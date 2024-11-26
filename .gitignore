@@ -56,3 +56,5 @@ MANIFEST
 # Save games
 *.csav
 *.csav.json
+!tests/data/*.csav
+!tests/data/*.csav.json
