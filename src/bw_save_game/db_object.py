@@ -54,6 +54,21 @@ class DbTimespan:
     length: int
 
 
+@dataclass
+class Long:
+    value: int  # 8 bytes
+
+
+@dataclass
+class VarInt:
+    value: int  # 8 bytes
+
+
+@dataclass
+class Double:
+    value: float  # 8 bytes
+
+
 def from_raw_dict(obj):
     typ = obj.get("@type")
     if not typ:
@@ -77,6 +92,12 @@ def from_raw_dict(obj):
         return DbTimespan(obj["length"])
     if typ == UUID.__name__:
         return UUID(hex=obj["value"])
+    if typ == Long.__name__:
+        return Long(obj["value"])
+    if typ == VarInt.__name__:
+        return VarInt(obj["value"])
+    if typ == Double.__name__:
+        return Double(obj["value"])
 
 
 def to_raw_dict(obj):
@@ -112,6 +133,12 @@ def to_raw_dict(obj):
         return {"@type": DbTimespan.__name__, "value": obj.length}
     if isinstance(obj, UUID):
         return {"@type": UUID.__name__, "value": obj.hex}
+    if isinstance(obj, Long):
+        return {"@type": Long.__name__, "value": obj.value}
+    if isinstance(obj, VarInt):
+        return {"@type": VarInt.__name__, "value": obj.value}
+    if isinstance(obj, Double):
+        return {"@type": Double.__name__, "value": obj.value}
 
     if isinstance(obj, dict):
         return obj

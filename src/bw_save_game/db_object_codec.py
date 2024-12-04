@@ -10,7 +10,10 @@ from .db_object import (
     DbSHA1,
     DbTimespan,
     DbTimestamp,
+    Double,
+    Long,
     Matrix4x4,
+    VarInt,
     Vector4D,
 )
 
@@ -132,12 +135,7 @@ def encode_value(name, value, buf, on_unknown=None):
         buf.write(encode_prefix(TYPE_Bool, name))
         buf.write(byte_struct.pack(value))
     elif isinstance(value, int):
-        if value < -0x80000000 or 0x7FFFFFFFFFFFFFFF >= value > 0x7FFFFFFF:
-            buf.write(encode_prefix(TYPE_VarInt, name))
-            buf.write(encode_varint_leb128(zigzag(value)))
-        elif value > 0x7FFFFFFFFFFFFFFF:
-            if value > 0xFFFFFFFFFFFFFFFF:
-                raise ValueError(f"DbObject format supports only int value < {0xFFFFFFFFFFFFFFFF}")
+        if value > 2**32 - 1 or value < value > 2**31 - 1:
             buf.write(encode_prefix(TYPE_Long, name))
             buf.write(uint64_struct.pack(value))
         else:
@@ -195,7 +193,16 @@ def encode_value(name, value, buf, on_unknown=None):
         buf.write(encode_array(value, on_unknown=on_unknown))
     elif isinstance(value, Decimal):
         buf.write(encode_prefix(TYPE_Double, name))
-        buf.write(float_struct.pack(float(value)))
+        buf.write(double_struct.pack(float(value)))
+    elif isinstance(value, Long):
+        buf.write(encode_prefix(TYPE_Long, name))
+        buf.write(uint64_struct.pack(value.value))
+    elif isinstance(value, VarInt):
+        buf.write(encode_prefix(TYPE_VarInt, name))
+        buf.write(encode_varint_leb128(zigzag(value.value)))
+    elif isinstance(value, Double):
+        buf.write(encode_prefix(TYPE_Double, name))
+        buf.write(double_struct.pack(value.value))
     else:
         if on_unknown is not None:
             encode_value(name, on_unknown(value), buf, on_unknown)
@@ -210,11 +217,9 @@ def encode_document(obj, on_unknown=None, with_length_prefix=True):
         encode_value(name, value, buf, on_unknown)
     encoded = buf.getvalue()
     encoded_size = len(encoded)
-
-    result = struct.pack("<%dsb" % (encoded_size,), encoded, 0)
     if with_length_prefix:
-        return encode_varint_leb128(encoded_size + 1) + result
-    return result
+        return encode_varint_leb128(encoded_size + 1) + encoded + byte_struct.pack(TYPE_Eoo)
+    return encoded
 
 
 def encode_array(array, on_unknown=None):
@@ -268,10 +273,11 @@ def decode_value(base: int, data: bytes):
     elif element_type == TYPE_Long:
         value = uint64_struct.unpack(data[base : base + 8])[0]
         base += 8
+        value = Long(value)
 
     elif element_type == TYPE_VarInt:
         base, value = decode_varint_leb128(data, base)
-        value = zagzig(value)
+        value = VarInt(zagzig(value))
 
     elif element_type == TYPE_Float:
         value = float_struct.unpack(data[base : base + 4])[0]
@@ -280,6 +286,7 @@ def decode_value(base: int, data: bytes):
     elif element_type == TYPE_Double:
         value = double_struct.unpack(data[base : base + 8])[0]
         base += 8
+        value = Double(value)
 
     elif element_type == TYPE_Timestamp:
         value = uint64_struct.unpack(data[base : base + 8])[0]
