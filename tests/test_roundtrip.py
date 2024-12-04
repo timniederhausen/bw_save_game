@@ -37,11 +37,8 @@ def test_actual_save_games_python():
         meta2 = dumps(meta_py)
         data2 = dumps(data_py)
 
-        # We can't do that (yet?) - as we might serialize some ints in
-        # different sizes compared to the binary
-        # (we lose that information at loading time when we convert to Python [int])
-        # assert meta == meta2
-        # assert data == data2
+        assert meta == meta2
+        assert data == data2
 
         assert meta_py == loads(meta2)
         assert data_py == loads(data2)
