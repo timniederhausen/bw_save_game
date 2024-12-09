@@ -24,7 +24,7 @@ from bw_save_game import (
     read_save_from_reader,
     write_save_to_writer,
 )
-from bw_save_game.db_object import Double, Long, from_raw_dict
+from bw_save_game.db_object import Double, Long, from_raw_dict, to_raw_dict
 from bw_save_game.db_object_codec import (
     double_struct,
     float_struct,
@@ -49,40 +49,26 @@ class State(object):
     def __init__(self):
         self.app = wx.App(None)
 
+        # UI state
         self.show_app_about = False
 
+        # loaded save game
         self.active_filename = None  # type: typing.Optional[str]
         self.active_meta = None  # type: typing.Optional[dict]
         self.active_data = None  # type: typing.Optional[dict]
 
     def has_content(self):
-        return self.active_filename is not None
+        return self.active_meta is not None and self.active_data is not None
 
     def load(self, filename: str):
-        is_csav = filename.lower().endswith(".csav")
-        if is_csav:
-            try:
-                with open(filename, "rb") as f:
-                    m, d = read_save_from_reader(f)
-                m = loads(m)
-                d = loads(d)
-            except Exception as e:
-                wx.MessageBox(f"Cannot load {filename}: {repr(e)}")
-                return
-        else:
-            try:
-                with open(filename, "r", encoding="utf-8") as f:
-                    doc = json.load(f, object_hook=from_raw_dict)
-            except Exception as e:
-                wx.MessageBox(f"Cannot load {filename}: {repr(e)}")
-                return
-
-            try:
-                m = doc["meta"]
-                d = doc["data"]
-            except KeyError as e:
-                wx.MessageBox(f"{filename} doesn't have the correct JSON structure.\n{e} is missing.")
-                return
+        try:
+            with open(filename, "rb") as f:
+                m, d = read_save_from_reader(f)
+            m = loads(m)
+            d = loads(d)
+        except Exception as e:
+            wx.MessageBox(f"Cannot load {filename}: {repr(e)}")
+            return
 
         self.active_filename = filename
         self.active_meta = m
@@ -98,6 +84,35 @@ class State(object):
             wx.MessageBox(f"Cannot save {filename}: {repr(e)}")
             return
         self.active_filename = filename
+
+    def import_json(self, filename: str):
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                doc = json.load(f, object_hook=from_raw_dict)
+        except Exception as e:
+            wx.MessageBox(f"Cannot load {filename}: {repr(e)}")
+            return
+
+        try:
+            m = doc["meta"]
+            d = doc["data"]
+        except KeyError as e:
+            wx.MessageBox(f"{filename} doesn't have the correct JSON structure.\n{e} is missing.")
+            return
+
+        self.active_filename = None
+        self.active_meta = m
+        self.active_data = d
+
+    def export_json(self, filename: str):
+        try:
+            root = dict(meta=self.active_meta, data=self.active_data, exporter=dict(version=__version__, format=1))
+            with open(filename, "w", encoding="utf-8") as f:
+                # TODO: do we want sort keys on?
+                json.dump(root, f, ensure_ascii=False, indent=2, default=to_raw_dict)
+        except Exception as e:
+            wx.MessageBox(f"Cannot save {filename}: {repr(e)}")
+            return
 
 
 def show_app_about(state: State):
@@ -128,15 +143,29 @@ def show_main_menu_bar(state: State):
                 if path:
                     state.load(path)
 
-            clicked, selected = imgui.menu_item(label="Save", shortcut="Ctrl+S")
+            clicked, selected = imgui.menu_item(label="Import JSON")
+            if clicked:
+                path = get_path("Open JSON Save Game", "JSON document (*.json)|*.json")
+                if path:
+                    state.import_json(path)
+
+            clicked, selected = imgui.menu_item(
+                label="Save", shortcut="Ctrl+S", enabled=state.active_filename is not None
+            )
             if clicked and state.active_filename:
                 state.save(state.active_filename)
 
-            clicked, selected = imgui.menu_item(label="Save As...")
+            clicked, selected = imgui.menu_item(label="Save As...", enabled=state.has_content())
             if clicked:
                 path = get_path("Write Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav", is_save=True)
                 if path:
                     state.save(path)
+
+            clicked, selected = imgui.menu_item(label="Export JSON", enabled=state.has_content())
+            if clicked:
+                path = get_path("Export JSON save game", "JSON document (*.json)|*.json", is_save=True)
+                if path:
+                    state.export_json(path)
 
             clicked, selected = imgui.menu_item("Quit", "Cmd+Q", False, True)
             if clicked:
