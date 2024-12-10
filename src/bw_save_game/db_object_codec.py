@@ -54,9 +54,10 @@ class UnknownSerializerError(TypeError):
 
 
 # Cache all the struct formats we might use.
-uint_struct = struct.Struct("<I")
+int32_struct = struct.Struct("<i")
+uint32_struct = struct.Struct("<I")
 byte_struct = struct.Struct("<B")
-long_struct = struct.Struct("<q")
+int64_struct = struct.Struct("<q")
 uint64_struct = struct.Struct("<Q")
 int_char_struct = struct.Struct("<ib")
 float_struct = struct.Struct("<f")
@@ -135,12 +136,12 @@ def encode_value(name, value, buf, on_unknown=None):
         buf.write(encode_prefix(TYPE_Bool, name))
         buf.write(byte_struct.pack(value))
     elif isinstance(value, int):
-        if value > 2**32 - 1 or value < value > 2**31 - 1:
+        if value > 2**32 - 1 or value < -(2**31) - 1:
             buf.write(encode_prefix(TYPE_Long, name))
             buf.write(uint64_struct.pack(value))
         else:
             buf.write(encode_prefix(TYPE_Integer, name))
-            buf.write(uint_struct.pack(value))
+            buf.write(uint32_struct.pack(value))
     elif isinstance(value, float):
         buf.write(encode_prefix(TYPE_Float, name))
         buf.write(float_struct.pack(value))
@@ -267,7 +268,7 @@ def decode_value(base: int, data: bytes):
         base += length
 
     elif element_type == TYPE_Integer:
-        value = uint_struct.unpack(data[base : base + 4])[0]
+        value = uint32_struct.unpack(data[base : base + 4])[0]
         base += 4
 
     elif element_type == TYPE_Long:
