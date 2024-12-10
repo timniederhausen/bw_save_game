@@ -114,6 +114,16 @@ class State(object):
             wx.MessageBox(f"Cannot save {filename}: {repr(e)}")
             return
 
+    # Easy data accessors
+    def get_server_extents(self):
+        return filter(lambda c: c["name"] == "RPGPlayerExtent", self.active_data["server"]["contributors"])
+
+    def get_items(self):
+        for extent in self.get_server_extents():
+            if "items" in extent["data"]:
+                return extent["data"]["items"]
+        raise ValueError("Server section doesn't have items")
+
 
 def show_app_about(state: State):
     if not state.show_app_about:
@@ -289,15 +299,49 @@ def show_editor_raw_data(state: State):
             show_value_editor(state.active_meta, key)
     imgui.separator()
     if imgui.collapsing_header("Content", None, imgui.TREE_NODE_DEFAULT_OPEN | imgui.TREE_NODE_ALLOW_ITEM_OVERLAP)[0]:
-
         for key in state.active_data.keys():
             show_value_editor(state.active_data, key)
+
+
+def show_editor_inventories(state):
+    def show_editor(item, key):
+        show_simple_value_editor(key, key, item, item[key])
+
+    items = state.get_items()
+
+    imgui.text(f"Number of items: {len(items)}")
+    with imgui.begin_table("Items", 5, imgui.TABLE_RESIZABLE | imgui.TABLE_BORDERS) as table:
+        if table.opened:
+            imgui.table_setup_column("Item")
+            imgui.table_setup_column("Parent")
+            imgui.table_setup_column("Slot")
+            imgui.table_setup_column("Amount")
+            imgui.table_setup_column("Rarity")
+            imgui.table_headers_row()
+            for i, item in enumerate(items):
+                imgui.push_id(str(i))
+                imgui.table_next_row()
+                imgui.table_next_column()
+                show_editor(item, "itemDataId")
+                imgui.table_next_column()
+                imgui.text(str(item["parent"]))
+                imgui.table_next_column()
+                show_editor(item, "attachSlot")
+                imgui.table_next_column()
+                show_editor(item, "stackCount")
+                imgui.table_next_column()
+                imgui.text(str(item.get("rarity")))
+                imgui.pop_id()
 
 
 def show_editor_content(state: State):
     with imgui.begin_tab_bar("editors") as tab_bar:
         if not tab_bar.opened:
             return
+
+        with imgui.begin_tab_item("Inventories") as inventories:
+            if inventories.selected:
+                show_editor_inventories(state)
 
         with imgui.begin_tab_item("Raw Data") as raw_data:
             if raw_data.selected:
@@ -338,7 +382,6 @@ def main():
 
     state = State()
 
-    # from testwindow import show_test_window
     def update(dt):
         impl.process_inputs()
         imgui.new_frame()
@@ -346,7 +389,6 @@ def main():
         show_main_menu_bar(state)
         show_app_about(state)
         show_editor_window(state)
-        # show_test_window()
 
         active_caption = state.active_filename if state.active_filename else WINDOW_TITLE
         if window.caption != active_caption:
