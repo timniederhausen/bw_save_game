@@ -1,11 +1,7 @@
 # bw_save_game: BioWare save game tools
 
-    Edit save games for Dragon Age: The Veilguard
-
-This pure-Python library and its console applications (`csav2json`, `json2csav`) can read and write Dragon Age: The Veilguard save files (`*.csav`).
-Support for previous Dragon Age games might follow.
-
-Converting the save games to easily editable `.json` documents is also supported!
+This pure-Python library can read and write _Dragon Age: The Veilguard_ save files (`*.csav`).
+It also comes with several tools (`csav2json`, `json2csav`) that can convert the save games to and from easily editable `.json` documents.
 
 ## Installation
 
@@ -13,8 +9,7 @@ Make sure you have these programs installed:
 
 * Python 3.8 or newer
 
-This package is available for download from [PyPI][1]. You can install this
-package using `pip`:
+This package is available for download from [PyPI][1]. You can install it using `pip`:
 ```bash
 pip install --upgrade bw_save_game
 ```

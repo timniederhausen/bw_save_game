@@ -158,12 +158,12 @@ Implement your changes
    .. important:: Don't forget to add unit tests and documentation in case your
       contribution adds an additional feature and is not just a bugfix.
 
-      Moreover, writing a `descriptive commit message`_ is highly recommended.
-      In case of doubt, you can check the commit history with::
+      Moreover, the project has very precise rules over how git commit messages can be formatted.
+      This leads to more readable messages that are easy to follow when looking through the project history.
+      But also, git history is used to generate the change log.
 
-         git log --graph --decorate --pretty=oneline --abbrev-commit --all
+      The commit message format is commonly known as `Conventional Commits`_
 
-      to look for recurring communication patterns.
 
 #. Please check that your changes don't break any unit tests with::
 
@@ -285,7 +285,7 @@ on PyPI_, the following steps can be used to release a new version for
 .. _CommonMark: https://commonmark.org/
 .. _contribution-guide.org: https://www.contribution-guide.org/
 .. _creating a PR: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request
-.. _descriptive commit message: https://chris.beams.io/posts/git-commit
+.. _Conventional Commits: https://www.conventionalcommits.org/
 .. _docstrings: https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
 .. _first-contributions tutorial: https://github.com/firstcontributions/first-contributions
 .. _flake8: https://flake8.pycqa.org/en/stable/
