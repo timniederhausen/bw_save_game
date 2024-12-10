@@ -19,4 +19,4 @@ finally:
 from .container import read_save_from_reader, write_save_to_writer
 from .db_object_codec import dumps, loads
 
-__all__ = ["read_save_from_reader", "write_save_to_writer", "dumps", "loads"]
+__all__ = ["read_save_from_reader", "write_save_to_writer", "dumps", "loads", "__version__"]
