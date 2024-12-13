@@ -25,6 +25,7 @@ from bw_save_game.db_object_codec import (
     int32_struct,
     int64_struct,
 )
+from bw_save_game.ui.widgets import show_searchable_combo_box
 
 # imgui_bundle has automatically generated bindings that mishandle void*
 # by requiring capsules instead of the raw bytes the actual imgui API wants.
@@ -66,6 +67,15 @@ class State(object):
         self.active_filename = None  # type: typing.Optional[str]
         self.active_meta = None  # type: typing.Optional[dict]
         self.active_data = None  # type: typing.Optional[dict]
+
+        with open("item_list.json", "r", encoding="utf-8") as f:
+            self.item_list = json.load(f)
+
+        self.item_id_to_index = {}
+        for i, item in enumerate(self.item_list):
+            item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
+            item["guid"] = UUID(item["guid"])
+            self.item_id_to_index[item["id"]] = i
 
     def has_content(self):
         return self.active_meta is not None and self.active_data is not None
@@ -125,11 +135,11 @@ class State(object):
             return
 
     # Easy data accessors
-    def get_server_extents(self):
+    def get_server_rpg_extents(self):
         return filter(lambda c: c["name"] == "RPGPlayerExtent", self.active_data["server"]["contributors"])
 
     def get_items(self):
-        for extent in self.get_server_extents():
+        for extent in self.get_server_rpg_extents():
             if "items" in extent["data"]:
                 return extent["data"]["items"]
         raise ValueError("Server section doesn't have items")
@@ -278,10 +288,6 @@ def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
         raise TypeError(f"Unsupported type {type(value)}")
 
 
-def _ordered_keys(value: dict):
-    return sorted(value.keys(), key=lambda x: (isinstance(value[x], dict), x))
-
-
 def show_value_editor(obj, key):
     value = obj[key]
     label = str(key)
@@ -299,7 +305,7 @@ def show_value_editor(obj, key):
                 imgui.pop_id()
         if isinstance(value, list):
             for sub_key in range(len(value)):
-                imgui.push_id(str(sub_key))
+                imgui.push_id(sub_key)
                 show_value_editor(value, sub_key)
                 imgui.pop_id()
         imgui.unindent()
@@ -312,6 +318,24 @@ def show_value_editor(obj, key):
     show_simple_value_editor(obj, key, value)
 
     imgui.columns(1)
+
+
+def show_item_id_editor(state: State, obj):
+    index = state.item_id_to_index.get(obj["itemDataId"].value)
+    if index is not None:
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.push_item_width(-1)
+        changed, new_index = show_searchable_combo_box("##itemDataId", state.item_list, lambda item: item["key"], index)
+        imgui.pop_item_width()
+
+        if changed:
+            data = state.item_list[new_index]
+            obj["itemDataId"] = Long(data["id"])
+            obj["dataGuid"] = data["guid"]
+    else:
+        imgui.text(obj["itemDataId"].value)
+        # oh well
+        # show_simple_value_editor(obj, "itemDataId")
 
 
 def show_editor_raw_data(state: State):
@@ -328,7 +352,7 @@ def show_editor_raw_data(state: State):
             imgui.pop_id()
 
 
-def show_editor_inventories(state):
+def show_editor_inventories(state: State):
     items = state.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
@@ -343,7 +367,7 @@ def show_editor_inventories(state):
             imgui.push_id(str(i))
             imgui.table_next_row()
             imgui.table_next_column()
-            show_simple_value_editor(item, "itemDataId")
+            show_item_id_editor(state, item)
             imgui.table_next_column()
             imgui.text(str(item["parent"]))
             imgui.table_next_column()
