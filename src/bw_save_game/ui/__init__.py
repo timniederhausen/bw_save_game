@@ -18,7 +18,7 @@ from bw_save_game import (
     read_save_from_reader,
     write_save_to_writer,
 )
-from bw_save_game.db_object import Double, Long, from_raw_dict, to_raw_dict
+from bw_save_game.db_object import Double, Long, from_raw_dict, to_native, to_raw_dict
 from bw_save_game.db_object_codec import (
     double_struct,
     float_struct,
@@ -52,6 +52,34 @@ def get_path(message, wildcard, is_save=False):
 def show_error(message: str):
     print(message)
     portable_file_dialogs.message("Error", message, portable_file_dialogs.choice.ok).ready(900)
+
+
+_PERSISTENCE_TYPES = {
+    # TODO: this is incomplete!
+    "Boolean": bool,
+    "Uint8": Long,
+    "Uint16": Long,
+    "Uint32": Long,
+    "Uint64": Long,
+    "Int8": Long,
+    "Int16": Long,
+    "Int32": Long,
+    "Int64": Long,
+}
+
+
+def get_or_create_persisted_value(family: dict, id: int, typ: str):
+    key = f",{id}:{typ}"
+
+    all_props = family["PropertyValueData"]["DefinitionProperties"]
+    found_prop = None
+    for prop in all_props:
+        if key in prop:
+            found_prop = prop
+    if found_prop is None:
+        found_prop = {key: _PERSISTENCE_TYPES[typ]()}
+        all_props.append(found_prop)
+    return found_prop, key
 
 
 class State(object):
@@ -138,16 +166,40 @@ class State(object):
             return
 
     # Easy data accessors
-    def get_server_rpg_extents(self) -> typing.Iterator[dict]:
-        return filter(lambda c: c["name"] == "RPGPlayerExtent", self.active_data["server"]["contributors"])
+    def get_client_rpg_extents(self, loadpass=0) -> dict:
+        for c in self.active_data["client"]["contributors"]:
+            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No client RPGPlayerExtent with loadpass {loadpass}")
+
+    def get_server_rpg_extents(self, loadpass=0) -> dict:
+        for c in self.active_data["server"]["contributors"]:
+            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No server RPGPlayerExtent with loadpass {loadpass}")
 
     def get_currencies(self):
-        first_extent = next(self.get_server_rpg_extents())["data"]
+        first_extent = self.get_server_rpg_extents(0)
         return first_extent.setdefault("currencies", []), first_extent.setdefault("discoveredCurrencies", [])
 
     def get_items(self) -> list:
-        first_extent = next(self.get_server_rpg_extents())["data"]
+        first_extent = self.get_server_rpg_extents(0)
         return first_extent.setdefault("items", [])
+
+    def get_registered_persistence(self, loadpass=0) -> dict:
+        for c in self.active_data["server"]["contributors"]:
+            if c["name"] == "RegisteredPersistence" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No RegisteredPersistence with loadpass {loadpass}")
+
+    def get_persisted_definitions(self) -> typing.List[dict]:
+        return self.get_registered_persistence()["RegisteredData"]["Persistence"]
+
+    def get_persisted_definition_family(self, family_id: int) -> typing.Optional[dict]:
+        for family in self.get_persisted_definitions():
+            if to_native(family["DefinitionId"]) == family_id:
+                return family
+        return None
 
 
 def show_app_about(state: State):
@@ -263,14 +315,23 @@ def show_numeric_value_editor(obj, key, value):
     return True, True
 
 
-def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
+def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
     if value is None:
         value = obj[key]
 
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
-    supported, changed = show_numeric_value_editor(obj, key, value)
+    supported = False
+    if isinstance(value, bool):
+        changed, new_value = imgui.checkbox(f"##{key}", value)
+        if changed:
+            obj[key] = new_value
+        supported = True
+
+    if not supported:
+        supported, changed = show_numeric_value_editor(obj, key, value)
+
     if not supported and isinstance(value, str):
         changed, new_value = imgui.input_text(f"##{key}", value)
         if changed:
@@ -294,9 +355,10 @@ def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
     return changed
 
 
-def show_key_value_editor(obj, key):
+def show_raw_key_value_editor(obj, key, label=None):
     value = obj[key]
-    label = str(key)
+    if label is None:
+        label = str(key)
 
     if isinstance(value, (dict, list)):
         is_open, is_removed = imgui.collapsing_header(label, True, imgui.TreeNodeFlags_.allow_overlap)
@@ -307,12 +369,12 @@ def show_key_value_editor(obj, key):
         if isinstance(value, dict):
             for sub_key in value:
                 imgui.push_id(sub_key)
-                show_key_value_editor(value, sub_key)
+                show_raw_key_value_editor(value, sub_key)
                 imgui.pop_id()
         if isinstance(value, list):
             for sub_key in range(len(value)):
                 imgui.push_id(sub_key)
-                show_key_value_editor(value, sub_key)
+                show_raw_key_value_editor(value, sub_key)
                 imgui.pop_id()
         imgui.unindent()
         return
@@ -321,13 +383,36 @@ def show_key_value_editor(obj, key):
     imgui.text(label)
     imgui.next_column()
 
-    show_simple_value_editor(obj, key, value)
+    show_raw_value_editor(obj, key, value)
+
+    imgui.columns(1)
+
+
+def show_key_value_options_editor(label: str, obj, key, options: typing.List[dict], default: int = 0):
+    value = obj[key]
+    native_value = to_native(value)
+
+    imgui.columns(2)
+    imgui.text(label)
+    imgui.next_column()
+
+    current_item = None
+    for i, option in enumerate(options):
+        if to_native(option["value"]) == native_value:
+            current_item = i
+
+    if current_item is None:
+        current_item = default
+
+    changed, current_item = show_searchable_combo_box(f"##{key}", options, lambda o: o["label"], current_item)
+    if changed:
+        obj[key] = options[current_item]["value"]
 
     imgui.columns(1)
 
 
 def show_item_id_editor(state: State, obj):
-    index = state.item_id_to_index.get(obj["itemDataId"].value)
+    index = state.item_id_to_index.get(to_native(obj["itemDataId"]))
     if index is not None:
         # https://github.com/ocornut/imgui/issues/623
         imgui.push_item_width(-1)
@@ -339,22 +424,42 @@ def show_item_id_editor(state: State, obj):
             obj["itemDataId"] = Long(data["id"])
             obj["dataGuid"] = data["guid"]
     else:
-        imgui.text(obj["itemDataId"].value)
+        imgui.text(to_native(obj["itemDataId"]))
         # oh well
         # show_simple_value_editor(obj, "itemDataId")
+
+
+def show_persisted_value_editor(state: State, label: str, family_id: int, id: int, typ: str):
+    family = state.get_persisted_definition_family(family_id)
+    if not family:
+        return
+
+    obj, key = get_or_create_persisted_value(family, id, typ)
+    show_raw_key_value_editor(obj, key, label)
+
+
+def show_persisted_value_options_editor(
+    state: State, label: str, family_id: int, id: int, typ: str, options: typing.List[dict], default: int = 0
+):
+    family = state.get_persisted_definition_family(family_id)
+    if not family:
+        return
+
+    obj, key = get_or_create_persisted_value(family, id, typ)
+    show_key_value_options_editor(label, obj, key, options, default)
 
 
 def show_editor_raw_data(state: State):
     if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in state.active_meta:
             imgui.push_id(key)
-            show_key_value_editor(state.active_meta, key)
+            show_raw_key_value_editor(state.active_meta, key)
             imgui.pop_id()
     imgui.separator()
     if imgui.collapsing_header("Content", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in state.active_data.keys():
             imgui.push_id(key)
-            show_key_value_editor(state.active_data, key)
+            show_raw_key_value_editor(state.active_data, key)
             imgui.pop_id()
 
 
@@ -378,12 +483,12 @@ def show_editor_inventories(state: State):
             imgui.text(str(item.get("parent")))
             imgui.table_next_column()
             if "attachSlot" in item:
-                show_simple_value_editor(item, "attachSlot")
+                show_raw_value_editor(item, "attachSlot")
             else:
                 imgui.text("n/a")
             imgui.table_next_column()
             if "stackCount" in item:
-                show_simple_value_editor(item, "stackCount")
+                show_raw_value_editor(item, "stackCount")
             else:
                 imgui.text("n/a")
             imgui.table_next_column()
@@ -418,28 +523,90 @@ def show_currency_editor(state: State):
         if obj is None:
             currencies.append(dict(currency=currency_def["id"], value=0))
             obj = currencies[-1]
-        show_simple_value_editor(obj, "value")
+        show_raw_value_editor(obj, "value")
         imgui.pop_id()
     imgui.end_table()
+
+
+# Globals/Persistence/InquisitorGeneratorDataAsset
+_PAST_DA_INQUISITOR_FAMILY_ID = 1250272560
+# DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
+_PAST_DA_SHOULD_REFERENCE_PROPERTY_ID = 746726984, "Boolean"
+_PAST_DA_INQUISITOR_ROMANCE_PROPERTY_ID = 3170937725, "Int32"
+_PAST_DA_INQUISITOR_ROMANCE_OPTIONS = [
+    # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
+    dict(value=1, label="Blackwall"),
+    dict(value=2, label="Cassandra"),
+    dict(value=3, label="Cullen"),
+    dict(value=4, label="Dorian"),
+    dict(value=5, label="IronBull"),
+    dict(value=6, label="Josephine"),
+    dict(value=7, label="Sera"),
+    dict(value=8, label="Solas"),
+]
 
 
 def show_editor_main(state: State):
     imgui.columns(2)
 
-    if imgui.collapsing_header(
-        "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
-    ):
-        imgui.text("TODO")
+    if imgui.begin_child("##first column"):
+        if imgui.collapsing_header(
+            "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            imgui.text("TODO")
 
-    if imgui.collapsing_header("Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        show_currency_editor(state)
+        if imgui.collapsing_header(
+            "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            show_currency_editor(state)
+    imgui.end_child()
 
     imgui.next_column()
 
-    if imgui.collapsing_header("Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        imgui.text("TODO")
+    if imgui.begin_child("##second column"):
+        if imgui.collapsing_header(
+            "Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            show_persisted_value_editor(
+                state, "Reference past DA?", _PAST_DA_INQUISITOR_FAMILY_ID, *_PAST_DA_SHOULD_REFERENCE_PROPERTY_ID
+            )
+            show_persisted_value_options_editor(
+                state,
+                "Romance option",
+                _PAST_DA_INQUISITOR_FAMILY_ID,
+                *_PAST_DA_INQUISITOR_ROMANCE_PROPERTY_ID,
+                _PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
+                7,
+            )
+    imgui.end_child()
 
     imgui.columns(1)
+
+
+def show_editor_appearances(state: State):
+    data = state.get_client_rpg_extents(2)
+
+    if imgui.collapsing_header(
+        "Player appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+    ):
+        imgui.push_item_width(-1)
+        changed, new_value = imgui.input_text_multiline(
+            "##Player", json.dumps(data["playerData"], indent=2, default=to_raw_dict)
+        )
+        imgui.pop_item_width()
+        if changed:
+            data["playerData"] = json.loads(new_value, object_hook=from_raw_dict)
+
+    if imgui.collapsing_header(
+        "Inquisitor appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+    ):
+        imgui.push_item_width(-1)
+        changed, new_value = imgui.input_text_multiline(
+            "##Inquisitor", json.dumps(data["inquisitorData"], indent=2, default=to_raw_dict)
+        )
+        imgui.pop_item_width()
+        if changed:
+            data["playerData"] = json.loads(new_value, object_hook=from_raw_dict)
 
 
 def show_editor_content(state: State):
@@ -448,6 +615,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Main")[0]:
         show_editor_main(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Appearances")[0]:
+        show_editor_appearances(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Inventories")[0]:

@@ -17,7 +17,7 @@ def show_searchable_combo_box(
     label: str,
     items: typing.List[typing.Any],
     to_text: typing.Callable[[typing.Any], str],
-    current_item: typing.Optional[int] = None,
+    current_item: int,
 ):
     ctx = imgui.get_current_context()
 
