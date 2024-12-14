@@ -143,3 +143,23 @@ def to_raw_dict(obj):
     if isinstance(obj, dict):
         return obj
     raise TypeError(f"Cannot serialize {type(obj)}")
+
+
+def to_native(obj):
+    if isinstance(obj, DbObjectId):
+        return obj.value
+    if isinstance(obj, DbSHA1):
+        return obj.value
+    if isinstance(obj, DbAttachment):
+        return obj.hash
+    if isinstance(obj, DbTimestamp):
+        return obj.value
+    if isinstance(obj, DbTimespan):
+        return obj.length
+    if isinstance(obj, Long):
+        return obj.value
+    if isinstance(obj, VarInt):
+        return obj.value
+    if isinstance(obj, Double):
+        return obj.value
+    return obj
