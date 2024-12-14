@@ -77,6 +77,9 @@ class State(object):
             item["guid"] = UUID(item["guid"])
             self.item_id_to_index[item["id"]] = i
 
+        with open("currencies.json", "r", encoding="utf-8") as f:
+            self.currencies = json.load(f)
+
     def has_content(self):
         return self.active_meta is not None and self.active_data is not None
 
@@ -135,14 +138,16 @@ class State(object):
             return
 
     # Easy data accessors
-    def get_server_rpg_extents(self):
+    def get_server_rpg_extents(self) -> typing.Iterator[dict]:
         return filter(lambda c: c["name"] == "RPGPlayerExtent", self.active_data["server"]["contributors"])
 
-    def get_items(self):
-        for extent in self.get_server_rpg_extents():
-            if "items" in extent["data"]:
-                return extent["data"]["items"]
-        raise ValueError("Server section doesn't have items")
+    def get_currencies(self):
+        first_extent = next(self.get_server_rpg_extents())["data"]
+        return first_extent.setdefault("currencies", []), first_extent.setdefault("discoveredCurrencies", [])
+
+    def get_items(self) -> list:
+        first_extent = next(self.get_server_rpg_extents())["data"]
+        return first_extent.setdefault("items", [])
 
 
 def show_app_about(state: State):
@@ -236,13 +241,13 @@ def show_numeric_value_editor(obj, key, value):
 
     if typ is None:
         # not numeric
-        return False
+        return False, False
 
     new_value = bytearray(encoded_value)
     capsule = wrap_bytes_for_imgui(new_value)
     changed = imgui.input_scalar(f"##{key}", typ, capsule)
     if not changed:
-        return True  # nothing to do
+        return True, False  # nothing to do
 
     if isinstance(value, int):
         if typ == imgui.DataType_.s64:
@@ -255,7 +260,7 @@ def show_numeric_value_editor(obj, key, value):
         obj[key] = float_struct.unpack(new_value)[0]
     if isinstance(value, Double):
         obj[key] = Double(double_struct.unpack(new_value)[0])
-    return True
+    return True, True
 
 
 def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
@@ -265,7 +270,7 @@ def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
-    supported = show_numeric_value_editor(obj, key, value)
+    supported, changed = show_numeric_value_editor(obj, key, value)
     if not supported and isinstance(value, str):
         changed, new_value = imgui.input_text(f"##{key}", value)
         if changed:
@@ -286,9 +291,10 @@ def show_simple_value_editor(obj: typing.MutableMapping, key, value=None):
 
     if not supported:
         raise TypeError(f"Unsupported type {type(value)}")
+    return changed
 
 
-def show_value_editor(obj, key):
+def show_key_value_editor(obj, key):
     value = obj[key]
     label = str(key)
 
@@ -301,12 +307,12 @@ def show_value_editor(obj, key):
         if isinstance(value, dict):
             for sub_key in value:
                 imgui.push_id(sub_key)
-                show_value_editor(value, sub_key)
+                show_key_value_editor(value, sub_key)
                 imgui.pop_id()
         if isinstance(value, list):
             for sub_key in range(len(value)):
                 imgui.push_id(sub_key)
-                show_value_editor(value, sub_key)
+                show_key_value_editor(value, sub_key)
                 imgui.pop_id()
         imgui.unindent()
         return
@@ -342,13 +348,13 @@ def show_editor_raw_data(state: State):
     if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in state.active_meta:
             imgui.push_id(key)
-            show_value_editor(state.active_meta, key)
+            show_key_value_editor(state.active_meta, key)
             imgui.pop_id()
     imgui.separator()
     if imgui.collapsing_header("Content", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in state.active_data.keys():
             imgui.push_id(key)
-            show_value_editor(state.active_data, key)
+            show_key_value_editor(state.active_data, key)
             imgui.pop_id()
 
 
@@ -364,14 +370,17 @@ def show_editor_inventories(state: State):
         imgui.table_setup_column("Rarity")
         imgui.table_headers_row()
         for i, item in enumerate(items):
-            imgui.push_id(str(i))
+            imgui.push_id(i)
             imgui.table_next_row()
             imgui.table_next_column()
             show_item_id_editor(state, item)
             imgui.table_next_column()
-            imgui.text(str(item["parent"]))
+            imgui.text(str(item.get("parent")))
             imgui.table_next_column()
-            show_simple_value_editor(item, "attachSlot")
+            if "attachSlot" in item:
+                show_simple_value_editor(item, "attachSlot")
+            else:
+                imgui.text("n/a")
             imgui.table_next_column()
             if "stackCount" in item:
                 show_simple_value_editor(item, "stackCount")
@@ -383,9 +392,63 @@ def show_editor_inventories(state: State):
         imgui.end_table()
 
 
+def show_currency_editor(state: State):
+    if not imgui.begin_table("Currencies", 3, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+        return
+
+    imgui.table_setup_column("Currency")
+    imgui.table_setup_column("Discovered?")
+    imgui.table_setup_column("Amount")
+    imgui.table_headers_row()
+    currencies, discovered_currencies = state.get_currencies()
+    for currency_def in state.currencies:
+        imgui.push_id(currency_def["id"])
+        imgui.table_next_row()
+        imgui.table_next_column()
+        imgui.text(f"{currency_def['name']} ({currency_def['id']})")
+        imgui.table_next_column()
+        changed, new_value = imgui.checkbox("##discovered?", currency_def["id"] in discovered_currencies)
+        if changed:
+            if new_value:
+                discovered_currencies.append(currency_def["id"])
+            else:
+                discovered_currencies.remove(currency_def["id"])
+        imgui.table_next_column()
+        obj = next((c for c in currencies if c["currency"] == currency_def["id"]), None)
+        if obj is None:
+            currencies.append(dict(currency=currency_def["id"], value=0))
+            obj = currencies[-1]
+        show_simple_value_editor(obj, "value")
+        imgui.pop_id()
+    imgui.end_table()
+
+
+def show_editor_main(state: State):
+    imgui.columns(2)
+
+    if imgui.collapsing_header(
+        "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+    ):
+        imgui.text("TODO")
+
+    if imgui.collapsing_header("Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        show_currency_editor(state)
+
+    imgui.next_column()
+
+    if imgui.collapsing_header("Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        imgui.text("TODO")
+
+    imgui.columns(1)
+
+
 def show_editor_content(state: State):
     if not imgui.begin_tab_bar("editors"):
         return
+
+    if imgui.begin_tab_item("Main")[0]:
+        show_editor_main(state)
+        imgui.end_tab_item()
 
     if imgui.begin_tab_item("Inventories")[0]:
         show_editor_inventories(state)
