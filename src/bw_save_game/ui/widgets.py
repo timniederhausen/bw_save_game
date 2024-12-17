@@ -1,22 +1,29 @@
-import typing
+from dataclasses import dataclass
 
 from imgui_bundle import imgui
 
+
+@dataclass
+class ComboBoxState:
+    search_pattern = ""
+    filtered_items: list[int] = None
+    shown_this_frame = True
+
+
 # retained state
-used_combo_boxes = {}
+used_combo_boxes = {}  # type: dict[int, ComboBoxState]
 
 
 def clear_unused_retained_data():
     global used_combo_boxes
-    used_combo_boxes = {k: v for k, v in used_combo_boxes.items() if v["shown_this_frame"]}
+    used_combo_boxes = {k: v for k, v in used_combo_boxes.items() if v.shown_this_frame}
     for v in used_combo_boxes.values():
-        v["shown_this_frame"] = False
+        v.shown_this_frame = False
 
 
 def show_searchable_combo_box(
     label: str,
-    items: typing.List[typing.Any],
-    to_text: typing.Callable[[typing.Any], str],
+    items: list[str],
     current_item: int,
 ):
     ctx = imgui.get_current_context()
@@ -25,7 +32,7 @@ def show_searchable_combo_box(
     if window.skip_items:
         return False, current_item
 
-    preview_value = to_text(items[current_item])
+    preview_value = items[current_item]
 
     id = window.get_id(label)
     popup_id = imgui.internal.im_hash_str("##ComboPopup", 0, id)
@@ -33,11 +40,11 @@ def show_searchable_combo_box(
     global used_combo_boxes
     retained_data = used_combo_boxes.get(id)
     if retained_data is None:
-        retained_data = dict(shown_this_frame=True, search_pattern="", filtered_items=None)
+        retained_data = ComboBoxState()
     else:
-        retained_data["shown_this_frame"] = True
+        retained_data.shown_this_frame = True
 
-    search_pattern = retained_data["search_pattern"]
+    search_pattern = retained_data.search_pattern
 
     is_already_open = imgui.internal.is_popup_open(popup_id, 0)
 
@@ -62,11 +69,11 @@ def show_searchable_combo_box(
 
     is_filtering = is_already_open and search_pattern
     if is_filtering:
-        if search_pattern != retained_data["search_pattern"] or not retained_data["filtered_items"]:
-            filtered_items = [i for (i, item) in enumerate(items) if search_pattern in to_text(item)]
-            retained_data["filtered_items"] = filtered_items
+        if search_pattern != retained_data.search_pattern or not retained_data.filtered_items:
+            filtered_items = [i for i, item in enumerate(items) if search_pattern in item]
+            retained_data.filtered_items = filtered_items
         else:
-            filtered_items = retained_data["filtered_items"]
+            filtered_items = retained_data.filtered_items
         num_items = len(filtered_items)
         try:
             filtered_current_item = filtered_items.index(current_item)
@@ -75,7 +82,7 @@ def show_searchable_combo_box(
     else:
         num_items = len(items)
 
-    retained_data["search_pattern"] = search_pattern
+    retained_data.search_pattern = search_pattern
 
     actual_current_item = filtered_current_item if is_filtering else current_item
     value_changed = False
@@ -99,7 +106,7 @@ def show_searchable_combo_box(
                     label = items[idx]
 
                 is_selected = idx == actual_current_item
-                if imgui.selectable(to_text(label), is_selected)[0]:
+                if imgui.selectable(label, is_selected)[0]:
                     if is_filtering:
                         current_item = filtered_items[idx]
                     else:

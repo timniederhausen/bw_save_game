@@ -142,9 +142,8 @@ KNOWN_CHARACTER_ARCHETYPES = {
     291152393: "Dalish",
     2366407241: "Crow",
 }
-KNOWN_CHARACTER_ARCHETYPE_VALUES = [k for k, v in KNOWN_CHARACTER_ARCHETYPES.items()]
-KNOWN_CHARACTER_ARCHETYPE_LABELS = [v for k, v in KNOWN_CHARACTER_ARCHETYPES.items()]
-KNOWN_CHARACTER_ARCHETYPE_OPTIONS = [dict(value=k, label=v) for k, v in KNOWN_CHARACTER_ARCHETYPES.items()]
+KNOWN_CHARACTER_ARCHETYPE_VALUES = list(KNOWN_CHARACTER_ARCHETYPES.keys())
+KNOWN_CHARACTER_ARCHETYPE_LABELS = list(KNOWN_CHARACTER_ARCHETYPES.values())
 
 ITEM_ATTACHMENT_SLOT_NAMES = [e.name for e in ItemAttachmentSlot]
 ITEM_ATTACHMENT_SLOT_VALUES = [e.value for e in ItemAttachmentSlot]
@@ -154,7 +153,7 @@ PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.R
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
 PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean")
 PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3170937725, "Int32")
-PAST_DA_INQUISITOR_ROMANCE_VALUES = {
+PAST_DA_INQUISITOR_ROMANCES = {
     # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
     1: "Blackwall",
     2: "Cassandra",
@@ -165,8 +164,9 @@ PAST_DA_INQUISITOR_ROMANCE_VALUES = {
     7: "Sera",
     8: "Solas",
 }
-PAST_DA_INQUISITOR_ROMANCE_OPTIONS = [dict(value=k, label=v) for k, v in PAST_DA_INQUISITOR_ROMANCE_VALUES.items()]
-PAST_DA_INQUISITOR_ROMANCE_OPTIONS_DEFAULT = 7  # Solas
+PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
+PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
+PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
 
 # from data files:
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))

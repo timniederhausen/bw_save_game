@@ -40,9 +40,10 @@ from bw_save_game.veilguard import (
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
-    PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
-    PAST_DA_INQUISITOR_ROMANCE_OPTIONS_DEFAULT,
+    PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX,
+    PAST_DA_INQUISITOR_ROMANCE_LABELS,
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
+    PAST_DA_INQUISITOR_ROMANCE_VALUES,
     PAST_DA_SHOULD_REFERENCE_PROPERTY,
     ItemAttachmentType,
     construct_item_attachment,
@@ -68,6 +69,7 @@ class State(object):
             item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
             item["guid"] = UUID(item["guid"])
             self.item_id_to_index[item["id"]] = i
+        self.item_keys = [item["key"] for item in self.item_list]
 
         self.currencies = ALL_CURRENCIES
 
@@ -245,7 +247,7 @@ def show_item_id_editor(state: State, obj):
     if index is not None:
         # https://github.com/ocornut/imgui/issues/623
         imgui.push_item_width(-1)
-        changed, new_index = show_searchable_combo_box("##itemDataId", state.item_list, lambda item: item["key"], index)
+        changed, new_index = show_searchable_combo_box("##itemDataId", state.item_keys, index)
         imgui.pop_item_width()
 
         if changed:
@@ -271,7 +273,8 @@ def show_persisted_value_options_editor(
     state: State,
     label: str,
     prop: PersistencePropertyDefinition,
-    options: typing.List[dict],
+    option_values: list,
+    option_names: list[str],
     default_option_index: int = 0,
 ):
     definition = state.get_persisted_definition(prop.definition.definitionId)
@@ -279,7 +282,7 @@ def show_persisted_value_options_editor(
         return
 
     obj, key = get_or_create_persisted_value(definition, prop.propertyId, prop.propertyType)
-    show_key_value_options_editor(label, obj, key, options, default_option_index)
+    show_key_value_options_editor(label, obj, key, option_values, option_names, default_option_index)
 
 
 def show_editor_raw_data(state: State):
@@ -444,8 +447,9 @@ def show_editor_main(state: State):
                 state,
                 "Romance option",
                 PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
-                PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
-                PAST_DA_INQUISITOR_ROMANCE_OPTIONS_DEFAULT,
+                PAST_DA_INQUISITOR_ROMANCE_VALUES,
+                PAST_DA_INQUISITOR_ROMANCE_LABELS,
+                PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX,
             )
     imgui.end_child()
 

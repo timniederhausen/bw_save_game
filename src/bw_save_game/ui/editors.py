@@ -169,7 +169,9 @@ def show_raw_key_value_editor(obj, key, label=None):
     return changed
 
 
-def show_key_value_options_editor(label: str, obj, key, options: typing.List[dict], default_option_index: int = 0):
+def show_key_value_options_editor(
+    label: str, obj, key, option_values: list, option_names: list[str], default_option_index: int = 0
+):
     value = obj[key]
     native_value = to_native(value)
 
@@ -178,15 +180,15 @@ def show_key_value_options_editor(label: str, obj, key, options: typing.List[dic
     imgui.next_column()
 
     current_item = None
-    for i, option in enumerate(options):
-        if option["value"] == native_value:
+    for i, option in enumerate(option_values):
+        if option == native_value:
             current_item = i
 
     if current_item is None:
         current_item = default_option_index
 
-    changed, current_item = show_searchable_combo_box(f"##{key}", options, lambda o: o["label"], current_item)
+    changed, current_item = show_searchable_combo_box(f"##{key}", option_names, current_item)
     if changed:
-        obj[key] = options[current_item]["value"]
+        obj[key] = option_values[current_item]
 
     imgui.columns(1)
