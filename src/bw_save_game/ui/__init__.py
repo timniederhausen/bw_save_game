@@ -3,13 +3,12 @@
 
 from __future__ import absolute_import
 
-import ctypes
 import json
 import sys
 import typing  # noqa: F401
 from uuid import UUID
 
-from imgui_bundle import imgui, immapp, portable_file_dialogs
+from imgui_bundle import imgui, immapp
 
 from bw_save_game import (
     __version__,
@@ -18,86 +17,40 @@ from bw_save_game import (
     read_save_from_reader,
     write_save_to_writer,
 )
-from bw_save_game.db_object import Double, Long, from_raw_dict, to_native, to_raw_dict
-from bw_save_game.db_object_codec import (
-    double_struct,
-    float_struct,
-    int32_struct,
-    int64_struct,
+from bw_save_game.db_object import Long, from_raw_dict, to_native, to_raw_dict
+from bw_save_game.persistence import (
+    PersistencePropertyDefinition,
+    get_or_create_persisted_value,
 )
+from bw_save_game.ui.editors import (
+    show_json_editor,
+    show_key_value_options_editor,
+    show_raw_key_value_editor,
+    show_raw_value_editor,
+)
+from bw_save_game.ui.utils import ask_for_file_to_open, ask_for_file_to_save, show_error
 from bw_save_game.ui.widgets import show_searchable_combo_box
-
-# imgui_bundle has automatically generated bindings that mishandle void*
-# by requiring capsules instead of the raw bytes the actual imgui API wants.
-PyCapsule_Destructor = ctypes.CFUNCTYPE(None, ctypes.py_object)
-PyCapsule_New = ctypes.pythonapi.PyCapsule_New
-PyCapsule_New.restype = ctypes.py_object
-PyCapsule_New.argtypes = (ctypes.c_void_p, ctypes.c_char_p, PyCapsule_Destructor)
-
-_NANOBIND_VOIDP_CAPSULE_TYPE = b"nb_handle"
-
-
-def wrap_bytes_for_imgui(buffer: bytearray):
-    raw = (ctypes.c_ubyte * len(buffer)).from_buffer(buffer)
-    return PyCapsule_New(raw, _NANOBIND_VOIDP_CAPSULE_TYPE, PyCapsule_Destructor(0))
-
-
-# https://stackoverflow.com/questions/9319317/quick-and-easy-file-dialog-in-python/9319832#9319832
-def get_path(message, wildcard, is_save=False):
-    if is_save:
-        return portable_file_dialogs.save_file(title=message, filters=wildcard.split("|"))
-    return portable_file_dialogs.open_file(title=message, filters=wildcard.split("|"))
-
-
-def show_error(message: str):
-    print(message)
-    portable_file_dialogs.message("Error", message, portable_file_dialogs.choice.ok).ready(900)
-
-
-_PERSISTENCE_TYPES = {
-    # TODO: this is incomplete!
-    "Boolean": bool,
-    "Uint8": Long,
-    "Uint16": Long,
-    "Uint32": Long,
-    "Uint64": Long,
-    "Int8": Long,
-    "Int16": Long,
-    "Int32": Long,
-    "Int64": Long,
-}
-
-
-def get_or_create_persisted_value(family: dict, id: int, typ: str):
-    key = f",{id}:{typ}"
-
-    all_props = family["PropertyValueData"]["DefinitionProperties"]
-    found_prop = None
-    for prop in all_props:
-        if key in prop:
-            found_prop = prop
-    if found_prop is None:
-        found_prop = {key: _PERSISTENCE_TYPES[typ]()}
-        all_props.append(found_prop)
-    return found_prop, key
+from bw_save_game.veilguard import (
+    ALL_CURRENCIES,
+    ALL_ITEMS,
+    PAST_DA_INQUISITOR_ROMANCE_DEFAULT,
+    PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
+    PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
+    PAST_DA_SHOULD_REFERENCE_PROPERTY,
+)
 
 
 class State(object):
     def __init__(self):
         # UI state
         self.show_app_about = False
-        self.open_csav_dialog = None  # type: typing.Optional[portable_file_dialogs.open_file]
-        self.open_json_dialog = None  # type: typing.Optional[portable_file_dialogs.open_file]
-        self.save_csav_dialog = None  # type: typing.Optional[portable_file_dialogs.save_file]
-        self.save_json_dialog = None  # type: typing.Optional[portable_file_dialogs.save_file]
 
         # loaded save game
         self.active_filename = None  # type: typing.Optional[str]
         self.active_meta = None  # type: typing.Optional[dict]
         self.active_data = None  # type: typing.Optional[dict]
 
-        with open("item_list.json", "r", encoding="utf-8") as f:
-            self.item_list = json.load(f)
+        self.item_list = ALL_ITEMS
 
         self.item_id_to_index = {}
         for i, item in enumerate(self.item_list):
@@ -105,8 +58,7 @@ class State(object):
             item["guid"] = UUID(item["guid"])
             self.item_id_to_index[item["id"]] = i
 
-        with open("currencies.json", "r", encoding="utf-8") as f:
-            self.currencies = json.load(f)
+        self.currencies = ALL_CURRENCIES
 
     def has_content(self):
         return self.active_meta is not None and self.active_data is not None
@@ -195,9 +147,9 @@ class State(object):
     def get_persisted_definitions(self) -> typing.List[dict]:
         return self.get_registered_persistence()["RegisteredData"]["Persistence"]
 
-    def get_persisted_definition_family(self, family_id: int) -> typing.Optional[dict]:
+    def get_persisted_definition(self, definition_id: int) -> typing.Optional[dict]:
         for family in self.get_persisted_definitions():
-            if to_native(family["DefinitionId"]) == family_id:
+            if to_native(family["DefinitionId"]) == definition_id:
                 return family
         return None
 
@@ -230,11 +182,15 @@ def show_main_menu_bar(state: State):
     if imgui.begin_menu("File", True):
         clicked, selected = imgui.menu_item(label="Open", shortcut="Ctrl+O", p_selected=False)
         if clicked:
-            state.open_csav_dialog = get_path("Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+            path = ask_for_file_to_open("Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+            if path:
+                state.load(path)
 
         clicked, selected = imgui.menu_item(label="Import JSON", shortcut="", p_selected=False)
         if clicked:
-            state.open_json_dialog = get_path("Open JSON Save Game", "JSON document (*.json)|*.json")
+            path = ask_for_file_to_open("Open JSON Save Game", "JSON document (*.json)|*.json")
+            if path:
+                state.import_json(path)
 
         clicked, selected = imgui.menu_item(
             label="Save", shortcut="Ctrl+S", p_selected=False, enabled=state.active_filename is not None
@@ -246,15 +202,17 @@ def show_main_menu_bar(state: State):
             label="Save As...", shortcut="", p_selected=False, enabled=state.has_content()
         )
         if clicked:
-            state.save_csav_dialog = get_path(
-                "Write Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav", is_save=True
-            )
+            path = ask_for_file_to_save("Write Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+            if path:
+                state.save(path)
 
         clicked, selected = imgui.menu_item(
             label="Export JSON", shortcut="", p_selected=False, enabled=state.has_content()
         )
         if clicked:
-            state.save_json_dialog = get_path("Export JSON save game", "JSON document (*.json)|*.json", is_save=True)
+            path = ask_for_file_to_save("Export JSON save game", "JSON document (*.json)|*.json")
+            if path:
+                state.export_json(path)
 
         clicked, selected = imgui.menu_item("Quit", "Cmd+Q", False, True)
         if clicked:
@@ -271,146 +229,6 @@ def show_main_menu_bar(state: State):
     imgui.end_main_menu_bar()
 
 
-def show_numeric_value_editor(obj, key, value):
-    typ = None
-    encoded_value = None
-    if isinstance(value, int):
-        if value < 0:
-            encoded_value = int32_struct.pack(value)
-            typ = imgui.DataType_.s32
-        else:
-            encoded_value = int64_struct.pack(value)
-            typ = imgui.DataType_.s64
-    if isinstance(value, Long):
-        encoded_value = int64_struct.pack(value.value)
-        typ = imgui.DataType_.s64
-    if isinstance(value, float):
-        encoded_value = float_struct.pack(value)
-        typ = imgui.DataType_.float
-    if isinstance(value, Double):
-        encoded_value = double_struct.pack(value.value)
-        typ = imgui.DataType_.double
-
-    if typ is None:
-        # not numeric
-        return False, False
-
-    new_value = bytearray(encoded_value)
-    capsule = wrap_bytes_for_imgui(new_value)
-    changed = imgui.input_scalar(f"##{key}", typ, capsule)
-    if not changed:
-        return True, False  # nothing to do
-
-    if isinstance(value, int):
-        if typ == imgui.DataType_.s64:
-            obj[key] = int64_struct.unpack(new_value)[0]
-        else:
-            obj[key] = int32_struct.unpack(new_value)[0]
-    if isinstance(value, Long):
-        obj[key] = Long(int64_struct.unpack(new_value)[0])
-    if isinstance(value, float):
-        obj[key] = float_struct.unpack(new_value)[0]
-    if isinstance(value, Double):
-        obj[key] = Double(double_struct.unpack(new_value)[0])
-    return True, True
-
-
-def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
-    if value is None:
-        value = obj[key]
-
-    # https://github.com/ocornut/imgui/issues/623
-    imgui.push_item_width(-1)
-
-    supported = False
-    if isinstance(value, bool):
-        changed, new_value = imgui.checkbox(f"##{key}", value)
-        if changed:
-            obj[key] = new_value
-        supported = True
-
-    if not supported:
-        supported, changed = show_numeric_value_editor(obj, key, value)
-
-    if not supported and isinstance(value, str):
-        changed, new_value = imgui.input_text(f"##{key}", value)
-        if changed:
-            obj[key] = new_value
-        supported = True
-
-    if not supported and isinstance(value, UUID):
-        changed, new_value = imgui.input_text(f"##{key}", str(value))
-        if changed:
-            try:
-                obj[key] = UUID(hex=new_value)
-            except ValueError:
-                # just ignore it, the user needs to know what they're doing here
-                pass
-        supported = True
-
-    imgui.pop_item_width()
-
-    if not supported:
-        raise TypeError(f"Unsupported type {type(value)}")
-    return changed
-
-
-def show_raw_key_value_editor(obj, key, label=None):
-    value = obj[key]
-    if label is None:
-        label = str(key)
-
-    if isinstance(value, (dict, list)):
-        is_open, is_removed = imgui.collapsing_header(label, True, imgui.TreeNodeFlags_.allow_overlap)
-        if not is_open:
-            return
-
-        imgui.indent()
-        if isinstance(value, dict):
-            for sub_key in value:
-                imgui.push_id(sub_key)
-                show_raw_key_value_editor(value, sub_key)
-                imgui.pop_id()
-        if isinstance(value, list):
-            for sub_key in range(len(value)):
-                imgui.push_id(sub_key)
-                show_raw_key_value_editor(value, sub_key)
-                imgui.pop_id()
-        imgui.unindent()
-        return
-
-    imgui.columns(2)
-    imgui.text(label)
-    imgui.next_column()
-
-    show_raw_value_editor(obj, key, value)
-
-    imgui.columns(1)
-
-
-def show_key_value_options_editor(label: str, obj, key, options: typing.List[dict], default: int = 0):
-    value = obj[key]
-    native_value = to_native(value)
-
-    imgui.columns(2)
-    imgui.text(label)
-    imgui.next_column()
-
-    current_item = None
-    for i, option in enumerate(options):
-        if to_native(option["value"]) == native_value:
-            current_item = i
-
-    if current_item is None:
-        current_item = default
-
-    changed, current_item = show_searchable_combo_box(f"##{key}", options, lambda o: o["label"], current_item)
-    if changed:
-        obj[key] = options[current_item]["value"]
-
-    imgui.columns(1)
-
-
 def show_item_id_editor(state: State, obj):
     index = state.item_id_to_index.get(to_native(obj["itemDataId"]))
     if index is not None:
@@ -424,29 +242,33 @@ def show_item_id_editor(state: State, obj):
             obj["itemDataId"] = Long(data["id"])
             obj["dataGuid"] = data["guid"]
     else:
-        imgui.text(to_native(obj["itemDataId"]))
+        imgui.text(f"Unsupported item: {to_native(obj["itemDataId"])}")
         # oh well
         # show_simple_value_editor(obj, "itemDataId")
 
 
-def show_persisted_value_editor(state: State, label: str, family_id: int, id: int, typ: str):
-    family = state.get_persisted_definition_family(family_id)
-    if not family:
+def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
+    definition = state.get_persisted_definition(prop.definition.definitionId)
+    if not definition:
         return
 
-    obj, key = get_or_create_persisted_value(family, id, typ)
+    obj, key = get_or_create_persisted_value(definition, prop.propertyId, prop.propertyType)
     show_raw_key_value_editor(obj, key, label)
 
 
 def show_persisted_value_options_editor(
-    state: State, label: str, family_id: int, id: int, typ: str, options: typing.List[dict], default: int = 0
+    state: State,
+    label: str,
+    prop: PersistencePropertyDefinition,
+    options: typing.List[dict],
+    default_option_index: int = 0,
 ):
-    family = state.get_persisted_definition_family(family_id)
-    if not family:
+    definition = state.get_persisted_definition(prop.definition.definitionId)
+    if not definition:
         return
 
-    obj, key = get_or_create_persisted_value(family, id, typ)
-    show_key_value_options_editor(label, obj, key, options, default)
+    obj, key = get_or_create_persisted_value(definition, prop.propertyId, prop.propertyType)
+    show_key_value_options_editor(label, obj, key, options, default_option_index)
 
 
 def show_editor_raw_data(state: State):
@@ -528,28 +350,13 @@ def show_currency_editor(state: State):
     imgui.end_table()
 
 
-# Globals/Persistence/InquisitorGeneratorDataAsset
-_PAST_DA_INQUISITOR_FAMILY_ID = 1250272560
-# DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
-_PAST_DA_SHOULD_REFERENCE_PROPERTY_ID = 746726984, "Boolean"
-_PAST_DA_INQUISITOR_ROMANCE_PROPERTY_ID = 3170937725, "Int32"
-_PAST_DA_INQUISITOR_ROMANCE_OPTIONS = [
-    # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
-    dict(value=1, label="Blackwall"),
-    dict(value=2, label="Cassandra"),
-    dict(value=3, label="Cullen"),
-    dict(value=4, label="Dorian"),
-    dict(value=5, label="IronBull"),
-    dict(value=6, label="Josephine"),
-    dict(value=7, label="Sera"),
-    dict(value=8, label="Solas"),
-]
-
-
 def show_editor_main(state: State):
     imgui.columns(2)
 
     if imgui.begin_child("##first column"):
+        if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+            show_raw_key_value_editor(state.active_meta, "description", "Description")
+
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
@@ -567,16 +374,13 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
-            show_persisted_value_editor(
-                state, "Reference past DA?", _PAST_DA_INQUISITOR_FAMILY_ID, *_PAST_DA_SHOULD_REFERENCE_PROPERTY_ID
-            )
+            show_persisted_value_editor(state, "Reference past DA?", PAST_DA_SHOULD_REFERENCE_PROPERTY)
             show_persisted_value_options_editor(
                 state,
                 "Romance option",
-                _PAST_DA_INQUISITOR_FAMILY_ID,
-                *_PAST_DA_INQUISITOR_ROMANCE_PROPERTY_ID,
-                _PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
-                7,
+                PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
+                PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
+                PAST_DA_INQUISITOR_ROMANCE_DEFAULT,
             )
     imgui.end_child()
 
@@ -586,27 +390,25 @@ def show_editor_main(state: State):
 def show_editor_appearances(state: State):
     data = state.get_client_rpg_extents(2)
 
+    imgui.text_wrapped(
+        "You can manually edit the following JSON documents or copy them from another save game!\n"
+        + "Hint: It is probably easier to make a new character with the desired player or inquisitor appearance "
+        + "and copy their appearance documents over than trying to modify the values below."
+    )
+
     if imgui.collapsing_header(
         "Player appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
     ):
-        imgui.push_item_width(-1)
-        changed, new_value = imgui.input_text_multiline(
-            "##Player", json.dumps(data["playerData"], indent=2, default=to_raw_dict)
-        )
-        imgui.pop_item_width()
+        changed, new_value = show_json_editor("##Player", data["playerData"])
         if changed:
-            data["playerData"] = json.loads(new_value, object_hook=from_raw_dict)
+            data["playerData"] = new_value
 
     if imgui.collapsing_header(
         "Inquisitor appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
     ):
-        imgui.push_item_width(-1)
-        changed, new_value = imgui.input_text_multiline(
-            "##Inquisitor", json.dumps(data["inquisitorData"], indent=2, default=to_raw_dict)
-        )
-        imgui.pop_item_width()
+        changed, new_value = show_json_editor("##Inquisitor", data["inquisitorData"])
         if changed:
-            data["playerData"] = json.loads(new_value, object_hook=from_raw_dict)
+            data["inquisitorData"] = new_value
 
 
 def show_editor_content(state: State):
@@ -665,38 +467,7 @@ def show_ui(state: State):
     show_app_about(state)
     show_editor_window(state)
 
-    def process_open_dialog(dlg: portable_file_dialogs.open_file, fn):
-        if dlg and dlg.ready():
-            res = dlg.result()
-            if res:
-                print(res)
-                fn(res[0])
-            return True
-        return False
-
-    def process_save_dialog(dlg: portable_file_dialogs.save_file, fn):
-        if dlg and dlg.ready():
-            res = dlg.result()
-            if res:
-                print(res)
-                fn(res)
-            return True
-        return False
-
-    if process_open_dialog(state.open_csav_dialog, state.load):
-        state.open_csav_dialog = None
-    if process_open_dialog(state.open_json_dialog, state.import_json):
-        state.open_json_dialog = None
-    if process_save_dialog(state.save_csav_dialog, state.save):
-        state.save_csav_dialog = None
-    if process_save_dialog(state.save_json_dialog, state.export_json):
-        state.save_json_dialog = None
-
 
 def main():
     state = State()
     immapp.run(gui_function=lambda: show_ui(state), window_title=WINDOW_TITLE)
-
-
-if __name__ == "__main__":
-    main()
