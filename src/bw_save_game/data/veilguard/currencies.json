@@ -1,0 +1,98 @@
+[
+  {
+    "id": 31,
+    "rarity": "Rarity_Uncommon",
+    "name": "Etheric Remnant",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 0,
+    "rarity": "Rarity_None",
+    "name": "Gold",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 1,
+    "rarity": "Rarity_Common",
+    "name": "Pure Ore",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 9,
+    "rarity": "Rarity_Common",
+    "name": "Imperial Weave",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 17,
+    "rarity": "Rarity_Common",
+    "name": "Heartwood",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 25,
+    "rarity": "Rarity_Common",
+    "name": "Flawless Crystal",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 26,
+    "rarity": "Rarity_Rare",
+    "name": "Fade-Touched Ore",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 27,
+    "rarity": "Rarity_Rare",
+    "name": "Fade-Touched Crystal",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 19,
+    "rarity": "Rarity_Rare",
+    "name": "Vhenadahl's Tears",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 29,
+    "rarity": "Rarity_Legendary",
+    "name": "Dragonfire Catalyst",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 28,
+    "rarity": "Rarity_Legendary",
+    "name": "Royal Elfroot",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  },
+  {
+    "id": 12,
+    "rarity": "Rarity_Legendary",
+    "name": "Fade-Touched Silk",
+    "HiddenCurrency": false,
+    "ShowInInventory": true,
+    "MaxStackSize": 4294967294
+  }
+]
