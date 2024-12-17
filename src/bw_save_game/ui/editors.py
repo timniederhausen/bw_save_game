@@ -24,9 +24,35 @@ PyCapsule_New.argtypes = (ctypes.c_void_p, ctypes.c_char_p, PyCapsule_Destructor
 _NANOBIND_VOIDP_CAPSULE_TYPE = b"nb_handle"
 
 
-def wrap_bytes_for_imgui(buffer: bytearray):
+def _wrap_bytes_for_imgui(buffer: bytearray):
     raw = (ctypes.c_ubyte * len(buffer)).from_buffer(buffer)
     return PyCapsule_New(raw, _NANOBIND_VOIDP_CAPSULE_TYPE, PyCapsule_Destructor(0))
+
+
+def show_json_editor(label: str, value):
+    changed, new_value = imgui.input_text_multiline(label, json.dumps(value, indent=2, default=to_raw_dict))
+    error = None
+    if changed:
+        try:
+            return True, json.loads(new_value, object_hook=from_raw_dict)
+        except ValueError as e:
+            error = repr(e)
+    if error is not None:
+        imgui.text_colored((0.9, 0.01, 0.01, 1.0), f"ERROR: {error}")
+    return False, None
+
+
+def show_uuid_editor(label: str, value: UUID):
+    changed, new_value = imgui.input_text(label, str(value))
+    error = None
+    if changed:
+        try:
+            return True, UUID(hex=new_value)
+        except ValueError as e:
+            error = repr(e)
+    if error is not None:
+        imgui.text_colored((0.9, 0.01, 0.01, 1.0), f"ERROR: {error}")
+    return False, None
 
 
 def show_numeric_value_editor(obj, key, value):
@@ -54,7 +80,7 @@ def show_numeric_value_editor(obj, key, value):
         return False, False
 
     new_value = bytearray(encoded_value)
-    capsule = wrap_bytes_for_imgui(new_value)
+    capsule = _wrap_bytes_for_imgui(new_value)
     changed = imgui.input_scalar(f"##{key}", typ, capsule)
     if not changed:
         return True, False  # nothing to do
@@ -97,13 +123,9 @@ def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
         supported = True
 
     if not supported and isinstance(value, UUID):
-        changed, new_value = imgui.input_text(f"##{key}", str(value))
+        changed, new_value = show_uuid_editor(f"##{key}", value)
         if changed:
-            try:
-                obj[key] = UUID(hex=new_value)
-            except ValueError:
-                # just ignore it, the user needs to know what they're doing here
-                pass
+            obj[key] = new_value
         supported = True
 
     imgui.pop_item_width()
@@ -157,7 +179,7 @@ def show_key_value_options_editor(label: str, obj, key, options: typing.List[dic
 
     current_item = None
     for i, option in enumerate(options):
-        if to_native(option["value"]) == native_value:
+        if option["value"] == native_value:
             current_item = i
 
     if current_item is None:
@@ -168,19 +190,3 @@ def show_key_value_options_editor(label: str, obj, key, options: typing.List[dic
         obj[key] = options[current_item]["value"]
 
     imgui.columns(1)
-
-
-def show_json_editor(label: str, value):
-    imgui.push_item_width(-1)
-    changed, new_value = imgui.input_text_multiline(label, json.dumps(value, indent=2, default=to_raw_dict))
-    imgui.pop_item_width()
-    error = None
-    if changed:
-        try:
-            return json.loads(new_value, object_hook=from_raw_dict)
-        except ValueError as e:
-            error = repr(e)
-    if error is not None:
-        imgui.text_colored((0.9, 0.01, 0.01, 1.0), f"ERROR: {error}")
-        return False, None
-    return changed, new_value

@@ -27,16 +27,27 @@ from bw_save_game.ui.editors import (
     show_key_value_options_editor,
     show_raw_key_value_editor,
     show_raw_value_editor,
+    show_uuid_editor,
 )
 from bw_save_game.ui.utils import ask_for_file_to_open, ask_for_file_to_save, show_error
-from bw_save_game.ui.widgets import show_searchable_combo_box
+from bw_save_game.ui.widgets import (
+    clear_unused_retained_data,
+    show_searchable_combo_box,
+)
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
-    PAST_DA_INQUISITOR_ROMANCE_DEFAULT,
+    ITEM_ATTACHMENT_SLOT_NAMES,
+    KNOWN_CHARACTER_ARCHETYPE_LABELS,
+    KNOWN_CHARACTER_ARCHETYPE_VALUES,
     PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
+    PAST_DA_INQUISITOR_ROMANCE_OPTIONS_DEFAULT,
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
     PAST_DA_SHOULD_REFERENCE_PROPERTY,
+    ItemAttachmentType,
+    construct_item_attachment,
+    deconstruct_item_attachment,
+    item_attachment_to_string,
 )
 
 
@@ -285,14 +296,73 @@ def show_editor_raw_data(state: State):
             imgui.pop_id()
 
 
+def show_item_attachment_editor(state: State, item: dict):
+    preview_value = item_attachment_to_string(item)
+
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.push_item_width(-1)
+    is_open = imgui.begin_combo("##itemAttachment", preview_value, imgui.ComboFlags_.height_largest)
+    if not is_open:
+        imgui.pop_item_width()
+        return
+
+    typ, parent, attach_slot = deconstruct_item_attachment(item)
+
+    if imgui.radio_button("None", typ == ItemAttachmentType.None_):
+        construct_item_attachment(item, ItemAttachmentType.None_)
+    imgui.same_line()
+    if imgui.radio_button("Character", typ == ItemAttachmentType.Character):
+        construct_item_attachment(item, ItemAttachmentType.Character, KNOWN_CHARACTER_ARCHETYPE_VALUES[0], attach_slot)
+    imgui.same_line()
+    if imgui.radio_button("ItemGuid", typ == ItemAttachmentType.ItemGuid):
+        construct_item_attachment(item, ItemAttachmentType.ItemGuid, UUID(int=0), attach_slot)
+
+    if typ == ItemAttachmentType.None_:
+        imgui.end_combo()
+        imgui.pop_item_width()
+        return
+
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.push_item_width(-1)
+
+    if typ == ItemAttachmentType.Character:
+        try:
+            current_item = KNOWN_CHARACTER_ARCHETYPE_VALUES.index(parent)
+            imgui.text("Character archetype:")
+            changed, new_item = imgui.list_box("##Character", current_item, KNOWN_CHARACTER_ARCHETYPE_LABELS)
+            if changed:
+                construct_item_attachment(
+                    item, ItemAttachmentType.Character, KNOWN_CHARACTER_ARCHETYPE_VALUES[new_item], attach_slot
+                )
+        except ValueError:
+            imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown archetype {parent}")
+    if typ == ItemAttachmentType.ItemGuid:
+        imgui.text("Item UUID:")
+        changed, new_value = show_uuid_editor("##ItemGuid", parent)
+        if changed:
+            construct_item_attachment(item, ItemAttachmentType.ItemGuid, new_value, attach_slot)
+
+    try:
+        current_item = ITEM_ATTACHMENT_SLOT_NAMES.index(attach_slot or "None")
+        imgui.text("Attach slot:")
+        changed, new_item = imgui.list_box("##AttachSlot", current_item, ITEM_ATTACHMENT_SLOT_NAMES)
+        if changed:
+            construct_item_attachment(item, typ, parent, ITEM_ATTACHMENT_SLOT_NAMES[new_item])
+    except ValueError:
+        imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown attach slot {attach_slot}")
+
+    imgui.pop_item_width()
+    imgui.end_combo()
+    imgui.pop_item_width()
+
+
 def show_editor_inventories(state: State):
     items = state.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
-        imgui.table_setup_column("Parent")
-        imgui.table_setup_column("Slot")
+        imgui.table_setup_column("Attached to")
         imgui.table_setup_column("Amount")
         imgui.table_setup_column("Rarity")
         imgui.table_headers_row()
@@ -302,17 +372,12 @@ def show_editor_inventories(state: State):
             imgui.table_next_column()
             show_item_id_editor(state, item)
             imgui.table_next_column()
-            imgui.text(str(item.get("parent")))
-            imgui.table_next_column()
-            if "attachSlot" in item:
-                show_raw_value_editor(item, "attachSlot")
-            else:
-                imgui.text("n/a")
+            show_item_attachment_editor(state, item)
             imgui.table_next_column()
             if "stackCount" in item:
                 show_raw_value_editor(item, "stackCount")
             else:
-                imgui.text("n/a")
+                imgui.text("1")
             imgui.table_next_column()
             imgui.text(str(item.get("rarity")))
             imgui.pop_id()
@@ -380,7 +445,7 @@ def show_editor_main(state: State):
                 "Romance option",
                 PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
                 PAST_DA_INQUISITOR_ROMANCE_OPTIONS,
-                PAST_DA_INQUISITOR_ROMANCE_DEFAULT,
+                PAST_DA_INQUISITOR_ROMANCE_OPTIONS_DEFAULT,
             )
     imgui.end_child()
 
@@ -399,16 +464,22 @@ def show_editor_appearances(state: State):
     if imgui.collapsing_header(
         "Player appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
     ):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.push_item_width(-1)
         changed, new_value = show_json_editor("##Player", data["playerData"])
         if changed:
             data["playerData"] = new_value
+        imgui.pop_item_width()
 
     if imgui.collapsing_header(
         "Inquisitor appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
     ):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.push_item_width(-1)
         changed, new_value = show_json_editor("##Inquisitor", data["inquisitorData"])
         if changed:
             data["inquisitorData"] = new_value
+        imgui.pop_item_width()
 
 
 def show_editor_content(state: State):
@@ -466,6 +537,8 @@ def show_ui(state: State):
     show_main_menu_bar(state)
     show_app_about(state)
     show_editor_window(state)
+
+    clear_unused_retained_data()
 
 
 def main():
