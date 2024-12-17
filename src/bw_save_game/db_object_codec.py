@@ -211,14 +211,14 @@ def encode_value(name, value, buf, on_unknown=None):
             raise UnknownSerializerError(name, value)
 
 
-def encode_document(obj, on_unknown=None, with_length_prefix=True):
+def encode_document(obj, on_unknown=None, with_envelope=True):
     buf = BytesIO()
     for name in iter(obj):
         value = obj[name]
         encode_value(name, value, buf, on_unknown)
     encoded = buf.getvalue()
     encoded_size = len(encoded)
-    if with_length_prefix:
+    if with_envelope:
         return encode_varint_leb128(encoded_size + 1) + encoded + byte_struct.pack(TYPE_Eoo)
     return encoded
 
@@ -343,8 +343,8 @@ def decode_value(base: int, data: bytes):
     return base, name, value
 
 
-def decode_document(data, base, as_array=False, with_length_prefix=True):
-    if with_length_prefix:
+def decode_document(data, base, as_array=False, with_envelope=True):
+    if with_envelope:
         base, length = decode_varint_leb128(data, base)
         end_point = base + length
         if data[end_point - 1] not in ("\0", 0):
@@ -364,8 +364,8 @@ def decode_document(data, base, as_array=False, with_length_prefix=True):
 
 
 def dumps(obj, on_unknown=None):
-    return encode_document({None: obj}, with_length_prefix=False, on_unknown=on_unknown)
+    return encode_document({None: obj}, with_envelope=False, on_unknown=on_unknown)
 
 
 def loads(data):
-    return decode_document(data, 0, with_length_prefix=False)[1][None]
+    return decode_document(data, 0, with_envelope=False)[1][None]
