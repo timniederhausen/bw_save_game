@@ -23,18 +23,22 @@ class SaveHeader(ctypes.Structure):
     ]
 
 
+class SaveLoadingError(ValueError):
+    pass
+
+
 def read_save_from_reader(reader: typing.BinaryIO, expected_save_type: bytes = b"C", strict=True):
     magic = reader.read(7)
     if magic != MAGIC:
-        raise ValueError(f"Invalid magic bytes: {magic} != {MAGIC}")
+        raise SaveLoadingError(f"Invalid magic bytes: {magic} != {MAGIC}")
 
     save_type = reader.read(1)
     if expected_save_type is not None and save_type != expected_save_type:
-        raise ValueError(f"Invalid save type: ${save_type} != {expected_save_type}")
+        raise SaveLoadingError(f"Invalid save type: ${save_type} != {expected_save_type}")
 
     header = SaveHeader.from_buffer_copy(reader.read(ctypes.sizeof(SaveHeader)))
     if header.formatversion != CURRENT_FORMAT_VERSION:
-        raise ValueError(f"Invalid format version: {header.formatversion} != {CURRENT_FORMAT_VERSION}")
+        raise SaveLoadingError(f"Invalid format version: {header.formatversion} != {CURRENT_FORMAT_VERSION}")
 
     meta = reader.read(header.meta_compressed_length)
     data = reader.read(header.data_compressed_length)
@@ -45,9 +49,9 @@ def read_save_from_reader(reader: typing.BinaryIO, expected_save_type: bytes = b
         actual_data_checksum = zlib.crc32(data, CRC32_STARTING_VALUE)
 
         if header.meta_checksum != actual_meta_checksum:
-            raise ValueError(f"Invalid meta checksum: {header.meta_checksum} != {actual_meta_checksum}")
+            raise SaveLoadingError(f"Invalid meta checksum: {header.meta_checksum} != {actual_meta_checksum}")
         if header.data_checksum != actual_data_checksum:
-            raise ValueError(f"Invalid data checksum: {header.data_checksum} != {actual_data_checksum}")
+            raise SaveLoadingError(f"Invalid data checksum: {header.data_checksum} != {actual_data_checksum}")
 
     # all good, so now we just have to decompress
     meta = gzip.decompress(meta)

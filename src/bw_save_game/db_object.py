@@ -2,8 +2,10 @@ from binascii import hexlify, unhexlify
 from dataclasses import dataclass
 from uuid import UUID
 
-# We need some type-safe way of representing the different DbObject element types
-# TODO: There are other / better ways of doing this.
+# We could represent most of these as basic Python objects (int, bytes, ...)
+# but would lose the original type in the process (e.g. was it Integer or Long?).
+# Since we strive for bit-for-bit identical output with the game itself we can't afford to lose that type info.
+# TODO: Are there better ways of doing this?
 
 
 @dataclass

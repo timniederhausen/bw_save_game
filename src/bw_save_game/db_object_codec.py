@@ -17,6 +17,15 @@ from .db_object import (
     Vector4D,
 )
 
+
+class UnknownSerializerError(TypeError):
+    def __init__(self, key, value):
+        super(UnknownSerializerError, self).__init__(
+            f"Unable to serialize: key '{key}' value: {value} type: {type(value)}"
+        )
+
+
+# Thankfully they left that enum-to-string in the shipping build!
 TYPE_Eoo = 0x0
 TYPE_Array = 0x1
 TYPE_Object = 0x2
@@ -39,19 +48,8 @@ TYPE_Vector4 = 0x12
 TYPE_Blob = 0x13
 TYPE_Attachment = 0x14
 TYPE_Timespan = 0x15
-TYPE_StringAtom = 0x16
-TYPE_TypedBlob = 0x17
-TYPE_Environment = 0x18
-TYPE_TaggedField = 0x40
+TYPE_InternalMax = 0x1F
 TYPE_Anonymous = 0x80
-
-
-class UnknownSerializerError(TypeError):
-    def __init__(self, key, value):
-        super(UnknownSerializerError, self).__init__(
-            f"Unable to serialize: key '{key}' value: {value} type: {type(value)}"
-        )
-
 
 # Cache all the struct formats we might use.
 int32_struct = struct.Struct("<i")
@@ -235,7 +233,7 @@ def encode_array(array, on_unknown=None):
 
 def decode_value(base: int, data: bytes):
     header = byte_struct.unpack(data[base : base + 1])[0]
-    element_type = header & 0b11111
+    element_type = header & TYPE_InternalMax
 
     decode_name = (header & TYPE_Anonymous) == 0
     if decode_name:
