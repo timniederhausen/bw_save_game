@@ -172,7 +172,9 @@ def show_raw_key_value_editor(obj, key, label=None):
 def show_key_value_options_editor(
     label: str, obj, key, option_values: list, option_names: list[str], default_option_index: int = 0
 ):
-    value = obj[key]
+    value = obj.get(key)
+    if value is None:
+        value = option_values[default_option_index]
     native_value = to_native(value)
 
     imgui.columns(2)
