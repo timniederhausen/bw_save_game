@@ -171,6 +171,15 @@ DIFFICULTY_EXPLORATION_PRESETS = {
 DIFFICULTY_EXPLORATION_PRESET_VALUES = list(DIFFICULTY_EXPLORATION_PRESETS.keys())
 DIFFICULTY_EXPLORATION_PRESET_LABELS = list(DIFFICULTY_EXPLORATION_PRESETS.values())
 
+CLASS_KEYBINDINGS = {
+    # UI/SCREENS/Settings/OptionsData/ControlsOptions/ClassKeybindingsOption
+    0: "Warrior",
+    1: "Rogue",
+    2: "Mage",
+}
+CLASS_KEYBINDING_VALUES = list(CLASS_KEYBINDINGS.keys())
+CLASS_KEYBINDING_LABELS = list(CLASS_KEYBINDINGS.values())
+
 # Globals/Persistence/InquisitorGeneratorDataAsset
 PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.Registered)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc

@@ -37,6 +37,8 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    CLASS_KEYBINDING_LABELS,
+    CLASS_KEYBINDING_VALUES,
     DIFFICULTY_COMBAT_PRESET_LABELS,
     DIFFICULTY_COMBAT_PRESET_VALUES,
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
@@ -438,7 +440,13 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
-            pass
+            show_key_value_options_editor(
+                "Class keybinding profile",
+                state.active_meta["projdata"],
+                "keybindingprofile",
+                CLASS_KEYBINDING_VALUES,
+                CLASS_KEYBINDING_LABELS,
+            )
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
