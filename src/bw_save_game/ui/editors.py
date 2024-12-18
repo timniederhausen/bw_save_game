@@ -192,3 +192,4 @@ def show_key_value_options_editor(
         obj[key] = option_values[current_item]
 
     imgui.columns(1)
+    return changed

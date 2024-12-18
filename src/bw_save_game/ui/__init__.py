@@ -37,6 +37,10 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    DIFFICULTY_COMBAT_PRESET_LABELS,
+    DIFFICULTY_COMBAT_PRESET_VALUES,
+    DIFFICULTY_EXPLORATION_PRESET_LABELS,
+    DIFFICULTY_EXPLORATION_PRESET_VALUES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -142,6 +146,12 @@ class State(object):
             if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
                 return c["data"]
         raise ValueError(f"No server RPGPlayerExtent with loadpass {loadpass}")
+
+    def get_client_difficulty(self, loadpass=0) -> dict:
+        for c in self.active_data["client"]["contributors"]:
+            if c["name"] == "DifficultyOptions" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No client DifficultyOptions with loadpass {loadpass}")
 
     def get_currencies(self):
         first_extent = self.get_server_rpg_extents(0)
@@ -428,7 +438,7 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
-            imgui.text("TODO")
+            pass
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -439,6 +449,27 @@ def show_editor_main(state: State):
     imgui.next_column()
 
     if imgui.begin_child("##second column"):
+        if imgui.collapsing_header(
+            "Difficulty", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            difficulty = state.get_client_difficulty()
+            if show_key_value_options_editor(
+                "Combat Difficulty",
+                difficulty,
+                "difficultyIndex",
+                DIFFICULTY_COMBAT_PRESET_VALUES,
+                DIFFICULTY_COMBAT_PRESET_LABELS,
+            ):
+                # value is duplicated!
+                state.active_meta["projdata"]["difficulty"] = difficulty["difficultyIndex"]
+            show_key_value_options_editor(
+                "Exploration Difficulty",
+                difficulty,
+                "explorationIndex",
+                DIFFICULTY_EXPLORATION_PRESET_VALUES,
+                DIFFICULTY_EXPLORATION_PRESET_LABELS,
+            )
+
         if imgui.collapsing_header(
             "Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):

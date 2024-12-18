@@ -148,6 +148,29 @@ KNOWN_CHARACTER_ARCHETYPE_LABELS = list(KNOWN_CHARACTER_ARCHETYPES.values())
 ITEM_ATTACHMENT_SLOT_NAMES = [e.name for e in ItemAttachmentSlot]
 ITEM_ATTACHMENT_SLOT_VALUES = [e.value for e in ItemAttachmentSlot]
 
+DIFFICULTY_COMBAT_PRESETS = {
+    # UI/SCREENS/Settings/OptionsData/GamePresetOption
+    1: "Adventurer",
+    2: "Storyteller",
+    3: "Keeper",
+    4: "Underdog",
+    5: "Nightmare",
+    6: "Custom",
+}
+DIFFICULTY_COMBAT_PRESET_VALUES = list(DIFFICULTY_COMBAT_PRESETS.keys())
+DIFFICULTY_COMBAT_PRESET_LABELS = list(DIFFICULTY_COMBAT_PRESETS.values())
+
+DIFFICULTY_EXPLORATION_PRESETS = {
+    # UI/SCREENS/Settings/OptionsData/ExplorePresetOption
+    0: "No Assists",
+    1: "Pulse Only",
+    2: "Standard",
+    3: "Directed",
+    4: "Custom",
+}
+DIFFICULTY_EXPLORATION_PRESET_VALUES = list(DIFFICULTY_EXPLORATION_PRESETS.keys())
+DIFFICULTY_EXPLORATION_PRESET_LABELS = list(DIFFICULTY_EXPLORATION_PRESETS.values())
+
 # Globals/Persistence/InquisitorGeneratorDataAsset
 PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.Registered)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
@@ -189,6 +212,7 @@ def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | 
         if not parent_guid:
             raise ValueError("No parentGuid for ItemGuid attachment")
         return ItemAttachmentType.ItemGuid, parent_guid, attach_slot
+    # TODO: What's the Item type?
     raise ValueError(f"Unsupported ItemAttachmentType type {attachment_type}")
 
 
