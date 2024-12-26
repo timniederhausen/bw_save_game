@@ -402,15 +402,28 @@ def show_item_stack_count_editor(state: State, item: dict):
     imgui.pop_item_width()
 
 
+def show_item_level_editor(state: State, item: dict):
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.push_item_width(-1)
+
+    level = item.get("level", 1)
+    changed, new_level = imgui.input_int("##Level", level)
+    if changed:
+        item["level"] = new_level
+
+    imgui.pop_item_width()
+
+
 def show_editor_inventories(state: State):
     items = state.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
-    if imgui.begin_table("Items", 4, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+    if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
         imgui.table_setup_column("Attached to")
         imgui.table_setup_column("Amount")
         imgui.table_setup_column("Rarity")
+        imgui.table_setup_column("Level")
         imgui.table_headers_row()
         for i, item in enumerate(items):
             imgui.push_id(i)
@@ -423,6 +436,8 @@ def show_editor_inventories(state: State):
             show_item_stack_count_editor(state, item)
             imgui.table_next_column()
             show_item_rarity_editor(state, item)
+            imgui.table_next_column()
+            show_item_level_editor(state, item)
             imgui.pop_id()
         imgui.end_table()
 
