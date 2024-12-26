@@ -41,7 +41,6 @@ class PersistencePropertyDefinition:
     default: object
 
 
-# from the .exe:
 def parse_key_string(key: str):
     dots = key.split(":", 3)
     if len(dots) < 3:

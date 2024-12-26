@@ -59,6 +59,14 @@ from bw_save_game.veilguard import (
     item_attachment_to_string,
 )
 
+# The UI needs some additional per-item data, pre-compute that here:
+_ITEM_ID_TO_INDEX = {}
+for i, item in enumerate(ALL_ITEMS):
+    item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
+    item["guid"] = UUID(item["guid"])
+    _ITEM_ID_TO_INDEX[item["id"]] = i
+_ITEM_KEYS = [item["key"] for item in ALL_ITEMS]
+
 
 class State(object):
     def __init__(self):
@@ -69,17 +77,6 @@ class State(object):
         self.active_filename = None  # type: typing.Optional[str]
         self.active_meta = None  # type: typing.Optional[dict]
         self.active_data = None  # type: typing.Optional[dict]
-
-        self.item_list = ALL_ITEMS
-
-        self.item_id_to_index = {}
-        for i, item in enumerate(self.item_list):
-            item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
-            item["guid"] = UUID(item["guid"])
-            self.item_id_to_index[item["id"]] = i
-        self.item_keys = [item["key"] for item in self.item_list]
-
-        self.currencies = ALL_CURRENCIES
 
     def has_content(self):
         return self.active_meta is not None and self.active_data is not None
@@ -256,16 +253,16 @@ def show_main_menu_bar(state: State):
     imgui.end_main_menu_bar()
 
 
-def show_item_id_editor(state: State, obj):
-    index = state.item_id_to_index.get(to_native(obj["itemDataId"]))
+def show_item_id_editor(obj):
+    index = _ITEM_ID_TO_INDEX.get(to_native(obj["itemDataId"]))
     if index is not None:
         # https://github.com/ocornut/imgui/issues/623
         imgui.push_item_width(-1)
-        changed, new_index = show_searchable_combo_box("##itemDataId", state.item_keys, index)
+        changed, new_index = show_searchable_combo_box("##itemDataId", _ITEM_KEYS, index)
         imgui.pop_item_width()
 
         if changed:
-            data = state.item_list[new_index]
+            data = ALL_ITEMS[new_index]
             obj["itemDataId"] = Long(data["id"])
             obj["dataGuid"] = data["guid"]
     else:
@@ -308,7 +305,7 @@ def show_editor_raw_data(state: State):
             imgui.pop_id()
 
 
-def show_item_attachment_editor(state: State, item: dict):
+def show_item_attachment_editor(item: dict):
     preview_value = item_attachment_to_string(item)
 
     # https://github.com/ocornut/imgui/issues/623
@@ -368,7 +365,7 @@ def show_item_attachment_editor(state: State, item: dict):
     imgui.pop_item_width()
 
 
-def show_item_rarity_editor(state: State, item: dict):
+def show_item_rarity_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
@@ -384,7 +381,7 @@ def show_item_rarity_editor(state: State, item: dict):
     imgui.pop_item_width()
 
 
-def show_item_stack_count_editor(state: State, item: dict):
+def show_item_stack_count_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
@@ -396,7 +393,7 @@ def show_item_stack_count_editor(state: State, item: dict):
     imgui.pop_item_width()
 
 
-def show_item_level_editor(state: State, item: dict):
+def show_item_level_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
@@ -423,15 +420,15 @@ def show_editor_inventories(state: State):
             imgui.push_id(i)
             imgui.table_next_row()
             imgui.table_next_column()
-            show_item_id_editor(state, item)
+            show_item_id_editor(item)
             imgui.table_next_column()
-            show_item_attachment_editor(state, item)
+            show_item_attachment_editor(item)
             imgui.table_next_column()
-            show_item_stack_count_editor(state, item)
+            show_item_stack_count_editor(item)
             imgui.table_next_column()
-            show_item_rarity_editor(state, item)
+            show_item_rarity_editor(item)
             imgui.table_next_column()
-            show_item_level_editor(state, item)
+            show_item_level_editor(item)
             imgui.pop_id()
         imgui.end_table()
 
@@ -445,7 +442,7 @@ def show_currency_editor(state: State):
     imgui.table_setup_column("Amount")
     imgui.table_headers_row()
     currencies, discovered_currencies = state.get_currencies()
-    for currency_def in state.currencies:
+    for currency_def in ALL_CURRENCIES:
         imgui.push_id(currency_def["id"])
         imgui.table_next_row()
         imgui.table_next_column()
@@ -460,9 +457,11 @@ def show_currency_editor(state: State):
         imgui.table_next_column()
         obj = next((c for c in currencies if c["currency"] == currency_def["id"]), None)
         if obj is None:
-            currencies.append(dict(currency=currency_def["id"], value=0))
-            obj = currencies[-1]
-        show_raw_value_editor(obj, "value")
+            tmp = dict(currency=currency_def["id"], value=0)
+            if show_raw_value_editor(tmp, "value"):
+                currencies.append(tmp)
+        else:
+            show_raw_value_editor(obj, "value")
         imgui.pop_id()
     imgui.end_table()
 
