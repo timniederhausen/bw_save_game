@@ -44,8 +44,11 @@ from bw_save_game.veilguard import (
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
     DIFFICULTY_EXPLORATION_PRESET_VALUES,
     ITEM_ATTACHMENT_SLOT_NAMES,
+    ITEM_ATTACHMENT_SLOT_VALUES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
+    LOOT_RARITY_NAMES,
+    LOOT_RARITY_VALUES,
     PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX,
     PAST_DA_INQUISITOR_ROMANCE_LABELS,
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
@@ -267,7 +270,7 @@ def show_item_id_editor(state: State, obj):
             obj["itemDataId"] = Long(data["id"])
             obj["dataGuid"] = data["guid"]
     else:
-        imgui.text(f"Unsupported item: {to_native(obj["itemDataId"])}")
+        imgui.text(f"Unsupported item: {to_native(obj['itemDataId'])}")
         # oh well
         # show_simple_value_editor(obj, "itemDataId")
 
@@ -362,7 +365,7 @@ def show_item_attachment_editor(state: State, item: dict):
         imgui.text("Attach slot:")
         changed, new_item = imgui.list_box("##AttachSlot", current_item, ITEM_ATTACHMENT_SLOT_NAMES)
         if changed:
-            construct_item_attachment(item, typ, parent, ITEM_ATTACHMENT_SLOT_NAMES[new_item])
+            construct_item_attachment(item, typ, parent, ITEM_ATTACHMENT_SLOT_VALUES[new_item])
     except ValueError:
         imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown attach slot {attach_slot}")
 
@@ -371,11 +374,39 @@ def show_item_attachment_editor(state: State, item: dict):
     imgui.pop_item_width()
 
 
+def show_item_rarity_editor(state: State, item: dict):
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.push_item_width(-1)
+
+    rarity = item.get("rarity")
+    try:
+        current_item = LOOT_RARITY_NAMES.index(rarity or "Rarity_None")
+        changed, new_item = imgui.combo("##Rarity", current_item, LOOT_RARITY_NAMES)
+        if changed:
+            item["rarity"] = LOOT_RARITY_VALUES[new_item]
+    except ValueError:
+        imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown: {rarity}")
+
+    imgui.pop_item_width()
+
+
+def show_item_stack_count_editor(state: State, item: dict):
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.push_item_width(-1)
+
+    count = item.get("stackCount", 1)
+    changed, new_count = imgui.input_int("##StackCount", count)
+    if changed:
+        item["stackCount"] = new_count
+
+    imgui.pop_item_width()
+
+
 def show_editor_inventories(state: State):
     items = state.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
-    if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+    if imgui.begin_table("Items", 4, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
         imgui.table_setup_column("Attached to")
         imgui.table_setup_column("Amount")
@@ -389,12 +420,9 @@ def show_editor_inventories(state: State):
             imgui.table_next_column()
             show_item_attachment_editor(state, item)
             imgui.table_next_column()
-            if "stackCount" in item:
-                show_raw_value_editor(item, "stackCount")
-            else:
-                imgui.text("1")
+            show_item_stack_count_editor(state, item)
             imgui.table_next_column()
-            imgui.text(str(item.get("rarity")))
+            show_item_rarity_editor(state, item)
             imgui.pop_id()
         imgui.end_table()
 

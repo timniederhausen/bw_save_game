@@ -107,6 +107,18 @@ class ItemAttachmentSlot(IntEnum):
 ItemAttachmentSlot.None_._name_ = "None"
 ItemAttachmentSlot._member_map_["None"] = ItemAttachmentSlot.None_
 
+
+class LootRarity(IntEnum):
+    Rarity_None = 0
+    Rarity_Common = 1
+    Rarity_Uncommon = 2
+    Rarity_Rare = 3
+    Rarity_Epic = 4
+    Rarity_Legendary = 5
+    Rarity_Ancient = 6
+    Rarity_Max = 7
+
+
 KNOWN_CHARACTER_ARCHETYPES = {
     # Globals/CharacterArchetypes/...
     2325381541: "Watcher",
@@ -147,6 +159,9 @@ KNOWN_CHARACTER_ARCHETYPE_LABELS = list(KNOWN_CHARACTER_ARCHETYPES.values())
 
 ITEM_ATTACHMENT_SLOT_NAMES = [e.name for e in ItemAttachmentSlot]
 ITEM_ATTACHMENT_SLOT_VALUES = [e.value for e in ItemAttachmentSlot]
+
+LOOT_RARITY_NAMES = [e.name for e in LootRarity]
+LOOT_RARITY_VALUES = [e.value for e in LootRarity]
 
 DIFFICULTY_COMBAT_PRESETS = {
     # UI/SCREENS/Settings/OptionsData/GamePresetOption
