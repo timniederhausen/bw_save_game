@@ -29,15 +29,16 @@ PROPERTY_TYPES = {
 
 @dataclass
 class PersistenceDefinition:
-    definitionId: int  # uint32
-    familyId: PersistenceFamilyId
+    definition_id: int  # uint32
+    family_id: PersistenceFamilyId
 
 
 @dataclass
 class PersistencePropertyDefinition:
     definition: PersistenceDefinition
-    propertyId: int  # uint32
-    propertyType: str
+    id: int  # uint32
+    type: str
+    default: object
 
 
 # from the .exe:
@@ -58,7 +59,7 @@ def format_key_string(family: str, family_data: list, version: int = 7):
     return f"{version}:{family}:{('|' if version >= 6 else '.').join(family_data)}"
 
 
-def get_or_create_persisted_value(definition: dict, property_id: int, property_type: str):
+def get_or_create_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
     key = f",{property_id}:{property_type}"
 
     all_props = definition["PropertyValueData"]["DefinitionProperties"]
@@ -67,6 +68,6 @@ def get_or_create_persisted_value(definition: dict, property_id: int, property_t
         if key in prop:
             found_prop = prop
     if found_prop is None:
-        found_prop = {key: PROPERTY_TYPES[property_type]()}
+        found_prop = {key: PROPERTY_TYPES[property_type](default_value)}
         all_props.append(found_prop)
     return found_prop, key

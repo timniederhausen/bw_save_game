@@ -49,7 +49,6 @@ from bw_save_game.veilguard import (
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
     LOOT_RARITY_VALUES,
-    PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX,
     PAST_DA_INQUISITOR_ROMANCE_LABELS,
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
     PAST_DA_INQUISITOR_ROMANCE_VALUES,
@@ -276,28 +275,23 @@ def show_item_id_editor(state: State, obj):
 
 
 def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
-    definition = state.get_persisted_definition(prop.definition.definitionId)
+    definition = state.get_persisted_definition(prop.definition.definition_id)
     if not definition:
         return
 
-    obj, key = get_or_create_persisted_value(definition, prop.propertyId, prop.propertyType)
+    obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
     show_raw_key_value_editor(obj, key, label)
 
 
 def show_persisted_value_options_editor(
-    state: State,
-    label: str,
-    prop: PersistencePropertyDefinition,
-    option_values: list,
-    option_names: list[str],
-    default_option_index: int = 0,
+    state: State, label: str, prop: PersistencePropertyDefinition, option_values: list, option_names: list[str]
 ):
-    definition = state.get_persisted_definition(prop.definition.definitionId)
+    definition = state.get_persisted_definition(prop.definition.definition_id)
     if not definition:
         return
 
-    obj, key = get_or_create_persisted_value(definition, prop.propertyId, prop.propertyType)
-    show_key_value_options_editor(label, obj, key, option_values, option_names, default_option_index)
+    obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
+    show_key_value_options_editor(label, obj, key, option_values, option_names, option_values.index(prop.default))
 
 
 def show_editor_raw_data(state: State):
@@ -531,7 +525,6 @@ def show_editor_main(state: State):
                 PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
                 PAST_DA_INQUISITOR_ROMANCE_VALUES,
                 PAST_DA_INQUISITOR_ROMANCE_LABELS,
-                PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX,
             )
     imgui.end_child()
 

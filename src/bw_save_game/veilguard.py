@@ -198,8 +198,8 @@ CLASS_KEYBINDING_LABELS = list(CLASS_KEYBINDINGS.values())
 # Globals/Persistence/InquisitorGeneratorDataAsset
 PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.Registered)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
-PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean")
-PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3170937725, "Int32")
+PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean", False)
+PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 2643758781, "Int32", 8)
 PAST_DA_INQUISITOR_ROMANCES = {
     # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
     1: "Blackwall",
