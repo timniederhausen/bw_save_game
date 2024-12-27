@@ -8,7 +8,7 @@ import sys
 import typing  # noqa: F401
 from uuid import UUID
 
-from imgui_bundle import imgui, immapp
+from imgui_bundle import glfw_utils, imgui, immapp
 
 from bw_save_game import (
     __version__,
@@ -85,11 +85,12 @@ class State(object):
             d = loads(d)
         except Exception as e:
             show_error(f"Cannot load {filename}: {repr(e)}")
-            return
+            return False
 
         self.active_filename = filename
         self.active_meta = m
         self.active_data = d
+        return True
 
     def save(self, filename: str):
         try:
@@ -175,24 +176,22 @@ class State(object):
 
 
 def show_app_about(state: State):
-    if not state.show_app_about:
-        return  # nothing to do
-
-    is_expand, is_show_app_about = imgui.begin(
-        name="About BWSaveGameEditor",
-        p_open=state.show_app_about,
-        flags=imgui.WindowFlags_.always_auto_resize | imgui.WindowFlags_.no_collapse,
-    )
-    if is_show_app_about is not None:
-        state.show_app_about = is_show_app_about
-    if is_expand:
+    if imgui.begin_popup("About BWSaveGameEditor", imgui.WindowFlags_.always_auto_resize):
         imgui.text("BWSaveGameEditor " + __version__)
         imgui.separator()
         imgui.text("By Tim and mons.")
         imgui.text("BWSaveGameEditor is licensed under GNU General Public License v3.0.")
         imgui.separator()
         imgui.text("Using ImGui v" + imgui.get_version())
-    imgui.end()
+        imgui.end_popup()
+
+
+def ask_for_open(state: State):
+    path = ask_for_file_to_open("Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+    if path:
+        if state.load(path):
+            glfw_win = glfw_utils.glfw_window_hello_imgui()
+            glfw_utils.glfw.set_window_title(glfw_win, path)
 
 
 def show_main_menu_bar(state: State):
@@ -202,9 +201,7 @@ def show_main_menu_bar(state: State):
     if imgui.begin_menu("File", True):
         clicked, selected = imgui.menu_item(label="Open", shortcut="Ctrl+O", p_selected=False)
         if clicked:
-            path = ask_for_file_to_open("Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
-            if path:
-                state.load(path)
+            ask_for_open(state)
 
         clicked, selected = imgui.menu_item(label="Import JSON", shortcut="", p_selected=False)
         if clicked:
@@ -240,13 +237,18 @@ def show_main_menu_bar(state: State):
 
         imgui.end_menu()
 
+    # https://github.com/ocornut/imgui/issues/331
+    need_about_open = False
     if imgui.begin_menu("Help", True):
-        clicked, state.show_app_about = imgui.menu_item(
-            label="About BWSaveGameEditor", shortcut="", p_selected=state.show_app_about
-        )
+        clicked, selected = imgui.menu_item(label="About BWSaveGameEditor", shortcut="", p_selected=False)
+        if clicked:
+            need_about_open = True
         imgui.end_menu()
 
     imgui.end_main_menu_bar()
+
+    if need_about_open:
+        imgui.open_popup("About BWSaveGameEditor")
 
 
 def show_item_id_editor(obj):
@@ -579,9 +581,10 @@ def show_editor_content(state: State):
     imgui.end_tab_bar()
 
 
-def show_empty_warning():
+def show_empty_warning(state: State):
     imgui.push_style_var(imgui.StyleVar_.selectable_text_align, (0.5, 0.5))
-    imgui.selectable("No save file loaded!", False)
+    if imgui.selectable("No save file loaded!", False)[0]:
+        ask_for_open(state)
     imgui.pop_style_var()
 
 
@@ -599,7 +602,7 @@ def show_editor_window(state: State):
         if state.has_content():
             show_editor_content(state)
         else:
-            show_empty_warning()
+            show_empty_warning(state)
 
     imgui.end()
 
