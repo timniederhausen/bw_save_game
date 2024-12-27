@@ -16,13 +16,13 @@ class PersistenceFamilyId(Enum):
 PROPERTY_TYPES = {
     # TODO: this is incomplete!
     "Boolean": bool,
-    "Uint8": Long,
-    "Uint16": Long,
-    "Uint32": Long,
+    "Uint8": int,
+    "Uint16": int,
+    "Uint32": int,
     "Uint64": Long,
-    "Int8": Long,
-    "Int16": Long,
-    "Int32": Long,
+    "Int8": int,
+    "Int16": int,
+    "Int32": int,
     "Int64": Long,
 }
 
