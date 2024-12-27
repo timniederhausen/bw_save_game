@@ -219,6 +219,11 @@ PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
 
+# post-processing for data files:
+for item in ALL_ITEMS:
+    item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
+    item["guid"] = UUID(item["guid"])
+
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:
     parent = item.get("parent")

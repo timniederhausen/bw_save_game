@@ -60,11 +60,7 @@ from bw_save_game.veilguard import (
 )
 
 # The UI needs some additional per-item data, pre-compute that here:
-_ITEM_ID_TO_INDEX = {}
-for i, item in enumerate(ALL_ITEMS):
-    item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
-    item["guid"] = UUID(item["guid"])
-    _ITEM_ID_TO_INDEX[item["id"]] = i
+_ITEM_ID_TO_INDEX = {item["id"]: i for i, item in enumerate(ALL_ITEMS)}
 _ITEM_KEYS = [item["key"] for item in ALL_ITEMS]
 
 
