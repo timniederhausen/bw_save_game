@@ -22,6 +22,7 @@ from bw_save_game.db_object import Long, from_raw_dict, to_native, to_raw_dict
 from bw_save_game.persistence import (
     PersistencePropertyDefinition,
     get_or_create_persisted_value,
+    get_persisted_value,
 )
 from bw_save_game.ui.editors import (
     show_json_editor,
@@ -38,6 +39,9 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    CHARACTER_GENERATOR_FACTION,
+    CHARACTER_GENERATOR_FACTION_LABELS,
+    CHARACTER_GENERATOR_FACTION_VALUES,
     CLASS_KEYBINDING_LABELS,
     CLASS_KEYBINDING_VALUES,
     DIFFICULTY_COMBAT_PRESET_LABELS,
@@ -179,6 +183,12 @@ class State(object):
                 return family
         return None
 
+    def get_persisted_property(self, property: PersistencePropertyDefinition):
+        definition = self.get_persisted_definition(property.definition.definition_id)
+        if definition is None:
+            return None
+        return get_persisted_value(definition, property.id, property.type, property.default)
+
 
 def show_app_about(state: State):
     if imgui.begin_popup("About BWSaveGameEditor", imgui.WindowFlags_.always_auto_resize):
@@ -279,10 +289,10 @@ def show_item_id_editor(obj):
 def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
     definition = state.get_persisted_definition(prop.definition.definition_id)
     if not definition:
-        return
+        return False
 
     obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
-    show_raw_key_value_editor(obj, key, label)
+    return show_raw_key_value_editor(obj, key, label)
 
 
 def show_persisted_value_options_editor(
@@ -290,10 +300,12 @@ def show_persisted_value_options_editor(
 ):
     definition = state.get_persisted_definition(prop.definition.definition_id)
     if not definition:
-        return
+        return False
 
     obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
-    show_key_value_options_editor(label, obj, key, option_values, option_names, option_values.index(prop.default))
+    return show_key_value_options_editor(
+        label, obj, key, option_values, option_names, option_values.index(prop.default)
+    )
 
 
 def show_editor_raw_data(state: State):
@@ -481,6 +493,15 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
+            if show_persisted_value_options_editor(
+                state,
+                "Faction",
+                CHARACTER_GENERATOR_FACTION,
+                CHARACTER_GENERATOR_FACTION_VALUES,
+                CHARACTER_GENERATOR_FACTION_LABELS,
+            ):
+                # value is duplicated!
+                state.active_meta["projdata"]["faction"] = state.get_persisted_property(CHARACTER_GENERATOR_FACTION)
             show_key_value_options_editor(
                 "Class keybinding profile",
                 state.active_meta["projdata"],

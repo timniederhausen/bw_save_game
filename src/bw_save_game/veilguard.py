@@ -195,6 +195,28 @@ CLASS_KEYBINDINGS = {
 CLASS_KEYBINDING_VALUES = list(CLASS_KEYBINDINGS.keys())
 CLASS_KEYBINDING_LABELS = list(CLASS_KEYBINDINGS.values())
 
+# CharacterGenerator_RDA_1647819227
+CHARACTER_GENERATOR_DEF = PersistenceDefinition(1647819227, PersistenceFamilyId.Registered)
+CHARACTER_GENERATOR_GENDER = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 894942981, "Int32", 1)
+CHARACTER_GENERATOR_VOICE_TONE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1419752156, "Int32", 1)
+CHARACTER_GENERATOR_LINEAGE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1491933783, "Int32", 1)
+CHARACTER_GENERATOR_PRONOUNS = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 2061714718, "Int32", 1)
+CHARACTER_GENERATOR_IS_TRANS = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 2684529018, "Boolean", False)
+CHARACTER_GENERATOR_VOICE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 3513989292, "Int32", 0)
+CHARACTER_GENERATOR_FACTION = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 3942110114, "Int32", 2)
+
+CHARACTER_GENERATOR_FACTIONS = {
+    # Globals/RPG/FactionTypes
+    0: "GreyWardens",
+    1: "VeilJumpers",
+    2: "ShadowDragons",
+    3: "LordsOfFortune",
+    4: "TheMournWatch",
+    5: "AntivanCrows",
+}
+CHARACTER_GENERATOR_FACTION_VALUES = list(CHARACTER_GENERATOR_FACTIONS.keys())
+CHARACTER_GENERATOR_FACTION_LABELS = list(CHARACTER_GENERATOR_FACTIONS.values())
+
 # Globals/Persistence/InquisitorGeneratorDataAsset
 PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.Registered)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc

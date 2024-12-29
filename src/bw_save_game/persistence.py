@@ -58,15 +58,28 @@ def format_key_string(family: str, family_data: list, version: int = 7):
     return f"{version}:{family}:{('|' if version >= 6 else '.').join(family_data)}"
 
 
-def get_or_create_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
-    key = f",{property_id}:{property_type}"
+def get_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
+    prop_name = f",{property_id}:{property_type}"
 
     all_props = definition["PropertyValueData"]["DefinitionProperties"]
     found_prop = None
     for prop in all_props:
-        if key in prop:
+        if prop_name in prop:
             found_prop = prop
     if found_prop is None:
-        found_prop = {key: PROPERTY_TYPES[property_type](default_value)}
+        return PROPERTY_TYPES[property_type](default_value)
+    return found_prop[prop_name]
+
+
+def get_or_create_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
+    prop_name = f",{property_id}:{property_type}"
+
+    all_props = definition["PropertyValueData"]["DefinitionProperties"]
+    found_prop = None
+    for prop in all_props:
+        if prop_name in prop:
+            found_prop = prop
+    if found_prop is None:
+        found_prop = {prop_name: PROPERTY_TYPES[property_type](default_value)}
         all_props.append(found_prop)
-    return found_prop, key
+    return found_prop, prop_name
