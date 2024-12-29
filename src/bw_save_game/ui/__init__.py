@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 
 import json
+import os.path
 import sys
 import typing  # noqa: F401
 from uuid import UUID
@@ -68,6 +69,10 @@ class State(object):
     def __init__(self):
         # UI state
         self.show_app_about = False
+
+        self.default_save_path = os.path.expandvars(
+            "%USERPROFILE%/Documents/BioWare/Dragon Age The Veilguard/save games"
+        )
 
         # loaded save game
         self.active_filename = None  # type: typing.Optional[str]
@@ -187,7 +192,9 @@ def show_app_about(state: State):
 
 
 def ask_for_open(state: State):
-    path = ask_for_file_to_open("Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+    path = ask_for_file_to_open(
+        "Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav", state.default_save_path
+    )
     if path:
         if state.load(path):
             glfw_win = glfw_utils.glfw_window_hello_imgui()
@@ -383,7 +390,7 @@ def show_item_stack_count_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
-    count = item.get("stackCount", 1)
+    count = to_native(item.get("stackCount", 1))
     changed, new_count = imgui.input_int("##StackCount", count)
     if changed:
         item["stackCount"] = new_count
@@ -395,7 +402,7 @@ def show_item_level_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
-    level = item.get("level", 1)
+    level = to_native(item.get("level", 1))
     changed, new_level = imgui.input_int("##Level", level)
     if changed:
         item["level"] = new_level
