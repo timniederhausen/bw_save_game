@@ -50,6 +50,12 @@ def show_searchable_combo_box(
 
     if not imgui.begin_combo(label, preview_value, imgui.ComboFlags_.height_largest):
         used_combo_boxes[id] = retained_data
+
+        # Show tooltips in case our preview value is too long for the inline preview
+        if imgui.begin_item_tooltip():
+            imgui.text(preview_value)
+            imgui.end_tooltip()
+
         return False, current_item
 
     if not is_already_open:

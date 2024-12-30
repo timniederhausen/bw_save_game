@@ -328,6 +328,10 @@ def show_item_attachment_editor(item: dict):
     imgui.push_item_width(-1)
     is_open = imgui.begin_combo("##itemAttachment", preview_value, imgui.ComboFlags_.height_largest)
     if not is_open:
+        if imgui.begin_item_tooltip():
+            imgui.text(preview_value)
+            imgui.end_tooltip()
+
         imgui.pop_item_width()
         return
 
