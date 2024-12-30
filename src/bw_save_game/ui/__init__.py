@@ -358,12 +358,15 @@ def show_item_stack_count_editor(item: dict):
     # https://github.com/ocornut/imgui/issues/623
     imgui.push_item_width(-1)
 
+    removed = False
     count = to_native(item.get("stackCount", 1))
     changed, new_count = imgui.input_int("##StackCount", count)
     if changed:
         item["stackCount"] = new_count
+        removed = new_count == 0
 
     imgui.pop_item_width()
+    return removed
 
 
 def show_item_level_editor(item: dict):
@@ -422,6 +425,7 @@ def show_editor_inventories(state: State):
             imgui.close_current_popup()
         imgui.end_popup()
 
+    removed_items = []
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
         imgui.table_setup_column("Attached to")
@@ -437,13 +441,20 @@ def show_editor_inventories(state: State):
             imgui.table_next_column()
             show_item_attachment_editor(item)
             imgui.table_next_column()
-            show_item_stack_count_editor(item)
+            if show_item_stack_count_editor(item):
+                removed_items.append(i)
             imgui.table_next_column()
             show_item_rarity_editor(item)
             imgui.table_next_column()
             show_item_level_editor(item)
             imgui.pop_id()
         imgui.end_table()
+
+    # Actually remove the items from our list - in reverse order of index
+    if removed_items:
+        removed_items = sorted(removed_items, reverse=True)
+        for i in removed_items:
+            del items[i]
 
 
 def show_currency_editor(state: State):
