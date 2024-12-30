@@ -26,22 +26,11 @@ PROPERTY_TYPES = {
     "Int64": Long,
 }
 
-
-@dataclass
-class PersistenceDefinition:
-    definition_id: int  # uint32
-    family_id: PersistenceFamilyId
+_DEFAULT_PERSONA_ID = 0xC0FFEEEE
+_UID_PREFIX = "uid="
 
 
-@dataclass
-class PersistencePropertyDefinition:
-    definition: PersistenceDefinition
-    id: int  # uint32
-    type: str
-    default: object
-
-
-@dataclass
+@dataclass(frozen=True)
 class PersistenceKeyWithUniqueId:
     version: int  # usually 7
     family: PersistenceFamilyId
@@ -62,45 +51,64 @@ class PersistenceKeyWithUniqueId:
             family = dots[1]
             family_data = dots[2]
 
-        family_data = family_data.split("|" if version >= 6 else ".", 13)
-
         persona = 0
         uid = None
         definition_id = 0
         third = 0
 
-        if family_data:
-            persona = int(family_data[0])
-            family_data = family_data[1:]
+        values = family_data.split("|" if version >= 6 else ".", 13)
+        num_values = len(values)
+        index = 0
 
-        if family_data and family_data[0].startswith("uid="):
-            uid = int(family_data[0][len("uid=") :])
-            family_data = family_data[1:]
+        if index < num_values:
+            persona = int(values[index])
+            index += 1
 
-        if family_data:
-            definition_id = int(family_data[0])
-            family_data = family_data[1:]
+        if index < num_values and values[index].startswith(_UID_PREFIX):
+            uid = int(values[index][len(_UID_PREFIX) :])
+            index += 1
 
-        if family_data:
-            third = int(family_data[0])
-            family_data = family_data[1:]
+        if index < num_values:
+            definition_id = int(values[index])
+            index += 1
+
+        if index < num_values:
+            third = int(values[index])
+            index += 1
 
         return PersistenceKeyWithUniqueId(version, PersistenceFamilyId[family], persona, definition_id, third, uid)
+
+    @staticmethod
+    def constant(definition_id: int, family: PersistenceFamilyId, uid: int = None):
+        return PersistenceKeyWithUniqueId(7, family, _DEFAULT_PERSONA_ID, definition_id, 0, uid)
+
+    def with_uid(self, uid: int):
+        return PersistenceKeyWithUniqueId(
+            self.version, self.family, self.persona_id, self.definition_id, self.third, uid
+        )
 
     def __str__(self):
         family_data = [str(self.persona_id)]
         if self.uid is not None:
-            family_data.append(f"uid={self.uid}")
-        family_data.append(self.definition_id)
-        family_data.append(self.third)
+            family_data.append(f"{_UID_PREFIX}{self.uid}")
+        family_data.append(str(self.definition_id))
+        family_data.append(str(self.third))
 
         return f"{self.version}:{self.family.name}:{('|' if self.version >= 6 else '.').join(family_data)}"
 
 
-def get_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
+@dataclass(frozen=True)
+class PersistencePropertyDefinition:
+    key: PersistenceKeyWithUniqueId
+    id: int  # uint32
+    type: str
+    default: object
+
+
+def get_persisted_value(def_instance: dict, property_id: int, property_type: str, default_value):
     prop_name = f",{property_id}:{property_type}"
 
-    all_props = definition["PropertyValueData"]["DefinitionProperties"]
+    all_props = def_instance["PropertyValueData"]["DefinitionProperties"]
     found_prop = None
     for prop in all_props:
         if prop_name in prop:
@@ -110,10 +118,10 @@ def get_persisted_value(definition: dict, property_id: int, property_type: str, 
     return found_prop[prop_name]
 
 
-def get_or_create_persisted_value(definition: dict, property_id: int, property_type: str, default_value: object):
+def get_or_create_persisted_value(def_instance: dict, property_id: int, property_type: str, default_value):
     prop_name = f",{property_id}:{property_type}"
 
-    all_props = definition["PropertyValueData"]["DefinitionProperties"]
+    all_props = def_instance["PropertyValueData"]["DefinitionProperties"]
     found_prop = None
     for prop in all_props:
         if prop_name in prop:

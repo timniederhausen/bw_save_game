@@ -1,4 +1,5 @@
 import json
+import typing
 from enum import IntEnum
 from uuid import UUID
 
@@ -6,9 +7,10 @@ from importlib_resources import files
 
 from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
-    PersistenceDefinition,
     PersistenceFamilyId,
+    PersistenceKeyWithUniqueId,
     PersistencePropertyDefinition,
+    get_persisted_value,
 )
 
 
@@ -196,7 +198,7 @@ CLASS_KEYBINDING_VALUES = list(CLASS_KEYBINDINGS.keys())
 CLASS_KEYBINDING_LABELS = list(CLASS_KEYBINDINGS.values())
 
 # CharacterGenerator_RDA_1647819227
-CHARACTER_GENERATOR_DEF = PersistenceDefinition(1647819227, PersistenceFamilyId.Registered)
+CHARACTER_GENERATOR_DEF = PersistenceKeyWithUniqueId.constant(1647819227, PersistenceFamilyId.Registered)
 CHARACTER_GENERATOR_GENDER = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 894942981, "Int32", 1)
 CHARACTER_GENERATOR_VOICE_TONE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1419752156, "Int32", 1)
 CHARACTER_GENERATOR_LINEAGE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1491933783, "Int32", 1)
@@ -218,7 +220,7 @@ CHARACTER_GENERATOR_FACTION_VALUES = list(CHARACTER_GENERATOR_FACTIONS.keys())
 CHARACTER_GENERATOR_FACTION_LABELS = list(CHARACTER_GENERATOR_FACTIONS.values())
 
 # Globals/Persistence/InquisitorGeneratorDataAsset
-PAST_DA_INQUISITOR_DEF = PersistenceDefinition(1250272560, PersistenceFamilyId.Registered)
+PAST_DA_INQUISITOR_DEF = PersistenceKeyWithUniqueId.constant(1250272560, PersistenceFamilyId.Registered)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
 PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean", False)
 PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 2643758781, "Int32", 8)
@@ -245,6 +247,72 @@ ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "cu
 for item in ALL_ITEMS:
     item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
     item["guid"] = UUID(item["guid"])
+
+
+class VeilguardSaveGame(object):
+    def __init__(self, meta: dict, data: dict):
+        self.meta = meta
+        self.data = data
+
+        self._persistence_key_to_instance = {}  # type: typing.Dict[PersistenceKeyWithUniqueId, dict]
+
+        self.refresh_derived_data()
+
+    def get_client_rpg_extents(self, loadpass=0) -> dict:
+        for c in self.data["client"]["contributors"]:
+            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No client RPGPlayerExtent with loadpass {loadpass}")
+
+    def get_server_rpg_extents(self, loadpass=0) -> dict:
+        for c in self.data["server"]["contributors"]:
+            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No server RPGPlayerExtent with loadpass {loadpass}")
+
+    def get_client_difficulty(self, loadpass=0) -> dict:
+        for c in self.data["client"]["contributors"]:
+            if c["name"] == "DifficultyOptions" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No client DifficultyOptions with loadpass {loadpass}")
+
+    def get_currencies(self):
+        first_extent = self.get_server_rpg_extents(0)
+        return first_extent.setdefault("currencies", []), first_extent.setdefault("discoveredCurrencies", [])
+
+    def get_items(self) -> list:
+        first_extent = self.get_server_rpg_extents(0)
+        return first_extent.setdefault("items", [])
+
+    def get_registered_persistence(self, loadpass=0) -> dict:
+        for c in self.data["server"]["contributors"]:
+            if c["name"] == "RegisteredPersistence" and to_native(c["loadpass"]) == loadpass:
+                return c["data"]
+        raise ValueError(f"No RegisteredPersistence with loadpass {loadpass}")
+
+    def get_persistence_instances(self) -> typing.List[dict]:
+        return self.get_registered_persistence()["RegisteredData"]["Persistence"]
+
+    def get_persistence_instance(self, key: PersistenceKeyWithUniqueId) -> typing.Optional[dict]:
+        return self._persistence_key_to_instance.get(key)
+
+    def get_persistence_instance_by_id(self, definition_id: int) -> typing.Optional[dict]:
+        for def_instance in self.get_persistence_instances():
+            if to_native(def_instance["DefinitionId"]) == definition_id:
+                return def_instance
+        return None
+
+    def get_persistence_property(self, prop: PersistencePropertyDefinition):
+        instance = self.get_persistence_instance(prop.key)
+        if instance is None:
+            return None
+        return get_persisted_value(instance, prop.id, prop.type, prop.default)
+
+    def refresh_derived_data(self):
+        self._persistence_key_to_instance.clear()
+        for def_instance in self.get_persistence_instances():
+            key = PersistenceKeyWithUniqueId.from_string(def_instance["Key"])
+            self._persistence_key_to_instance[key] = def_instance
 
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:

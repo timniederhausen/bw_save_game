@@ -22,7 +22,6 @@ from bw_save_game.db_object import Long, from_raw_dict, to_native, to_raw_dict
 from bw_save_game.persistence import (
     PersistencePropertyDefinition,
     get_or_create_persisted_value,
-    get_persisted_value,
 )
 from bw_save_game.ui.editors import (
     show_json_editor,
@@ -58,6 +57,7 @@ from bw_save_game.veilguard import (
     PAST_DA_INQUISITOR_ROMANCE_VALUES,
     PAST_DA_SHOULD_REFERENCE_PROPERTY,
     ItemAttachmentType,
+    VeilguardSaveGame,
     construct_item_attachment,
     deconstruct_item_attachment,
     item_attachment_to_string,
@@ -79,11 +79,10 @@ class State(object):
 
         # loaded save game
         self.active_filename = None  # type: typing.Optional[str]
-        self.active_meta = None  # type: typing.Optional[dict]
-        self.active_data = None  # type: typing.Optional[dict]
+        self.save_game = None  # type: typing.Optional[VeilguardSaveGame]
 
     def has_content(self):
-        return self.active_meta is not None and self.active_data is not None
+        return self.save_game is not None
 
     def load(self, filename: str):
         try:
@@ -96,14 +95,13 @@ class State(object):
             return False
 
         self.active_filename = filename
-        self.active_meta = m
-        self.active_data = d
+        self.save_game = VeilguardSaveGame(m, d)
         return True
 
     def save(self, filename: str):
         try:
-            m = dumps(self.active_meta)
-            d = dumps(self.active_data)
+            m = dumps(self.save_game.meta)
+            d = dumps(self.save_game.data)
             with open(filename, "wb") as f:
                 write_save_to_writer(f, m, d)
         except Exception as e:
@@ -127,66 +125,19 @@ class State(object):
             return
 
         self.active_filename = None
-        self.active_meta = m
-        self.active_data = d
+        self.save_game = VeilguardSaveGame(m, d)
 
     def export_json(self, filename: str):
         try:
-            root = dict(meta=self.active_meta, data=self.active_data, exporter=dict(version=__version__, format=1))
+            root = dict(
+                meta=self.save_game.meta, data=self.save_game.data, exporter=dict(version=__version__, format=1)
+            )
             with open(filename, "w", encoding="utf-8") as f:
                 # TODO: do we want sort keys on?
                 json.dump(root, f, ensure_ascii=False, indent=2, default=to_raw_dict)
         except Exception as e:
             show_error(f"Cannot save {filename}: {repr(e)}")
             return
-
-    # Easy data accessors
-    def get_client_rpg_extents(self, loadpass=0) -> dict:
-        for c in self.active_data["client"]["contributors"]:
-            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
-                return c["data"]
-        raise ValueError(f"No client RPGPlayerExtent with loadpass {loadpass}")
-
-    def get_server_rpg_extents(self, loadpass=0) -> dict:
-        for c in self.active_data["server"]["contributors"]:
-            if c["name"] == "RPGPlayerExtent" and to_native(c["loadpass"]) == loadpass:
-                return c["data"]
-        raise ValueError(f"No server RPGPlayerExtent with loadpass {loadpass}")
-
-    def get_client_difficulty(self, loadpass=0) -> dict:
-        for c in self.active_data["client"]["contributors"]:
-            if c["name"] == "DifficultyOptions" and to_native(c["loadpass"]) == loadpass:
-                return c["data"]
-        raise ValueError(f"No client DifficultyOptions with loadpass {loadpass}")
-
-    def get_currencies(self):
-        first_extent = self.get_server_rpg_extents(0)
-        return first_extent.setdefault("currencies", []), first_extent.setdefault("discoveredCurrencies", [])
-
-    def get_items(self) -> list:
-        first_extent = self.get_server_rpg_extents(0)
-        return first_extent.setdefault("items", [])
-
-    def get_registered_persistence(self, loadpass=0) -> dict:
-        for c in self.active_data["server"]["contributors"]:
-            if c["name"] == "RegisteredPersistence" and to_native(c["loadpass"]) == loadpass:
-                return c["data"]
-        raise ValueError(f"No RegisteredPersistence with loadpass {loadpass}")
-
-    def get_persisted_definitions(self) -> typing.List[dict]:
-        return self.get_registered_persistence()["RegisteredData"]["Persistence"]
-
-    def get_persisted_definition(self, definition_id: int) -> typing.Optional[dict]:
-        for family in self.get_persisted_definitions():
-            if to_native(family["DefinitionId"]) == definition_id:
-                return family
-        return None
-
-    def get_persisted_property(self, property: PersistencePropertyDefinition):
-        definition = self.get_persisted_definition(property.definition.definition_id)
-        if definition is None:
-            return None
-        return get_persisted_value(definition, property.id, property.type, property.default)
 
 
 def show_app_about(state: State):
@@ -286,38 +237,39 @@ def show_item_id_editor(obj):
 
 
 def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
-    definition = state.get_persisted_definition(prop.definition.definition_id)
-    if not definition:
+    def_instance = state.save_game.get_persistence_instance(prop.key)
+    if not def_instance:
         return False
 
-    obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
+    obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
     return show_raw_key_value_editor(obj, key, label)
 
 
 def show_persisted_value_options_editor(
     state: State, label: str, prop: PersistencePropertyDefinition, option_values: list, option_names: list[str]
 ):
-    definition = state.get_persisted_definition(prop.definition.definition_id)
-    if not definition:
+    def_instance = state.save_game.get_persistence_instance(prop.key)
+    if not def_instance:
         return False
 
-    obj, key = get_or_create_persisted_value(definition, prop.id, prop.type, prop.default)
+    obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
     return show_key_value_options_editor(
         label, obj, key, option_values, option_names, option_values.index(prop.default)
     )
 
 
 def show_editor_raw_data(state: State):
+    game = state.save_game
     if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        for key in state.active_meta:
+        for key in game.meta:
             imgui.push_id(key)
-            show_raw_key_value_editor(state.active_meta, key)
+            show_raw_key_value_editor(game.meta, key)
             imgui.pop_id()
     imgui.separator()
     if imgui.collapsing_header("Content", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        for key in state.active_data.keys():
+        for key in game.data:
             imgui.push_id(key)
-            show_raw_key_value_editor(state.active_data, key)
+            show_raw_key_value_editor(game.data, key)
             imgui.pop_id()
 
 
@@ -426,7 +378,7 @@ def show_item_level_editor(item: dict):
 
 
 def show_editor_inventories(state: State):
-    items = state.get_items()
+    items = state.save_game.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
@@ -461,7 +413,7 @@ def show_currency_editor(state: State):
     imgui.table_setup_column("Discovered?")
     imgui.table_setup_column("Amount")
     imgui.table_headers_row()
-    currencies, discovered_currencies = state.get_currencies()
+    currencies, discovered_currencies = state.save_game.get_currencies()
     for currency_def in ALL_CURRENCIES:
         imgui.push_id(currency_def["id"])
         imgui.table_next_row()
@@ -491,7 +443,7 @@ def show_editor_main(state: State):
 
     if imgui.begin_child("##first column"):
         if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-            show_raw_key_value_editor(state.active_meta, "description", "Description")
+            show_raw_key_value_editor(state.save_game.meta, "description", "Description")
 
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -504,10 +456,12 @@ def show_editor_main(state: State):
                 CHARACTER_GENERATOR_FACTION_LABELS,
             ):
                 # value is duplicated!
-                state.active_meta["projdata"]["faction"] = state.get_persisted_property(CHARACTER_GENERATOR_FACTION)
+                state.save_game.meta["projdata"]["faction"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_FACTION
+                )
             show_key_value_options_editor(
                 "Class keybinding profile",
-                state.active_meta["projdata"],
+                state.save_game.meta["projdata"],
                 "keybindingprofile",
                 CLASS_KEYBINDING_VALUES,
                 CLASS_KEYBINDING_LABELS,
@@ -525,7 +479,7 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Difficulty", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
-            difficulty = state.get_client_difficulty()
+            difficulty = state.save_game.get_client_difficulty()
             if show_key_value_options_editor(
                 "Combat Difficulty",
                 difficulty,
@@ -534,7 +488,7 @@ def show_editor_main(state: State):
                 DIFFICULTY_COMBAT_PRESET_LABELS,
             ):
                 # value is duplicated!
-                state.active_meta["projdata"]["difficulty"] = difficulty["difficultyIndex"]
+                state.save_game.meta["projdata"]["difficulty"] = difficulty["difficultyIndex"]
             show_key_value_options_editor(
                 "Exploration Difficulty",
                 difficulty,
@@ -560,7 +514,7 @@ def show_editor_main(state: State):
 
 
 def show_editor_appearances(state: State):
-    data = state.get_client_rpg_extents(2)
+    data = state.save_game.get_client_rpg_extents(2)
 
     imgui.text_wrapped(
         "You can manually edit the following JSON documents or copy them from another save game!\n"
