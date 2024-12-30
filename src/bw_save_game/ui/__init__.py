@@ -53,7 +53,6 @@ from bw_save_game.veilguard import (
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
-    LOOT_RARITY_VALUES,
     PAST_DA_INQUISITOR_ROMANCE_LABELS,
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
     PAST_DA_INQUISITOR_ROMANCE_VALUES,
@@ -391,7 +390,7 @@ def show_item_rarity_editor(item: dict):
         current_item = LOOT_RARITY_NAMES.index(rarity or "Rarity_None")
         changed, new_item = imgui.combo("##Rarity", current_item, LOOT_RARITY_NAMES)
         if changed:
-            item["rarity"] = LOOT_RARITY_VALUES[new_item]
+            item["rarity"] = LOOT_RARITY_NAMES[new_item]
     except ValueError:
         imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown: {rarity}")
 
