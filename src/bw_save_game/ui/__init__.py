@@ -7,7 +7,7 @@ import json
 import os.path
 import sys
 import typing  # noqa: F401
-from uuid import UUID
+from uuid import UUID, uuid1
 
 from imgui_bundle import glfw_utils, imgui, immapp
 
@@ -72,6 +72,7 @@ class State(object):
     def __init__(self):
         # UI state
         self.show_app_about = False
+        self.add_item_object = None  # type: typing.Optional[dict]
 
         self.default_save_path = os.path.expandvars(
             "%USERPROFILE%/Documents/BioWare/Dragon Age The Veilguard/save games"
@@ -381,6 +382,46 @@ def show_editor_inventories(state: State):
     items = state.save_game.get_items()
 
     imgui.text(f"Number of items: {len(items)}")
+    imgui.same_line()
+    if imgui.button("Add Item"):
+        default_item_data = ALL_ITEMS[0]
+        state.add_item_object = dict(
+            itemDataId=Long(default_item_data["id"]), dataGuid=default_item_data["guid"], instanceGuid=uuid1()
+        )
+        imgui.open_popup("Add Item")
+
+    if imgui.begin_popup_modal("Add Item", None, imgui.WindowFlags_.always_auto_resize)[0]:
+        item = state.add_item_object
+
+        imgui.text_disabled("Item: ")
+        imgui.same_line()
+        show_item_id_editor(item)
+
+        imgui.text_disabled("Attached to: ")
+        imgui.same_line()
+        show_item_attachment_editor(item)
+
+        imgui.text_disabled("Stack count: ")
+        imgui.same_line()
+        show_item_stack_count_editor(item)
+
+        imgui.text_disabled("Rarity: ")
+        imgui.same_line()
+        show_item_rarity_editor(item)
+
+        imgui.text_disabled("Level: ")
+        imgui.same_line()
+        show_item_level_editor(item)
+
+        if imgui.button("OK", (120, 0)):
+            items.append(item)
+            imgui.close_current_popup()
+        imgui.set_item_default_focus()
+        imgui.same_line()
+        if imgui.button("Cancel", (120, 0)):
+            imgui.close_current_popup()
+        imgui.end_popup()
+
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
         imgui.table_setup_column("Attached to")
