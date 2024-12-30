@@ -288,5 +288,7 @@ def construct_item_attachment(item: dict, typ: ItemAttachmentType, parent: int |
 def item_attachment_to_string(item: dict):
     typ, parent, attach_slot = deconstruct_item_attachment(item)
     if parent:
+        if typ == ItemAttachmentType.Character:
+            parent = KNOWN_CHARACTER_ARCHETYPES[parent]
         return f"{typ.name} {parent}: {attach_slot}"
     return "Not Attached"
