@@ -161,7 +161,7 @@ def show_app_about(state: State):
     if imgui.begin_popup("About BWSaveGameEditor", imgui.WindowFlags_.always_auto_resize):
         imgui.text("BWSaveGameEditor " + __version__)
         imgui.separator()
-        imgui.text("By Tim and mons.")
+        imgui.text("By Tim & mons.")
         imgui.text("BWSaveGameEditor is licensed under GNU General Public License v3.0.")
         imgui.separator()
         imgui.text("Using ImGui v" + imgui.get_version())
@@ -236,21 +236,30 @@ def show_main_menu_bar(state: State):
 
 
 def show_item_id_editor(obj):
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.set_next_item_width(-1)
+
     index = _ITEM_ID_TO_INDEX.get(to_native(obj["itemDataId"]))
     if index is not None:
         # https://github.com/ocornut/imgui/issues/623
-        imgui.push_item_width(-1)
         changed, new_index = show_searchable_combo_box("##itemDataId", _ITEM_KEYS, index)
-        imgui.pop_item_width()
-
         if changed:
             data = ALL_ITEMS[new_index]
             obj["itemDataId"] = Long(data["id"])
             obj["dataGuid"] = data["guid"]
-    else:
-        imgui.text(f"Unsupported item: {to_native(obj['itemDataId'])}")
-        # oh well
-        # show_simple_value_editor(obj, "itemDataId")
+        return
+
+    preview_value = f"Unsupported item: {to_native(obj['itemDataId'])}"
+
+    is_open = imgui.begin_combo("##itemDataId", preview_value, imgui.ComboFlags_.height_largest)
+    if not is_open:
+        if imgui.begin_item_tooltip():
+            imgui.text(preview_value)
+            imgui.end_tooltip()
+        return
+
+    # TODO: Show something better!
+    # show_simple_value_editor(obj, "itemDataId")
 
 
 def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
@@ -275,8 +284,7 @@ def show_persisted_value_options_editor(
     )
 
 
-def show_editor_raw_data(state: State):
-    game = state.save_game
+def show_editor_raw_data(game: VeilguardSaveGame):
     if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in game.meta:
             imgui.push_id(key)
@@ -628,7 +636,7 @@ def show_editor_content(state: State):
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Raw Data")[0]:
-        show_editor_raw_data(state)
+        show_editor_raw_data(state.save_game)
         imgui.end_tab_item()
 
     imgui.end_tab_bar()
@@ -660,15 +668,15 @@ def show_editor_window(state: State):
     imgui.end()
 
 
-WINDOW_TITLE = "Dragon Age: The Veilguard save editor by Tim & mons"
-
-
 def show_ui(state: State):
     show_main_menu_bar(state)
     show_app_about(state)
     show_editor_window(state)
 
     clear_unused_retained_data()
+
+
+WINDOW_TITLE = "Dragon Age: The Veilguard save editor - By Tim & mons"
 
 
 def main():
