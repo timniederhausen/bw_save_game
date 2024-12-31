@@ -75,6 +75,13 @@ from bw_save_game.veilguard import (
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
     PAST_DA_INQUISITOR_ROMANCE_VALUES,
     PAST_DA_SHOULD_REFERENCE_PROPERTY,
+    ROMANCE_BELLARA_PROPERTIES,
+    ROMANCE_DAVRIN_PROPERTIES,
+    ROMANCE_EMMRICH_PROPERTIES,
+    ROMANCE_HARDING_PROPERTIES,
+    ROMANCE_LUCANIS_PROPERTIES,
+    ROMANCE_NEVE_PROPERTIES,
+    ROMANCE_TAASH_PROPERTIES,
     ItemAttachmentType,
     VeilguardSaveGame,
     construct_item_attachment,
@@ -644,6 +651,47 @@ def show_editor_appearances(state: State):
         imgui.pop_item_width()
 
 
+def show_editor_companion_romance(state: State, romance_properties: dict):
+    if imgui.collapsing_header("Romance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        for label, prop in romance_properties.items():
+            show_persisted_value_editor(state, label, prop)
+
+
+def show_editor_companions(state: State):
+    if not imgui.begin_tab_bar("companions"):
+        return
+
+    if imgui.begin_tab_item("Neve")[0]:
+        show_editor_companion_romance(state, ROMANCE_NEVE_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Davrin")[0]:
+        show_editor_companion_romance(state, ROMANCE_DAVRIN_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Bellara")[0]:
+        show_editor_companion_romance(state, ROMANCE_BELLARA_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Taash")[0]:
+        show_editor_companion_romance(state, ROMANCE_TAASH_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Emmrich")[0]:
+        show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Harding")[0]:
+        show_editor_companion_romance(state, ROMANCE_HARDING_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Lucanis")[0]:
+        show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
+        imgui.end_tab_item()
+
+    imgui.end_tab_bar()
+
+
 def show_editor_content(state: State):
     if not imgui.begin_tab_bar("editors"):
         return
@@ -654,6 +702,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Appearances")[0]:
         show_editor_appearances(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Companions")[0]:
+        show_editor_companions(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Inventories")[0]:

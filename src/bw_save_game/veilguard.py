@@ -268,6 +268,188 @@ PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
 PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
 PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
 
+# Romance properties
+ROMANCE_NEVE = registered_persistence_key(2022350065)  # ROMANCE_NEVE
+ROMANCE_NEVE_Rook_Can_Flirt_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 1309495461, "Boolean", True)
+ROMANCE_NEVE_Neve_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_NEVE, 1711736383, "Boolean", False)
+ROMANCE_NEVE_Neve_Romance_TestingWaters_Complete = PersistencePropertyDefinition(
+    ROMANCE_NEVE, 2152232388, "Boolean", False
+)
+ROMANCE_NEVE_Neve_Flirt_Count = PersistencePropertyDefinition(ROMANCE_NEVE, 2675503667, "Int32", 0)
+ROMANCE_NEVE_Neve_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_NEVE, 2851760417, "Boolean", False)
+ROMANCE_NEVE_Neve_Afterglow_Complete = PersistencePropertyDefinition(ROMANCE_NEVE, 3429055734, "Boolean", False)
+ROMANCE_NEVE_Rook_Backs_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 3737124597, "Int32", 0)
+
+ROMANCE_NEVE_PROPERTIES = {
+    "Can Flirt?": ROMANCE_NEVE_Rook_Can_Flirt_Neve,
+    "Cut Off?": ROMANCE_NEVE_Neve_Romance_Cut_Off,
+    "Testing waters complete?": ROMANCE_NEVE_Neve_Romance_TestingWaters_Complete,
+    "Flirt Count": ROMANCE_NEVE_Neve_Flirt_Count,
+    "Exclusive": ROMANCE_NEVE_Neve_Romance_Exclusive,
+    "Afterglow": ROMANCE_NEVE_Neve_Afterglow_Complete,
+    "Rook backs Neve": ROMANCE_NEVE_Rook_Backs_Neve,
+}
+
+ROMANCE_DAVRIN = registered_persistence_key(1805940062)  # ROMANCE_DAVRIN
+ROMANCE_DAVRIN_Afterglow_Life_of_Adventure_choice_taken = PersistencePropertyDefinition(
+    ROMANCE_DAVRIN, 571409871, "Boolean", False
+)
+ROMANCE_DAVRIN_Afterglow_Domestic_Bliss_choice_taken = PersistencePropertyDefinition(
+    ROMANCE_DAVRIN, 2651224975, "Boolean", False
+)
+ROMANCE_DAVRIN_Davrin_Flirt_Count = PersistencePropertyDefinition(ROMANCE_DAVRIN, 2732057980, "Int32", 0)
+ROMANCE_DAVRIN_Rook_Can_Flirt_Davrin = PersistencePropertyDefinition(ROMANCE_DAVRIN, 3175505004, "Boolean", True)
+ROMANCE_DAVRIN_Davrin_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_DAVRIN, 3287038745, "Boolean", False)
+ROMANCE_DAVRIN_Afterglow_Whatever_Comes_choice_taken = PersistencePropertyDefinition(
+    ROMANCE_DAVRIN, 3372923222, "Boolean", False
+)
+ROMANCE_DAVRIN_Davrin_Postreturn_Scene_Complete = PersistencePropertyDefinition(
+    ROMANCE_DAVRIN, 3643375017, "Boolean", False
+)
+ROMANCE_DAVRIN_Davrin_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_DAVRIN, 4037795175, "Boolean", False)
+ROMANCE_DAVRIN_Davrin_TestingWaters_Romantic = PersistencePropertyDefinition(
+    ROMANCE_DAVRIN, 4044905858, "Boolean", False
+)
+
+ROMANCE_DAVRIN_PROPERTIES = {
+    "Afterglow: Life of Adventure choice taken?": ROMANCE_DAVRIN_Afterglow_Life_of_Adventure_choice_taken,
+    "Domestic Bliss choice taken?": ROMANCE_DAVRIN_Afterglow_Domestic_Bliss_choice_taken,
+    "Flirt Count": ROMANCE_DAVRIN_Davrin_Flirt_Count,
+    "Can Flirt?": ROMANCE_DAVRIN_Rook_Can_Flirt_Davrin,
+    "Exclusive": ROMANCE_DAVRIN_Davrin_Romance_Exclusive,
+    "Afterglow: Whatever Comes choice taken": ROMANCE_DAVRIN_Afterglow_Whatever_Comes_choice_taken,
+    "Postreturn Scene Complete": ROMANCE_DAVRIN_Davrin_Postreturn_Scene_Complete,
+    "Cut Off?": ROMANCE_DAVRIN_Davrin_Romance_Cut_Off,
+    "Testing waters romantic?": ROMANCE_DAVRIN_Davrin_TestingWaters_Romantic,
+}
+
+ROMANCE_BELLARA = registered_persistence_key(1628101232)  # ROMANCE_BELLARA
+ROMANCE_BELLARA_Bellara_TW_SaidYes = PersistencePropertyDefinition(ROMANCE_BELLARA, 2044255856, "Boolean", False)
+ROMANCE_BELLARA_Bellara_AfterGlow_Complete = PersistencePropertyDefinition(
+    ROMANCE_BELLARA, 2934582687, "Boolean", False
+)
+ROMANCE_BELLARA_Rook_Can_Flirt_Bellara = PersistencePropertyDefinition(ROMANCE_BELLARA, 2987001456, "Boolean", True)
+ROMANCE_BELLARA_Bellara_Flirt_Count = PersistencePropertyDefinition(ROMANCE_BELLARA, 3199595209, "Int32", 0)
+ROMANCE_BELLARA_Bellara_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_BELLARA, 3951225758, "Boolean", False)
+ROMANCE_BELLARA_Bellara_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_BELLARA, 4128137329, "Boolean", False)
+
+ROMANCE_BELLARA_PROPERTIES = {
+    "TW Said Yes?": ROMANCE_BELLARA_Bellara_TW_SaidYes,
+    "Afterglow": ROMANCE_BELLARA_Bellara_AfterGlow_Complete,
+    "Can Flirt?": ROMANCE_BELLARA_Rook_Can_Flirt_Bellara,
+    "Flirt Count": ROMANCE_BELLARA_Bellara_Flirt_Count,
+    "Exclusive": ROMANCE_BELLARA_Bellara_Romance_Exclusive,
+    "Cut Off?": ROMANCE_BELLARA_Bellara_Romance_Cut_Off,
+}
+
+ROMANCE_TAASH = registered_persistence_key(1100432818)  # ROMANCE_TAASH
+ROMANCE_TAASH_Taash_Dragon_Noises = PersistencePropertyDefinition(ROMANCE_TAASH, 422033019, "Boolean", False)
+ROMANCE_TAASH_Taash_talk_Feels = PersistencePropertyDefinition(ROMANCE_TAASH, 815699466, "Boolean", False)
+ROMANCE_TAASH_Taash_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_TAASH, 1540447246, "Boolean", False)
+ROMANCE_TAASH_postreturn_irrev = PersistencePropertyDefinition(ROMANCE_TAASH, 1849171720, "Boolean", False)
+ROMANCE_TAASH_Taash_Flirt_Count = PersistencePropertyDefinition(ROMANCE_TAASH, 2016422682, "Int32", 0)
+ROMANCE_TAASH_Taash_Does_Feelings = PersistencePropertyDefinition(ROMANCE_TAASH, 2097810245, "Boolean", False)
+ROMANCE_TAASH_Taash_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_TAASH, 2458726006, "Boolean", False)
+ROMANCE_TAASH_Has_Flirted = PersistencePropertyDefinition(ROMANCE_TAASH, 2487640600, "Boolean", False)
+ROMANCE_TAASH_Rook_Can_Flirt_Taash = PersistencePropertyDefinition(ROMANCE_TAASH, 3547828755, "Boolean", True)
+ROMANCE_TAASH_postreturn_affable = PersistencePropertyDefinition(ROMANCE_TAASH, 3926517825, "Boolean", False)
+
+ROMANCE_TAASH_PROPERTIES = {
+    "Dragon Noises?": ROMANCE_TAASH_Taash_Dragon_Noises,
+    "Talk Feels?": ROMANCE_TAASH_Taash_talk_Feels,
+    "Exclusive": ROMANCE_TAASH_Taash_Romance_Exclusive,
+    "Postreturn: irreverent?": ROMANCE_TAASH_postreturn_irrev,
+    "Flirt Count": ROMANCE_TAASH_Taash_Flirt_Count,
+    "Does Feelings?": ROMANCE_TAASH_Taash_Does_Feelings,
+    "Cut Off?": ROMANCE_TAASH_Taash_Romance_Cut_Off,
+    "Has Flirted?": ROMANCE_TAASH_Has_Flirted,
+    "Can Flirt?": ROMANCE_TAASH_Rook_Can_Flirt_Taash,
+    "Postreturn: Affable?": ROMANCE_TAASH_postreturn_affable,
+}
+
+ROMANCE_EMMRICH = registered_persistence_key(1377196124)  # ROMANCE_EMMRICH
+ROMANCE_EMMRICH_Emmrich_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_EMMRICH, 104776446, "Boolean", False)
+ROMANCE_EMMRICH_Rook_necromancy_secretly_intrigued = PersistencePropertyDefinition(
+    ROMANCE_EMMRICH, 193508850, "Boolean", False
+)
+ROMANCE_EMMRICH_Emmrich_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_EMMRICH, 602628047, "Boolean", False)
+ROMANCE_EMMRICH_Rook_Can_Flirt_Emmrich = PersistencePropertyDefinition(ROMANCE_EMMRICH, 1113132626, "Boolean", True)
+ROMANCE_EMMRICH_Emmrich_Flirt_Count = PersistencePropertyDefinition(ROMANCE_EMMRICH, 1596288471, "Int32", 0)
+ROMANCE_EMMRICH_Rook_Told_Emmrich_I_Love_You = PersistencePropertyDefinition(
+    ROMANCE_EMMRICH, 2122535518, "Boolean", False
+)
+ROMANCE_EMMRICH_Emmrich_Postreturn_Scene_Complete = PersistencePropertyDefinition(
+    ROMANCE_EMMRICH, 2344312078, "Boolean", False
+)
+
+ROMANCE_EMMRICH_PROPERTIES = {
+    "Exclusive": ROMANCE_EMMRICH_Emmrich_Romance_Exclusive,
+    "Rook: Ncromancy secretly intrigued?": ROMANCE_EMMRICH_Rook_necromancy_secretly_intrigued,
+    "Cut Off?": ROMANCE_EMMRICH_Emmrich_Romance_Cut_Off,
+    "Can Flirt?": ROMANCE_EMMRICH_Rook_Can_Flirt_Emmrich,
+    "Flirt Count": ROMANCE_EMMRICH_Emmrich_Flirt_Count,
+    "Rook Told Emmrich I Love_You?": ROMANCE_EMMRICH_Rook_Told_Emmrich_I_Love_You,
+    "Postreturn: Complete?": ROMANCE_EMMRICH_Emmrich_Postreturn_Scene_Complete,
+}
+
+ROMANCE_HARDING = registered_persistence_key(1823151982)  # Harding_00_Romance_1823151982
+ROMANCE_HARDING_Rook_postmoment_friendly = PersistencePropertyDefinition(ROMANCE_HARDING, 50584005, "Boolean", False)
+ROMANCE_HARDING_Harding_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_HARDING, 354677581, "Boolean", False)
+ROMANCE_HARDING_Rook_postmoment_tough = PersistencePropertyDefinition(ROMANCE_HARDING, 501814079, "Boolean", False)
+ROMANCE_HARDING_Haash_Rook_revealed_crush = PersistencePropertyDefinition(ROMANCE_HARDING, 505689755, "Boolean", False)
+ROMANCE_HARDING_Harding_examined_by_Emmrich = PersistencePropertyDefinition(
+    ROMANCE_HARDING, 1208785000, "Boolean", False
+)
+ROMANCE_HARDING_Rook_ok_with_toxic_Harding = PersistencePropertyDefinition(
+    ROMANCE_HARDING, 2566208300, "Boolean", False
+)
+ROMANCE_HARDING_Rook_Can_Flirt_Harding = PersistencePropertyDefinition(ROMANCE_HARDING, 2932984777, "Boolean", True)
+ROMANCE_HARDING_Harding_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_HARDING, 3145448906, "Boolean", False)
+ROMANCE_HARDING_Harding_Flirt_Count = PersistencePropertyDefinition(ROMANCE_HARDING, 3715419413, "Int32", 0)
+ROMANCE_HARDING_Rook_postmoment_irreverent = PersistencePropertyDefinition(
+    ROMANCE_HARDING, 3785189163, "Boolean", False
+)
+ROMANCE_HARDING_Harding_revealed_dreams = PersistencePropertyDefinition(ROMANCE_HARDING, 3915839206, "Boolean", False)
+ROMANCE_HARDING_PostReturn_Done = PersistencePropertyDefinition(ROMANCE_HARDING, 4128551096, "Boolean", False)
+
+ROMANCE_HARDING_PROPERTIES = {
+    "Rook postmoment friendly?": ROMANCE_HARDING_Rook_postmoment_friendly,
+    "Rook postmoment tough?": ROMANCE_HARDING_Rook_postmoment_tough,
+    "Cut Off?": ROMANCE_HARDING_Harding_Romance_Cut_Off,
+    "Haash: Rook revealed crush?": ROMANCE_HARDING_Haash_Rook_revealed_crush,
+    "Harding examined by Emmrich?": ROMANCE_HARDING_Harding_examined_by_Emmrich,
+    "Rook ok with toxic Harding?": ROMANCE_HARDING_Rook_ok_with_toxic_Harding,
+    "Can Flirt?": ROMANCE_HARDING_Rook_Can_Flirt_Harding,
+    "Exclusive": ROMANCE_HARDING_Harding_Romance_Exclusive,
+    "Flirt Count": ROMANCE_HARDING_Harding_Flirt_Count,
+    "Rook postmoment irreverent?": ROMANCE_HARDING_Rook_postmoment_irreverent,
+    "Harding revealed dreams?": ROMANCE_HARDING_Harding_revealed_dreams,
+    "Postreturn: Done?": ROMANCE_HARDING_PostReturn_Done,
+}
+
+ROMANCE_LUCANIS = registered_persistence_key(2014269085)  # Lucanis_00_Romance_2014269085
+ROMANCE_LUCANIS_Lucanis_TestingWater_Romantic = PersistencePropertyDefinition(
+    ROMANCE_LUCANIS, 476713944, "Boolean", False
+)
+ROMANCE_LUCANIS_Lucanis_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_LUCANIS, 763737897, "Boolean", False)
+ROMANCE_LUCANIS_Took_CoffeeFlirt = PersistencePropertyDefinition(ROMANCE_LUCANIS, 1452072980, "Boolean", False)
+ROMANCE_LUCANIS_Rook_Can_Flirt_Lucanis = PersistencePropertyDefinition(ROMANCE_LUCANIS, 1960706744, "Boolean", True)
+ROMANCE_LUCANIS_Lucanis_Flirt_Count = PersistencePropertyDefinition(ROMANCE_LUCANIS, 2233014916, "Int32", 0)
+ROMANCE_LUCANIS_Lucanis_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_LUCANIS, 3625457665, "Boolean", False)
+ROMANCE_LUCANIS_Lucanis_Afterglow_Complete = PersistencePropertyDefinition(
+    ROMANCE_LUCANIS, 4203863220, "Boolean", False
+)
+
+ROMANCE_LUCANIS_PROPERTIES = {
+    "Testing water Romantic?": ROMANCE_LUCANIS_Lucanis_TestingWater_Romantic,
+    "Exclusive": ROMANCE_LUCANIS_Lucanis_Romance_Exclusive,
+    "Took Coffee Flirt?": ROMANCE_LUCANIS_Took_CoffeeFlirt,
+    "Can Flirt?": ROMANCE_LUCANIS_Rook_Can_Flirt_Lucanis,
+    "Flirt Count": ROMANCE_LUCANIS_Lucanis_Flirt_Count,
+    "Cut Off?": ROMANCE_LUCANIS_Lucanis_Romance_Cut_Off,
+    "Afterglow: Complete?": ROMANCE_LUCANIS_Lucanis_Afterglow_Complete,
+}
+
 # from data files:
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
