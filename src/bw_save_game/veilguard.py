@@ -343,6 +343,25 @@ class VeilguardSaveGame(object):
             key = parse_persistence_key_string(def_instance["Key"])
             self._persistence_key_to_instance[key] = def_instance
 
+    def replace_character_archetype(self, old_archetype: int, new_archetype: int):
+        self.meta["archetype"] = new_archetype
+
+        client_rpg_player = self.get_client_rpg_extents(loadpass=0)
+        for transmogSlot in client_rpg_player["transmogSlots"]:
+            if to_native(transmogSlot["id"]) == old_archetype:
+                transmogSlot["id"] = new_archetype
+
+        server_rpg_player = self.get_server_rpg_extents(loadpass=0)
+        server_rpg_player["archetype"] = new_archetype
+        for item in server_rpg_player["items"]:
+            if "parent" not in item:
+                continue
+            parent = item["parent"]
+            if "parentArchetype" not in parent:
+                continue
+            if to_native(parent["parentArchetype"]["id"]) == old_archetype:
+                parent["parentArchetype"]["id"] = Long(new_archetype)
+
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:
     parent = item.get("parent")

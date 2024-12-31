@@ -549,6 +549,17 @@ def show_editor_main(state: State):
                 state.save_game.meta["projdata"]["faction"] = state.save_game.get_persistence_property(
                     CHARACTER_GENERATOR_FACTION
                 )
+            if show_key_value_options_editor(
+                "Class",
+                state.save_game.meta["projdata"],
+                "archetype",
+                KNOWN_CHARACTER_ARCHETYPE_VALUES,
+                KNOWN_CHARACTER_ARCHETYPE_LABELS,
+            ):
+                old_archetype = to_native(state.save_game.get_server_rpg_extents(loadpass=0)["archetype"])
+                state.save_game.replace_character_archetype(
+                    old_archetype, state.save_game.meta["projdata"]["archetype"]
+                )
             show_key_value_options_editor(
                 "Class keybinding profile",
                 state.save_game.meta["projdata"],
