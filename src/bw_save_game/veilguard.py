@@ -7,10 +7,11 @@ from importlib_resources import files
 
 from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
-    PersistenceFamilyId,
-    PersistenceKeyWithUniqueId,
+    PersistenceKey,
     PersistencePropertyDefinition,
     get_persisted_value,
+    parse_persistence_key_string,
+    registered_persistence_key,
 )
 
 
@@ -198,7 +199,7 @@ CLASS_KEYBINDING_VALUES = list(CLASS_KEYBINDINGS.keys())
 CLASS_KEYBINDING_LABELS = list(CLASS_KEYBINDINGS.values())
 
 # CharacterGenerator_RDA_1647819227
-CHARACTER_GENERATOR_DEF = PersistenceKeyWithUniqueId.constant(1647819227, PersistenceFamilyId.Registered)
+CHARACTER_GENERATOR_DEF = registered_persistence_key(1647819227)
 CHARACTER_GENERATOR_GENDER = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 894942981, "Int32", 1)
 CHARACTER_GENERATOR_VOICE_TONE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1419752156, "Int32", 1)
 CHARACTER_GENERATOR_LINEAGE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 1491933783, "Int32", 1)
@@ -220,7 +221,7 @@ CHARACTER_GENERATOR_FACTION_VALUES = list(CHARACTER_GENERATOR_FACTIONS.keys())
 CHARACTER_GENERATOR_FACTION_LABELS = list(CHARACTER_GENERATOR_FACTIONS.values())
 
 # Globals/Persistence/InquisitorGeneratorDataAsset
-PAST_DA_INQUISITOR_DEF = PersistenceKeyWithUniqueId.constant(1250272560, PersistenceFamilyId.Registered)
+PAST_DA_INQUISITOR_DEF = registered_persistence_key(1250272560)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
 PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean", False)
 PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 2643758781, "Int32", 8)
@@ -254,7 +255,7 @@ class VeilguardSaveGame(object):
         self.meta = meta
         self.data = data
 
-        self._persistence_key_to_instance = {}  # type: typing.Dict[PersistenceKeyWithUniqueId, dict]
+        self._persistence_key_to_instance = {}  # type: typing.Dict[PersistenceKey, dict]
 
         self.refresh_derived_data()
 
@@ -293,7 +294,7 @@ class VeilguardSaveGame(object):
     def get_persistence_instances(self) -> typing.List[dict]:
         return self.get_registered_persistence()["RegisteredData"]["Persistence"]
 
-    def get_persistence_instance(self, key: PersistenceKeyWithUniqueId) -> typing.Optional[dict]:
+    def get_persistence_instance(self, key: PersistenceKey) -> typing.Optional[dict]:
         return self._persistence_key_to_instance.get(key)
 
     def get_persistence_instance_by_id(self, definition_id: int) -> typing.Optional[dict]:
@@ -311,7 +312,7 @@ class VeilguardSaveGame(object):
     def refresh_derived_data(self):
         self._persistence_key_to_instance.clear()
         for def_instance in self.get_persistence_instances():
-            key = PersistenceKeyWithUniqueId.from_string(def_instance["Key"])
+            key = parse_persistence_key_string(def_instance["Key"])
             self._persistence_key_to_instance[key] = def_instance
 
 
