@@ -57,6 +57,9 @@ from bw_save_game.veilguard import (
     CHARACTER_GENERATOR_FACTION,
     CHARACTER_GENERATOR_FACTION_LABELS,
     CHARACTER_GENERATOR_FACTION_VALUES,
+    CHARACTER_GENERATOR_LINEAGE,
+    CHARACTER_GENERATOR_LINEAGE_LABELS,
+    CHARACTER_GENERATOR_LINEAGE_VALUES,
     CLASS_KEYBINDING_LABELS,
     CLASS_KEYBINDING_VALUES,
     DIFFICULTY_COMBAT_PRESET_LABELS,
@@ -524,6 +527,17 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
+            if show_persisted_value_options_editor(
+                state,
+                "Lineage",
+                CHARACTER_GENERATOR_LINEAGE,
+                CHARACTER_GENERATOR_LINEAGE_VALUES,
+                CHARACTER_GENERATOR_LINEAGE_LABELS,
+            ):
+                # value is duplicated!
+                state.save_game.meta["projdata"]["lineage"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_LINEAGE
+                )
             if show_persisted_value_options_editor(
                 state,
                 "Faction",

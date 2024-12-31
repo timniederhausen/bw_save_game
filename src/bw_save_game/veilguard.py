@@ -226,6 +226,16 @@ CHARACTER_GENERATOR_IS_TRANS = PersistencePropertyDefinition(CHARACTER_GENERATOR
 CHARACTER_GENERATOR_VOICE = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 3513989292, "Int32", 0)
 CHARACTER_GENERATOR_FACTION = PersistencePropertyDefinition(CHARACTER_GENERATOR_DEF, 3942110114, "Int32", 2)
 
+CHARACTER_GENERATOR_LINEAGES = {
+    # UI/_Common/DesignerEnums/CharacterCreator/CharGenLineageEnum
+    0: "Human",
+    1: "Dwarf",
+    2: "Elf",
+    3: "Qunari",
+}
+CHARACTER_GENERATOR_LINEAGE_VALUES = list(CHARACTER_GENERATOR_LINEAGES.keys())
+CHARACTER_GENERATOR_LINEAGE_LABELS = list(CHARACTER_GENERATOR_LINEAGES.values())
+
 CHARACTER_GENERATOR_FACTIONS = {
     # Globals/RPG/FactionTypes
     0: "GreyWardens",
