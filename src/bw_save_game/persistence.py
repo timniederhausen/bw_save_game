@@ -1,3 +1,4 @@
+import typing
 from dataclasses import dataclass
 from enum import Enum
 
@@ -67,7 +68,7 @@ class EcoPersistenceKey(PersistenceKey):
 
 @dataclass(unsafe_hash=True)
 class PersistenceKeyWithUniqueId(PersistenceKey):
-    uid: int | None = None  # TODO: where do these come from?
+    uid: typing.Optional[int] = None  # TODO: where do these come from?
 
     def _collect_values(self, sep):
         if self.uid is not None:
