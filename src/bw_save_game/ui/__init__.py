@@ -126,6 +126,8 @@ class State(object):
         return True
 
     def save(self, filename: str):
+        if not os.path.splitext(filename)[1]:
+            filename += ".csav"
         try:
             m = dumps(self.save_game.meta)
             d = dumps(self.save_game.data)
@@ -155,6 +157,8 @@ class State(object):
         self.save_game = VeilguardSaveGame(m, d)
 
     def export_json(self, filename: str):
+        if not os.path.splitext(filename)[1]:
+            filename += ".json"
         try:
             root = dict(
                 meta=self.save_game.meta, data=self.save_game.data, exporter=dict(version=__version__, format=1)
