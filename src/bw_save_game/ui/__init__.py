@@ -76,7 +76,15 @@ from bw_save_game.veilguard import (
     ROMANCE_LUCANIS_PROPERTIES,
     ROMANCE_NEVE_PROPERTIES,
     ROMANCE_TAASH_PROPERTIES,
+    BELLARA_SKILLS_SkillPoints,
+    DAVRIN_SKILLS_SkillPoints,
+    EMMRICH_SKILLS_SkillPoints,
+    HARDING_SKILLS_SkillPoints,
     ItemAttachmentType,
+    LUCANIS_SKILLS_SkillPoints,
+    NEVE_SKILLS_SkillPoints,
+    PLAYERS_KILLS_SkillPoints,
+    TAASH_SKILLS_SkillPoints,
     VeilguardSaveGame,
     construct_item_attachment,
     deconstruct_item_attachment,
@@ -575,6 +583,7 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_VALUES,
                 CLASS_KEYBINDING_LABELS,
             )
+            show_persisted_value_editor(state, "Skill points:", PLAYERS_KILLS_SkillPoints)
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -654,6 +663,11 @@ def show_editor_appearances(state: State):
         imgui.pop_item_width()
 
 
+def show_editor_companion_skills(state: State, skill_points: PersistencePropertyDefinition):
+    if imgui.collapsing_header("Skills", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        show_persisted_value_editor(state, "Skill points:", skill_points)
+
+
 def show_editor_companion_romance(state: State, romance_properties: dict):
     if imgui.collapsing_header("Romance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for label, prop in romance_properties.items():
@@ -665,30 +679,37 @@ def show_editor_companions(state: State):
         return
 
     if imgui.begin_tab_item("Neve")[0]:
+        show_editor_companion_skills(state, NEVE_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_NEVE_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Davrin")[0]:
+        show_editor_companion_skills(state, DAVRIN_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_DAVRIN_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Bellara")[0]:
+        show_editor_companion_skills(state, BELLARA_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_BELLARA_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Taash")[0]:
+        show_editor_companion_skills(state, TAASH_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_TAASH_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Emmrich")[0]:
+        show_editor_companion_skills(state, EMMRICH_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Harding")[0]:
+        show_editor_companion_skills(state, HARDING_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_HARDING_PROPERTIES)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Lucanis")[0]:
+        show_editor_companion_skills(state, LUCANIS_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
         imgui.end_tab_item()
 

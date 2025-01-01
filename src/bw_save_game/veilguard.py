@@ -460,6 +460,44 @@ ROMANCE_LUCANIS_PROPERTIES = {
     "Afterglow: Complete?": ROMANCE_LUCANIS_Lucanis_Afterglow_Complete,
 }
 
+# Skills
+NEVE_SKILLS = registered_persistence_key(1218516147)  # NeveSkillRDA_1218516147
+NEVE_SKILLS_MaxSkills = PersistencePropertyDefinition(NEVE_SKILLS, 610427180, "Uint32", 160)
+NEVE_SKILLS_SkillPoints = PersistencePropertyDefinition(NEVE_SKILLS, 2271481620, "Uint32", 0)
+
+TAASH_SKILLS = registered_persistence_key(1151124387)  # TaashSkillRDA_1151124387
+TAASH_SKILLS_MaxSkills = PersistencePropertyDefinition(TAASH_SKILLS, 610427180, "Uint32", 160)
+TAASH_SKILLS_SkillPoints = PersistencePropertyDefinition(TAASH_SKILLS, 2271481620, "Uint32", 0)
+
+HARDING_SKILLS = registered_persistence_key(1637377456)  # HardingSkillRDA_1637377456
+HARDING_SKILLS_MaxSkills = PersistencePropertyDefinition(HARDING_SKILLS, 610427180, "Uint32", 160)
+HARDING_SKILLS_SkillPoints = PersistencePropertyDefinition(HARDING_SKILLS, 2271481620, "Uint32", 0)
+
+LUCANIS_SKILLS = registered_persistence_key(1969410800)  # LucanisSkillRDA_1969410800
+LUCANIS_SKILLS_MaxSkills = PersistencePropertyDefinition(LUCANIS_SKILLS, 610427180, "Uint32", 160)
+LUCANIS_SKILLS_SkillPoints = PersistencePropertyDefinition(LUCANIS_SKILLS, 2271481620, "Uint32", 0)
+
+PLAYERS_KILLS = registered_persistence_key(1414565872)  # PlayerSkillRDA_1414565872
+PLAYERS_KILLS_MaxSkills = PersistencePropertyDefinition(PLAYERS_KILLS, 610427180, "Uint32", 160)
+PLAYERS_KILLS_SkillPoints = PersistencePropertyDefinition(PLAYERS_KILLS, 2271481620, "Uint32", 0)
+
+DAVRIN_SKILLS = registered_persistence_key(2127371774)  # DavrinSkillRDA_2127371774
+DAVRIN_SKILLS_MaxSkills = PersistencePropertyDefinition(DAVRIN_SKILLS, 610427180, "Uint32", 160)
+DAVRIN_SKILLS_SkillPoints = PersistencePropertyDefinition(DAVRIN_SKILLS, 2271481620, "Uint32", 0)
+
+EMMRICH_SKILLS = registered_persistence_key(1097328601)  # EmmrichSkillRDA_1097328601
+EMMRICH_SKILLS_MaxSkills = PersistencePropertyDefinition(EMMRICH_SKILLS, 610427180, "Uint32", 160)
+EMMRICH_SKILLS_SkillPoints = PersistencePropertyDefinition(EMMRICH_SKILLS, 2271481620, "Uint32", 0)
+
+VARRIC_SKILLS = registered_persistence_key(1761904797)  # VarricSkillRDA_1761904797
+VARRIC_SKILLS_MaxSkills = PersistencePropertyDefinition(VARRIC_SKILLS, 610427180, "Uint32", 160)
+VARRIC_SKILLS_SkillPoints = PersistencePropertyDefinition(VARRIC_SKILLS, 2271481620, "Uint32", 0)
+
+# FOLLOWERSKILLCHOICE_RDA_1527920706 = registered_persistence_key(1527920706) # FollowerSkillChoice_RDA_1527920706
+BELLARA_SKILLS = registered_persistence_key(1567044626)  # BellaraSkillRDA_1567044626
+BELLARA_SKILLS_MaxSkills = PersistencePropertyDefinition(BELLARA_SKILLS, 610427180, "Uint32", 160)
+BELLARA_SKILLS_SkillPoints = PersistencePropertyDefinition(BELLARA_SKILLS, 2271481620, "Uint32", 0)
+
 # from data files:
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
