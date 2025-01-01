@@ -207,6 +207,8 @@ def show_key_value_options_editor(
     if current_item is None:
         current_item = default_option_index
 
+    # https://github.com/ocornut/imgui/issues/623
+    imgui.set_next_item_width(-1)
     changed, current_item = show_searchable_combo_box(f"##{key}", option_names, current_item)
     if changed:
         obj[key] = option_values[current_item]
