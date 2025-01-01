@@ -19,7 +19,6 @@
 
 from __future__ import absolute_import
 
-import json
 import os.path
 import sys
 import typing  # noqa: F401
@@ -27,14 +26,8 @@ from uuid import UUID, uuid1
 
 from imgui_bundle import glfw_utils, imgui, immapp
 
-from bw_save_game import (
-    __version__,
-    dumps,
-    loads,
-    read_save_from_reader,
-    write_save_to_writer,
-)
-from bw_save_game.db_object import Long, from_raw_dict, to_native, to_raw_dict
+from bw_save_game import __version__
+from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
     PersistencePropertyDefinition,
     get_or_create_persisted_value,
@@ -114,25 +107,21 @@ class State(object):
     def load(self, filename: str):
         try:
             with open(filename, "rb") as f:
-                m, d = read_save_from_reader(f)
-            m = loads(m)
-            d = loads(d)
+                new_save_game = VeilguardSaveGame.from_file(f)
         except Exception as e:
             show_error(f"Cannot load {filename}: {repr(e)}")
             return False
 
         self.active_filename = filename
-        self.save_game = VeilguardSaveGame(m, d)
+        self.save_game = new_save_game
         return True
 
     def save(self, filename: str):
         if not os.path.splitext(filename)[1]:
             filename += ".csav"
         try:
-            m = dumps(self.save_game.meta)
-            d = dumps(self.save_game.data)
             with open(filename, "wb") as f:
-                write_save_to_writer(f, m, d)
+                self.save_game.to_file(f)
         except Exception as e:
             show_error(f"Cannot save {filename}: {repr(e)}")
             return
@@ -141,31 +130,20 @@ class State(object):
     def import_json(self, filename: str):
         try:
             with open(filename, "r", encoding="utf-8") as f:
-                doc = json.load(f, object_hook=from_raw_dict)
+                new_save_game = VeilguardSaveGame.from_json(f)
         except Exception as e:
             show_error(f"Cannot load {filename}: {repr(e)}")
             return
 
-        try:
-            m = doc["meta"]
-            d = doc["data"]
-        except KeyError as e:
-            show_error(f"{filename} doesn't have the correct JSON structure.\n{e} is missing.")
-            return
-
         self.active_filename = None
-        self.save_game = VeilguardSaveGame(m, d)
+        self.save_game = new_save_game
 
     def export_json(self, filename: str):
         if not os.path.splitext(filename)[1]:
             filename += ".json"
         try:
-            root = dict(
-                meta=self.save_game.meta, data=self.save_game.data, exporter=dict(version=__version__, format=1)
-            )
             with open(filename, "w", encoding="utf-8") as f:
-                # TODO: do we want sort keys on?
-                json.dump(root, f, ensure_ascii=False, indent=2, default=to_raw_dict)
+                self.save_game.to_json(f)
         except Exception as e:
             show_error(f"Cannot save {filename}: {repr(e)}")
             return

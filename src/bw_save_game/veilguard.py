@@ -23,7 +23,14 @@ from uuid import UUID
 
 from importlib_resources import files
 
-from bw_save_game.db_object import Long, to_native
+from bw_save_game import (
+    __version__,
+    dumps,
+    loads,
+    read_save_from_reader,
+    write_save_to_writer,
+)
+from bw_save_game.db_object import Long, from_raw_dict, to_native, to_raw_dict
 from bw_save_game.persistence import (
     PersistenceKey,
     PersistencePropertyDefinition,
@@ -468,6 +475,31 @@ class VeilguardSaveGame(object):
         self._persistence_key_to_instance = {}  # type: typing.Dict[PersistenceKey, dict]
 
         self.refresh_derived_data()
+
+    @staticmethod
+    def from_file(fp):
+        m, d = read_save_from_reader(fp)
+        m = loads(m)
+        d = loads(d)
+        return VeilguardSaveGame(m, d)
+
+    def to_file(self, fp):
+        m = dumps(self.meta)
+        d = dumps(self.data)
+        write_save_to_writer(fp, m, d)
+
+    @staticmethod
+    def from_json(fp):
+        root = json.load(fp, object_hook=from_raw_dict)
+
+        m = root["meta"]
+        d = root["data"]
+
+        return VeilguardSaveGame(m, d)
+
+    def to_json(self, fp):
+        root = dict(meta=self.meta, data=self.data, exporter=dict(version=__version__, format=1))
+        json.dump(root, fp, ensure_ascii=False, indent=2, default=to_raw_dict)
 
     def get_client_rpg_extents(self, loadpass=0) -> dict:
         for c in self.data["client"]["contributors"]:
