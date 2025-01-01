@@ -275,8 +275,11 @@ PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
 PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
 PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
 
+CARETAKERPROGRESSION = registered_persistence_key(1570166263)  # CaretakerProgression_RDA_1570166263
+CARETAKERPROGRESSION_XP = PersistencePropertyDefinition(CARETAKERPROGRESSION, 3442105829, "Int32", 0)
+
 # Romance properties
-ROMANCE_NEVE = registered_persistence_key(2022350065)  # ROMANCE_NEVE
+ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
 ROMANCE_NEVE_Rook_Can_Flirt_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 1309495461, "Boolean", True)
 ROMANCE_NEVE_Neve_Romance_Cut_Off = PersistencePropertyDefinition(ROMANCE_NEVE, 1711736383, "Boolean", False)
 ROMANCE_NEVE_Neve_Romance_TestingWaters_Complete = PersistencePropertyDefinition(
@@ -297,7 +300,7 @@ ROMANCE_NEVE_PROPERTIES = {
     "Rook backs Neve": ROMANCE_NEVE_Rook_Backs_Neve,
 }
 
-ROMANCE_DAVRIN = registered_persistence_key(1805940062)  # ROMANCE_DAVRIN
+ROMANCE_DAVRIN = registered_persistence_key(1805940062)  # Davrin_00_Romance_1805940062
 ROMANCE_DAVRIN_Afterglow_Life_of_Adventure_choice_taken = PersistencePropertyDefinition(
     ROMANCE_DAVRIN, 571409871, "Boolean", False
 )
@@ -330,7 +333,7 @@ ROMANCE_DAVRIN_PROPERTIES = {
     "Testing waters romantic?": ROMANCE_DAVRIN_Davrin_TestingWaters_Romantic,
 }
 
-ROMANCE_BELLARA = registered_persistence_key(1628101232)  # ROMANCE_BELLARA
+ROMANCE_BELLARA = registered_persistence_key(1628101232)  # Bellara_00_Romance_1628101232
 ROMANCE_BELLARA_Bellara_TW_SaidYes = PersistencePropertyDefinition(ROMANCE_BELLARA, 2044255856, "Boolean", False)
 ROMANCE_BELLARA_Bellara_AfterGlow_Complete = PersistencePropertyDefinition(
     ROMANCE_BELLARA, 2934582687, "Boolean", False
@@ -349,7 +352,7 @@ ROMANCE_BELLARA_PROPERTIES = {
     "Cut Off?": ROMANCE_BELLARA_Bellara_Romance_Cut_Off,
 }
 
-ROMANCE_TAASH = registered_persistence_key(1100432818)  # ROMANCE_TAASH
+ROMANCE_TAASH = registered_persistence_key(1100432818)  # Taash_00_Romance_1100432818
 ROMANCE_TAASH_Taash_Dragon_Noises = PersistencePropertyDefinition(ROMANCE_TAASH, 422033019, "Boolean", False)
 ROMANCE_TAASH_Taash_talk_Feels = PersistencePropertyDefinition(ROMANCE_TAASH, 815699466, "Boolean", False)
 ROMANCE_TAASH_Taash_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_TAASH, 1540447246, "Boolean", False)
@@ -374,7 +377,7 @@ ROMANCE_TAASH_PROPERTIES = {
     "Postreturn: Affable?": ROMANCE_TAASH_postreturn_affable,
 }
 
-ROMANCE_EMMRICH = registered_persistence_key(1377196124)  # ROMANCE_EMMRICH
+ROMANCE_EMMRICH = registered_persistence_key(1377196124)  # Emmrich_00_Romance_1377196124
 ROMANCE_EMMRICH_Emmrich_Romance_Exclusive = PersistencePropertyDefinition(ROMANCE_EMMRICH, 104776446, "Boolean", False)
 ROMANCE_EMMRICH_Rook_necromancy_secretly_intrigued = PersistencePropertyDefinition(
     ROMANCE_EMMRICH, 193508850, "Boolean", False

@@ -47,6 +47,7 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    CARETAKERPROGRESSION_XP,
     CHARACTER_GENERATOR_FACTION,
     CHARACTER_GENERATOR_FACTION_LABELS,
     CHARACTER_GENERATOR_FACTION_VALUES,
@@ -616,6 +617,8 @@ def show_editor_main(state: State):
                 PAST_DA_INQUISITOR_ROMANCE_VALUES,
                 PAST_DA_INQUISITOR_ROMANCE_LABELS,
             )
+        if imgui.collapsing_header("Caretaker", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+            show_persisted_value_editor(state, "Caretaker XP", CARETAKERPROGRESSION_XP)
     imgui.end_child()
 
     imgui.columns(1)
