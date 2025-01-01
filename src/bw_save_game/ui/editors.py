@@ -19,9 +19,9 @@
 import ctypes
 import json
 import typing
-from uuid import UUID
+from uuid import UUID, uuid1
 
-from imgui_bundle import imgui
+from imgui_bundle import icons_fontawesome, imgui
 
 from bw_save_game.db_object import Double, Long, from_raw_dict, to_native, to_raw_dict
 from bw_save_game.db_object_codec import (
@@ -121,32 +121,39 @@ def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
     if value is None:
         value = obj[key]
 
-    # https://github.com/ocornut/imgui/issues/623
-    imgui.push_item_width(-1)
-
     supported = False
     if isinstance(value, bool):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.set_next_item_width(-1)
         changed, new_value = imgui.checkbox(f"##{key}", value)
         if changed:
             obj[key] = new_value
         supported = True
 
     if not supported:
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.set_next_item_width(-1)
         supported, changed = show_numeric_value_editor(obj, key, value)
 
     if not supported and isinstance(value, str):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.set_next_item_width(-1)
         changed, new_value = imgui.input_text(f"##{key}", value)
         if changed:
             obj[key] = new_value
         supported = True
 
     if not supported and isinstance(value, UUID):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.set_next_item_width(-1 - 30)
         changed, new_value = show_uuid_editor(f"##{key}", value)
+        imgui.same_line()
+        if imgui.button(icons_fontawesome.ICON_FA_SYNC):
+            changed = True
+            new_value = uuid1()
         if changed:
             obj[key] = new_value
         supported = True
-
-    imgui.pop_item_width()
 
     if not supported:
         raise TypeError(f"Unsupported type {type(value)}")
