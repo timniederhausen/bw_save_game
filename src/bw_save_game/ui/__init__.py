@@ -86,6 +86,8 @@ from bw_save_game.veilguard import (
 _ITEM_ID_TO_INDEX = {item["id"]: i for i, item in enumerate(ALL_ITEMS)}
 _ITEM_KEYS = [item["key"] for item in ALL_ITEMS]
 
+WINDOW_TITLE = "Dragon Age: The Veilguard save editor - By Tim & mons"
+
 
 class State(object):
     def __init__(self):
@@ -148,6 +150,26 @@ class State(object):
             show_error(f"Cannot save {filename}: {repr(e)}")
             return
 
+    def close(self):
+        self.active_filename = None
+        self.save_game = None
+
+
+def set_window_title(title: str):
+    glfw_win = glfw_utils.glfw_window_hello_imgui()
+    glfw_utils.glfw.set_window_title(glfw_win, title)
+
+
+DRAGON_AGE_CSAV_WILDCARD = "Dragon Age: Veilguard save file (*.csav)|*.csav"
+DRAGON_AGE_JSON_WILDCARD = "JSON save document (*.json)|*.json"
+
+
+def ask_for_open(state: State):
+    path = ask_for_file_to_open("Open Save Game", DRAGON_AGE_CSAV_WILDCARD, state.default_save_path)
+    if path:
+        if state.load(path):
+            set_window_title(path)
+
 
 def show_app_about(state: State):
     if imgui.begin_popup("About BWSaveGameEditor", imgui.WindowFlags_.always_auto_resize):
@@ -158,16 +180,6 @@ def show_app_about(state: State):
         imgui.separator()
         imgui.text("Using ImGui v" + imgui.get_version())
         imgui.end_popup()
-
-
-def ask_for_open(state: State):
-    path = ask_for_file_to_open(
-        "Open Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav", state.default_save_path
-    )
-    if path:
-        if state.load(path):
-            glfw_win = glfw_utils.glfw_window_hello_imgui()
-            glfw_utils.glfw.set_window_title(glfw_win, path)
 
 
 def show_main_menu_bar(state: State):
@@ -181,7 +193,7 @@ def show_main_menu_bar(state: State):
 
         clicked, selected = imgui.menu_item(label="Import JSON", shortcut="", p_selected=False)
         if clicked:
-            path = ask_for_file_to_open("Open JSON Save Game", "JSON document (*.json)|*.json")
+            path = ask_for_file_to_open("Open JSON Save Game", DRAGON_AGE_JSON_WILDCARD)
             if path:
                 state.import_json(path)
 
@@ -195,17 +207,23 @@ def show_main_menu_bar(state: State):
             label="Save As...", shortcut="", p_selected=False, enabled=state.has_content()
         )
         if clicked:
-            path = ask_for_file_to_save("Write Save Game", "Dragon Age: Veilguard save files (*.csav)|*.csav")
+            path = ask_for_file_to_save("Write Save Game", DRAGON_AGE_CSAV_WILDCARD)
             if path:
                 state.save(path)
+                set_window_title(path)
 
         clicked, selected = imgui.menu_item(
             label="Export JSON", shortcut="", p_selected=False, enabled=state.has_content()
         )
         if clicked:
-            path = ask_for_file_to_save("Export JSON save game", "JSON document (*.json)|*.json")
+            path = ask_for_file_to_save("Export JSON save game", DRAGON_AGE_JSON_WILDCARD)
             if path:
                 state.export_json(path)
+
+        clicked, selected = imgui.menu_item("Close", "", False, state.has_content())
+        if clicked:
+            state.close()
+            set_window_title(WINDOW_TITLE)
 
         clicked, selected = imgui.menu_item("Quit", "Cmd+Q", False, True)
         if clicked:
@@ -703,7 +721,7 @@ def show_editor_content(state: State):
 
 def show_empty_warning(state: State):
     imgui.push_style_var(imgui.StyleVar_.selectable_text_align, (0.5, 0.5))
-    if imgui.selectable("No save file loaded!", False)[0]:
+    if imgui.selectable("No save file loaded!\nClick here or use the menu to load or import files", False)[0]:
         ask_for_open(state)
     imgui.pop_style_var()
 
@@ -733,9 +751,6 @@ def show_ui(state: State):
     show_editor_window(state)
 
     clear_unused_retained_data()
-
-
-WINDOW_TITLE = "Dragon Age: The Veilguard save editor - By Tim & mons"
 
 
 def main():
