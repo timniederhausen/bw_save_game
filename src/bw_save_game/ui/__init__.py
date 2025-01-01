@@ -536,9 +536,10 @@ def show_currency_editor(state: State):
 def show_editor_main(state: State):
     imgui.columns(2)
 
-    if imgui.begin_child("##first column"):
+    if imgui.begin_child("##first column", child_flags=imgui.ChildFlags_.auto_resize_y):
         if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
             show_raw_key_value_editor(state.save_game.meta, "description", "Description")
+            show_raw_key_value_editor(state.save_game.meta, "uid", "Unique Identifier")
 
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -593,7 +594,7 @@ def show_editor_main(state: State):
 
     imgui.next_column()
 
-    if imgui.begin_child("##second column"):
+    if imgui.begin_child("##second column", child_flags=imgui.ChildFlags_.auto_resize_y):
         if imgui.collapsing_header(
             "Difficulty", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
