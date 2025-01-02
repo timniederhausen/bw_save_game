@@ -84,6 +84,7 @@ from bw_save_game.veilguard import (
     LUCANIS_SKILLS_SkillPoints,
     NEVE_SKILLS_SkillPoints,
     PLAYERS_KILLS_SkillPoints,
+    PROGRESSION_CurrentLevel,
     TAASH_SKILLS_SkillPoints,
     VeilguardSaveGame,
     construct_item_attachment,
@@ -584,6 +585,7 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_VALUES,
                 CLASS_KEYBINDING_LABELS,
             )
+            show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
             show_persisted_value_editor(state, "Skill points:", PLAYERS_KILLS_SkillPoints)
 
         if imgui.collapsing_header(

@@ -275,6 +275,31 @@ PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
 PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
 PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
 
+PROGRESSION = registered_persistence_key(1576630552)  # Progression_RDA_1576630552
+PROGRESSION_DEPRECATED_Dagger_CanUseChests = PersistencePropertyDefinition(PROGRESSION, 21147654, "Boolean", False)
+PROGRESSION_DEPRECATED_Dagger_CanUseFHAltars = PersistencePropertyDefinition(PROGRESSION, 530863613, "Boolean", False)
+PROGRESSION_BackgroundTraitGranted = PersistencePropertyDefinition(PROGRESSION, 589535686, "Boolean", False)
+PROGRESSION_Skills_StartedBellara = PersistencePropertyDefinition(PROGRESSION, 643085077, "Boolean", False)
+PROGRESSION_PotionLoadCount = PersistencePropertyDefinition(PROGRESSION, 863441793, "Int32", 3)
+PROGRESSION_DivinerAcquired = PersistencePropertyDefinition(PROGRESSION, 1222498433, "Boolean", False)
+PROGRESSION_InventoryTutorialReached = PersistencePropertyDefinition(PROGRESSION, 1291717646, "Boolean", False)
+PROGRESSION_Specialization1 = PersistencePropertyDefinition(PROGRESSION, 1660426999, "Boolean", False)
+PROGRESSION_CurrentLevel = PersistencePropertyDefinition(PROGRESSION, 2062776528, "Int32", 1)
+PROGRESSION_FollowerLevelUpTutorialReached = PersistencePropertyDefinition(PROGRESSION, 2097167731, "Boolean", False)
+PROGRESSION_FadeSmithUnlocked = PersistencePropertyDefinition(PROGRESSION, 2198525296, "Boolean", False)
+PROGRESSION_CanCheckEntitlements = PersistencePropertyDefinition(PROGRESSION, 2355626220, "Boolean", False)
+PROGRESSION_DEPRECATED_Dagger_CanUseEVAltars = PersistencePropertyDefinition(PROGRESSION, 2751582104, "Boolean", False)
+PROGRESSION_DEPRECATED_DaggerRankAvailable = PersistencePropertyDefinition(PROGRESSION, 2829214563, "Int32", 0)
+PROGRESSION_Specialization3 = PersistencePropertyDefinition(PROGRESSION, 2916814191, "Boolean", False)
+PROGRESSION_HealthUpgradesAcquired = PersistencePropertyDefinition(PROGRESSION, 3176868873, "Int32", 0)
+PROGRESSION_Specialization2 = PersistencePropertyDefinition(PROGRESSION, 3225557027, "Boolean", False)
+PROGRESSION_UltCanBeUnlocked = PersistencePropertyDefinition(PROGRESSION, 3628985747, "Boolean", False)
+PROGRESSION_DaggerState = PersistencePropertyDefinition(PROGRESSION, 3657647123, "Int32", 0)
+PROGRESSION_SkillsLevelUpReached = PersistencePropertyDefinition(PROGRESSION, 4033230091, "Boolean", False)
+PROGRESSION_DaggerRank = PersistencePropertyDefinition(PROGRESSION, 4125407861, "Int32", 0)
+PROGRESSION_DEPRECATED_Dagger_CanUseGates = PersistencePropertyDefinition(PROGRESSION, 4228552677, "Boolean", False)
+PROGRESSION_CanDropMaterials = PersistencePropertyDefinition(PROGRESSION, 4282910745, "Boolean", False)
+
 CARETAKERPROGRESSION = registered_persistence_key(1570166263)  # CaretakerProgression_RDA_1570166263
 CARETAKERPROGRESSION_XP = PersistencePropertyDefinition(CARETAKERPROGRESSION, 3442105829, "Int32", 0)
 
