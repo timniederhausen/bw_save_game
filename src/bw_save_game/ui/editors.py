@@ -151,6 +151,9 @@ def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
         if imgui.button(icons_fontawesome.ICON_FA_SYNC):
             changed = True
             new_value = uuid1()
+        if imgui.begin_item_tooltip():
+            imgui.text("Re-generate GUID")
+            imgui.end_tooltip()
         if changed:
             obj[key] = new_value
         supported = True
