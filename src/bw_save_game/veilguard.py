@@ -147,43 +147,78 @@ class LootRarity(IntEnum):
     Rarity_Max = 7
 
 
-KNOWN_CHARACTER_ARCHETYPES = {
-    # Globals/CharacterArchetypes/...
-    2325381541: "Watcher",
-    267923513: "Warrior",
-    1486725849: "Warden_Technique",
-    2257715964: "Warden_Strategy",
-    28757921: "Warden_Power",
-    4003900063: "Warden_Endurance",
-    294481: "Warden_Cine",
-    3998641339: "Warden_Challenger",
-    3723887171: "Warden_Art",
-    2903517207: "Warden_4",
-    1837455073: "Shadow_Evoker",
-    1902731980: "Rogue",
-    3822852109: "Ranger_03",
-    1480587723: "Ranger_02",
-    3517341798: "Ranger_01",
-    2930410500: "Player_RGZtest",
-    3509394015: "NullPlayer",
-    240491018: "Mage",
-    624386075: "Fortune",
-    3417468734: "Follower_Varric",
-    4131396826: "Follower_Taash",
-    1887180846: "Follower_Spite",
-    394763556: "Follower_Solas",
-    1928218134: "Follower_Neve",
-    2143795149: "Follower_Lucanis",
-    1326121707: "Follower_Harding",
-    3734548853: "Follower_Emmrich",
-    2602884150: "Follower_Davrin",
-    116806840: "Follower_Bellara",
-    2714609019: "Desperado",
-    291152393: "Dalish",
-    2366407241: "Crow",
+class CharacterArchetype(IntEnum):
+    Fortune = 624386075
+    Follower_Solas = 394763556
+    Follower_Davrin = 2602884150
+    Follower_Varric = 3417468734
+    Rogue = 1902731980
+    Warrior = 267923513
+    Follower_Lucanis = 2143795149
+    Desperado = 2714609019
+    Follower_Taash = 4131396826
+    Warden_Cine = 294481
+    Ranger_03 = 3822852109
+    Ranger_02 = 1480587723
+    Follower_Bellara = 116806840
+    Dalish = 291152393
+    Warden_Strategy = 2257715964
+    Mage = 240491018
+    Warden_4 = 2903517207
+    Follower_Neve = 1928218134
+    Warden_Challenger = 3998641339
+    Crow = 2366407241
+    Warden_Endurance = 4003900063
+    Shadow_Evoker = 1837455073
+    Ranger_01 = 3517341798
+    Watcher = 2325381541
+    Warden_Art = 3723887171
+    Follower_Harding = 1326121707
+    NullPlayer = 3509394015
+    Player_RGZtest = 2930410500
+    Warden_Power = 28757921
+    Warden_Technique = 1486725849
+    Follower_Spite = 1887180846
+    Follower_Emmrich = 3734548853
+
+
+VISIBLE_CHARACTER_ARCHETYPES = {
+    624386075,
+    394763556,
+    2602884150,
+    3417468734,
+    1902731980,
+    267923513,
+    2143795149,
+    2714609019,
+    4131396826,
+    294481,
+    3822852109,
+    1480587723,
+    116806840,
+    291152393,
+    2257715964,
+    240491018,
+    2903517207,
+    1928218134,
+    3998641339,
+    2366407241,
+    4003900063,
+    1837455073,
+    3517341798,
+    2325381541,
+    3723887171,
+    1326121707,
+    3509394015,
+    2930410500,
+    28757921,
+    1486725849,
+    1887180846,
+    3734548853,
 }
-KNOWN_CHARACTER_ARCHETYPE_VALUES = list(KNOWN_CHARACTER_ARCHETYPES.keys())
-KNOWN_CHARACTER_ARCHETYPE_LABELS = list(KNOWN_CHARACTER_ARCHETYPES.values())
+
+KNOWN_CHARACTER_ARCHETYPE_VALUES = [e.value for e in CharacterArchetype]
+KNOWN_CHARACTER_ARCHETYPE_LABELS = [e.name for e in CharacterArchetype]
 
 ITEM_ATTACHMENT_SLOT_NAMES = [e.name for e in ItemAttachmentSlot]
 ITEM_ATTACHMENT_SLOT_VALUES = [e.value for e in ItemAttachmentSlot]
@@ -502,9 +537,9 @@ LUCANIS_SKILLS = registered_persistence_key(1969410800)  # LucanisSkillRDA_19694
 LUCANIS_SKILLS_MaxSkills = PersistencePropertyDefinition(LUCANIS_SKILLS, 610427180, "Uint32", 160)
 LUCANIS_SKILLS_SkillPoints = PersistencePropertyDefinition(LUCANIS_SKILLS, 2271481620, "Uint32", 0)
 
-PLAYERS_KILLS = registered_persistence_key(1414565872)  # PlayerSkillRDA_1414565872
-PLAYERS_KILLS_MaxSkills = PersistencePropertyDefinition(PLAYERS_KILLS, 610427180, "Uint32", 160)
-PLAYERS_KILLS_SkillPoints = PersistencePropertyDefinition(PLAYERS_KILLS, 2271481620, "Uint32", 0)
+PLAYER_SKILLS = registered_persistence_key(1414565872)  # PlayerSkillRDA_1414565872
+PLAYER_SKILLS_MaxSkills = PersistencePropertyDefinition(PLAYER_SKILLS, 610427180, "Uint32", 160)
+PLAYER_SKILLS_SkillPoints = PersistencePropertyDefinition(PLAYER_SKILLS, 2271481620, "Uint32", 0)
 
 DAVRIN_SKILLS = registered_persistence_key(2127371774)  # DavrinSkillRDA_2127371774
 DAVRIN_SKILLS_MaxSkills = PersistencePropertyDefinition(DAVRIN_SKILLS, 610427180, "Uint32", 160)
@@ -523,14 +558,30 @@ BELLARA_SKILLS = registered_persistence_key(1567044626)  # BellaraSkillRDA_15670
 BELLARA_SKILLS_MaxSkills = PersistencePropertyDefinition(BELLARA_SKILLS, 610427180, "Uint32", 160)
 BELLARA_SKILLS_SkillPoints = PersistencePropertyDefinition(BELLARA_SKILLS, 2271481620, "Uint32", 0)
 
+ARCHETYPE_TO_SKILL_DATA: typing.Dict[CharacterArchetype, typing.Tuple[int, PersistenceKey]] = {
+    CharacterArchetype.Warrior: (3890969023, PLAYER_SKILLS),
+    CharacterArchetype.Rogue: (811552702, PLAYER_SKILLS),
+    CharacterArchetype.Mage: (493362280, PLAYER_SKILLS),
+    CharacterArchetype.Follower_Neve: (1888629511, NEVE_SKILLS),
+    CharacterArchetype.Follower_Davrin: (2132560412, DAVRIN_SKILLS),
+    CharacterArchetype.Follower_Taash: (84671452, TAASH_SKILLS),
+    CharacterArchetype.Follower_Bellara: (3116575990, BELLARA_SKILLS),
+    CharacterArchetype.Follower_Emmrich: (802714501, EMMRICH_SKILLS),
+    CharacterArchetype.Follower_Harding: (3622914845, HARDING_SKILLS),
+    CharacterArchetype.Follower_Lucanis: (2545231076, LUCANIS_SKILLS),
+}
+
 # from data files:
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
+ALL_SKILL_GRAPHS = json.loads(files("bw_save_game.data").joinpath("veilguard", "skill_graphs.json").read_text("utf-8"))
 
 # post-processing for data files:
 for item in ALL_ITEMS:
     item["key"] = f"{item['name' or 'NO NAME']} ({item['id']})"
     item["guid"] = UUID(item["guid"])
+
+SKILL_GRAPHS = {g["id"]: g for g in ALL_SKILL_GRAPHS}
 
 
 class VeilguardSaveGame(object):
@@ -685,6 +736,6 @@ def item_attachment_to_string(item: dict):
     typ, parent, attach_slot = deconstruct_item_attachment(item)
     if parent:
         if typ == ItemAttachmentType.Character:
-            parent = KNOWN_CHARACTER_ARCHETYPES[parent]
+            parent = CharacterArchetype(parent).name
         return f"{typ.name} {parent}: {attach_slot}"
     return "Not Attached"

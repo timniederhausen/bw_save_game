@@ -29,6 +29,7 @@ from imgui_bundle import glfw_utils, imgui, immapp
 from bw_save_game import __version__
 from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
+    PersistenceKey,
     PersistencePropertyDefinition,
     get_or_create_persisted_value,
 )
@@ -47,6 +48,7 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    ARCHETYPE_TO_SKILL_DATA,
     CARETAKERPROGRESSION_XP,
     CHARACTER_GENERATOR_FACTION,
     CHARACTER_GENERATOR_FACTION_LABELS,
@@ -76,16 +78,11 @@ from bw_save_game.veilguard import (
     ROMANCE_LUCANIS_PROPERTIES,
     ROMANCE_NEVE_PROPERTIES,
     ROMANCE_TAASH_PROPERTIES,
-    BELLARA_SKILLS_SkillPoints,
-    DAVRIN_SKILLS_SkillPoints,
-    EMMRICH_SKILLS_SkillPoints,
-    HARDING_SKILLS_SkillPoints,
+    SKILL_GRAPHS,
+    CharacterArchetype,
     ItemAttachmentType,
-    LUCANIS_SKILLS_SkillPoints,
-    NEVE_SKILLS_SkillPoints,
-    PLAYERS_KILLS_SkillPoints,
+    PLAYER_SKILLS_SkillPoints,
     PROGRESSION_CurrentLevel,
-    TAASH_SKILLS_SkillPoints,
     VeilguardSaveGame,
     construct_item_attachment,
     deconstruct_item_attachment,
@@ -282,13 +279,15 @@ def show_item_id_editor(obj):
     # show_simple_value_editor(obj, "itemDataId")
 
 
-def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
+def show_persisted_value_editor(state: State, label: typing.Optional[str], prop: PersistencePropertyDefinition):
     def_instance = state.save_game.get_persistence_instance(prop.key)
     if not def_instance:
         return False
 
     obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
-    return show_raw_key_value_editor(obj, key, label)
+    if label:
+        return show_raw_key_value_editor(obj, key, label)
+    return show_raw_value_editor(obj, key, obj[key])
 
 
 def show_persisted_value_options_editor(
@@ -586,7 +585,7 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_LABELS,
             )
             show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
-            show_persisted_value_editor(state, "Skill points:", PLAYERS_KILLS_SkillPoints)
+            show_persisted_value_editor(state, "Skill points:", PLAYER_SKILLS_SkillPoints)
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -666,9 +665,34 @@ def show_editor_appearances(state: State):
         imgui.pop_item_width()
 
 
-def show_editor_companion_skills(state: State, skill_points: PersistencePropertyDefinition):
+def show_editor_skills_list(state: State, graph: dict, persistence_key: PersistenceKey):
+    if imgui.begin_table("Skills", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+        imgui.table_setup_column("Skill Name")
+        imgui.table_setup_column("Unlocked?")
+        imgui.table_headers_row()
+        for skill in graph["skills"]:
+            unlock_property = PersistencePropertyDefinition(
+                persistence_key, skill["unlock_property_id"], "Boolean", False
+            )
+            imgui.push_id(skill["index"])
+            imgui.table_next_row()
+            imgui.table_next_column()
+            imgui.text(skill["name"])
+            imgui.table_next_column()
+            show_persisted_value_editor(state, None, unlock_property)
+            imgui.pop_id()
+        imgui.end_table()
+
+
+def show_editor_companion_skills(state: State, archetype: CharacterArchetype):
     if imgui.collapsing_header("Skills", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        graph_id, persistence_key = ARCHETYPE_TO_SKILL_DATA[archetype]
+
+        # see BELLARA_SKILLS_SkillPoints, ...
+        skill_points = PersistencePropertyDefinition(persistence_key, 2271481620, "Uint32", 0)
+
         show_persisted_value_editor(state, "Skill points:", skill_points)
+        show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
 
 
 def show_editor_companion_romance(state: State, romance_properties: dict):
@@ -682,38 +706,38 @@ def show_editor_companions(state: State):
         return
 
     if imgui.begin_tab_item("Neve")[0]:
-        show_editor_companion_skills(state, NEVE_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_NEVE_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Neve)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Davrin")[0]:
-        show_editor_companion_skills(state, DAVRIN_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_DAVRIN_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Davrin)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Bellara")[0]:
-        show_editor_companion_skills(state, BELLARA_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_BELLARA_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Bellara)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Taash")[0]:
-        show_editor_companion_skills(state, TAASH_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_TAASH_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Taash)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Emmrich")[0]:
-        show_editor_companion_skills(state, EMMRICH_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Emmrich)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Harding")[0]:
-        show_editor_companion_skills(state, HARDING_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_HARDING_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Harding)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Lucanis")[0]:
-        show_editor_companion_skills(state, LUCANIS_SKILLS_SkillPoints)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
+        show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
         imgui.end_tab_item()
 
     imgui.end_tab_bar()

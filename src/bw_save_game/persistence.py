@@ -166,7 +166,7 @@ def registered_persistence_key(definition_id: int) -> RegisteredPersistenceKey:
 
 @dataclass(frozen=True)
 class PersistencePropertyDefinition:
-    key: PersistenceKeyWithUniqueId
+    key: PersistenceKey
     id: int  # uint32
     type: str
     default: object
