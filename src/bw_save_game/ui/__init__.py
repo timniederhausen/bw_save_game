@@ -63,7 +63,6 @@ from bw_save_game.veilguard import (
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
     DIFFICULTY_EXPLORATION_PRESET_VALUES,
     ITEM_ATTACHMENT_SLOT_NAMES,
-    ITEM_ATTACHMENT_SLOT_VALUES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
@@ -372,7 +371,7 @@ def show_item_attachment_editor(item: dict):
         imgui.text("Attach slot:")
         changed, new_item = imgui.list_box("##AttachSlot", current_item, ITEM_ATTACHMENT_SLOT_NAMES)
         if changed:
-            construct_item_attachment(item, typ, parent, ITEM_ATTACHMENT_SLOT_VALUES[new_item])
+            construct_item_attachment(item, typ, parent, ITEM_ATTACHMENT_SLOT_NAMES[new_item])
     except ValueError:
         imgui.text_colored((1.0, 0.0, 0.0, 1.0), f"Unknown attach slot {attach_slot}")
 
