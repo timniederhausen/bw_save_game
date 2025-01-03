@@ -173,19 +173,19 @@ def show_raw_key_value_editor(obj, key, label=None):
         if not is_open:
             return
 
+        imgui.push_id(key)
         imgui.indent()
         if isinstance(value, dict):
             for sub_key in value:
                 show_raw_key_value_editor(value, sub_key)
-                imgui.pop_id()
         if isinstance(value, list):
             for sub_key in range(len(value)):
                 show_raw_key_value_editor(value, sub_key)
         imgui.unindent()
+        imgui.pop_id()
         return
 
     imgui.push_id(key)
-
     imgui.columns(2)
     imgui.text(label)
     imgui.next_column()
@@ -193,7 +193,6 @@ def show_raw_key_value_editor(obj, key, label=None):
     changed = show_raw_value_editor(obj, key, value)
 
     imgui.columns(1)
-
     imgui.pop_id()
     return changed
 
@@ -222,7 +221,7 @@ def show_key_value_options_editor(
 
     # https://github.com/ocornut/imgui/issues/623
     imgui.set_next_item_width(-1)
-    changed, current_item = show_searchable_combo_box("combo", option_names, current_item)
+    changed, current_item = show_searchable_combo_box("##combo", option_names, current_item)
     if changed:
         obj[key] = option_values[current_item]
 
