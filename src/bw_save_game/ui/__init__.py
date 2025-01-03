@@ -92,7 +92,7 @@ from bw_save_game.veilguard import (
 _ITEM_ID_TO_INDEX = {item["id"]: i for i, item in enumerate(ALL_ITEMS)}
 _ITEM_KEYS = [item["key"] for item in ALL_ITEMS]
 
-WINDOW_TITLE = "Dragon Age: The Veilguard save editor - By Tim & mons"
+WINDOW_TITLE = "DA:V Save Editor - By Tim & mons"
 
 
 class State(object):
@@ -174,7 +174,7 @@ def ask_for_open(state: State):
     path = ask_for_file_to_open("Open Save Game", DRAGON_AGE_CSAV_WILDCARD, state.default_save_path)
     if path:
         if state.load(path):
-            set_window_title(path)
+            set_window_title(f"{WINDOW_TITLE}: {path}")
 
 
 def show_app_about(state: State):
