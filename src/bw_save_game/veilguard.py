@@ -19,7 +19,7 @@
 import json
 import time
 import typing
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 from uuid import UUID
 
 from importlib_resources import files
@@ -147,6 +147,15 @@ class LootRarity(IntEnum):
     Rarity_Legendary = 5
     Rarity_Ancient = 6
     Rarity_Max = 7
+
+
+class CollectibleSetFlag(IntFlag):
+    NoFlags = 0
+    IsCollected = 1 << 1
+    IsDiscovered = 1 << 2
+    IsDisabled = 1 << 3
+    IsViewed = 1 << 4
+    IsSecret = 1 << 5
 
 
 class CharacterArchetype(IntEnum):
@@ -577,6 +586,7 @@ ARCHETYPE_TO_SKILL_DATA: typing.Dict[CharacterArchetype, typing.Tuple[int, Persi
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
 ALL_SKILL_GRAPHS = json.loads(files("bw_save_game.data").joinpath("veilguard", "skill_graphs.json").read_text("utf-8"))
+ALL_COLLECTIBLES = json.loads(files("bw_save_game.data").joinpath("veilguard", "collectibles.json").read_text("utf-8"))
 
 # post-processing for data files:
 for item in ALL_ITEMS:
@@ -584,6 +594,9 @@ for item in ALL_ITEMS:
     item["guid"] = UUID(item["guid"])
 
 SKILL_GRAPHS = {g["id"]: g for g in ALL_SKILL_GRAPHS}
+
+COLLECTIBLES = sorted(ALL_COLLECTIBLES, key=lambda s: s["name"])
+COLLECTIBLE_LABELS = [s["name"] for s in COLLECTIBLES]
 
 
 class VeilguardSaveGame(object):

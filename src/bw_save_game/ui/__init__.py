@@ -32,6 +32,7 @@ from bw_save_game.persistence import (
     PersistenceKey,
     PersistencePropertyDefinition,
     get_or_create_persisted_value,
+    registered_persistence_key,
 )
 from bw_save_game.ui.editors import (
     show_json_editor,
@@ -58,6 +59,8 @@ from bw_save_game.veilguard import (
     CHARACTER_GENERATOR_LINEAGE_VALUES,
     CLASS_KEYBINDING_LABELS,
     CLASS_KEYBINDING_VALUES,
+    COLLECTIBLE_LABELS,
+    COLLECTIBLES,
     DIFFICULTY_COMBAT_PRESET_LABELS,
     DIFFICULTY_COMBAT_PRESET_VALUES,
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
@@ -79,6 +82,7 @@ from bw_save_game.veilguard import (
     ROMANCE_TAASH_PROPERTIES,
     SKILL_GRAPHS,
     CharacterArchetype,
+    CollectibleSetFlag,
     ItemAttachmentType,
     PLAYER_SKILLS_SkillPoints,
     PROGRESSION_CurrentLevel,
@@ -100,6 +104,7 @@ class State(object):
         # UI state
         self.show_app_about = False
         self.add_item_object = None  # type: typing.Optional[dict]
+        self.selected_collectible_set_index = 0
 
         self.default_save_path = os.path.expandvars(
             "%USERPROFILE%/Documents/BioWare/Dragon Age The Veilguard/save games"
@@ -742,6 +747,46 @@ def show_editor_companions(state: State):
     imgui.end_tab_bar()
 
 
+def show_editor_collectibles(state: State):
+    imgui.text_disabled("Collectibles Set:")
+    imgui.same_line()
+    imgui.set_next_item_width(-1)
+    changed, new_index = show_searchable_combo_box(
+        "##CollectiblesSet", COLLECTIBLE_LABELS, state.selected_collectible_set_index
+    )
+    if changed:
+        state.selected_collectible_set_index = new_index
+
+    collectibles_set = COLLECTIBLES[state.selected_collectible_set_index]
+    persistence_key = registered_persistence_key(collectibles_set["definition_id"])
+
+    if not imgui.begin_table("Collectibles", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+        return
+
+    imgui.table_setup_column("Collectible Name")
+    imgui.table_setup_column("Is collected?")
+    imgui.table_headers_row()
+    for collectible in collectibles_set["collectibles"]:
+        flags_property = PersistencePropertyDefinition(persistence_key, collectible["id"], "Uint8", 0)
+
+        flags = state.save_game.get_persistence_property(flags_property) or 0
+
+        # XXX: nanobind only accepts signed values for PushID(int)
+        signed_id = collectible["id"]
+        imgui.push_id(signed_id - (signed_id & (1 << 31)))
+        imgui.table_next_row()
+        imgui.table_next_column()
+        imgui.text(collectible["name"])
+        imgui.table_next_column()
+        changed, new_value = imgui.checkbox("##collected", 0 != (flags & CollectibleSetFlag.IsCollected))
+        if changed:
+            flags = flags | CollectibleSetFlag.IsCollected if new_value else flags & ~CollectibleSetFlag.IsCollected
+            state.save_game.set_persistence_property(flags_property, flags)
+        imgui.pop_id()
+
+    imgui.end_table()
+
+
 def show_editor_content(state: State):
     if not imgui.begin_tab_bar("editors"):
         return
@@ -760,6 +805,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Inventories")[0]:
         show_editor_inventories(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Collectibles")[0]:
+        show_editor_collectibles(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Raw Data")[0]:
