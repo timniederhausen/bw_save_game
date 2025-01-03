@@ -349,6 +349,159 @@ PROGRESSION_CanDropMaterials = PersistencePropertyDefinition(PROGRESSION, 428291
 CARETAKERPROGRESSION = registered_persistence_key(1570166263)  # CaretakerProgression_RDA_1570166263
 CARETAKERPROGRESSION_XP = PersistencePropertyDefinition(CARETAKERPROGRESSION, 3442105829, "Int32", 0)
 
+PROGRESSION_NEVE = registered_persistence_key(1978619566)  # Neve_RDA_1978619566
+PROGRESSION_NEVE__IsHardened = PersistencePropertyDefinition(PROGRESSION_NEVE, 1034336597, "Boolean", False)
+PROGRESSION_NEVE_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_NEVE, 1363998350, "Int32", 0)
+PROGRESSION_NEVE__UnavailableReasonString = PersistencePropertyDefinition(PROGRESSION_NEVE, 1534810185, "Int32", 0)
+PROGRESSION_NEVE_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(PROGRESSION_NEVE, 1801418090, "Boolean", False)
+PROGRESSION_NEVE__Unlocked = PersistencePropertyDefinition(PROGRESSION_NEVE, 2184345643, "Boolean", False)
+PROGRESSION_NEVE__IsHeroic = PersistencePropertyDefinition(PROGRESSION_NEVE, 2245837626, "Boolean", False)
+PROGRESSION_NEVE_Bit = PersistencePropertyDefinition(PROGRESSION_NEVE, 2295053469, "Int32", 0)
+PROGRESSION_NEVE__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_NEVE, 2599909908, "Boolean", False)
+PROGRESSION_NEVE_XP = PersistencePropertyDefinition(PROGRESSION_NEVE, 3442105829, "Int32", 0)
+PROGRESSION_NEVE__State = PersistencePropertyDefinition(PROGRESSION_NEVE, 3518571373, "Int32", 2)
+PROGRESSION_NEVE_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_NEVE, 3799491550, "Int32", 0)
+PROGRESSION_NEVE_Context = PersistencePropertyDefinition(PROGRESSION_NEVE, 3901334258, "Int32", 0)
+PROGRESSION_NEVE__Available = PersistencePropertyDefinition(PROGRESSION_NEVE, 4103292835, "Boolean", True)
+
+PROGRESSION_NEVE_PROPERTIES = {
+    "Relationship XP": PROGRESSION_NEVE_Relationship_XP,
+}
+
+PROGRESSION_LUCANIS = registered_persistence_key(1623302849)  # Lucanis_RDA_1623302849
+PROGRESSION_LUCANIS__IsHardened = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 1034336597, "Boolean", False)
+PROGRESSION_LUCANIS_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 1363998350, "Int32", 0)
+PROGRESSION_LUCANIS__UnavailableReasonString = PersistencePropertyDefinition(
+    PROGRESSION_LUCANIS, 1534810185, "Int32", 0
+)
+PROGRESSION_LUCANIS_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_LUCANIS, 1801418090, "Boolean", False
+)
+PROGRESSION_LUCANIS__Unlocked = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 2184345643, "Boolean", False)
+PROGRESSION_LUCANIS_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 2234541938, "Int32", 0)
+PROGRESSION_LUCANIS__IsHeroic = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 2245837626, "Boolean", False)
+PROGRESSION_LUCANIS_Bit = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 2295053469, "Int32", 0)
+PROGRESSION_LUCANIS__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 2599909908, "Boolean", False)
+PROGRESSION_LUCANIS_XP = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 3442105829, "Int32", 0)
+PROGRESSION_LUCANIS__State = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 3518571373, "Int32", 2)
+PROGRESSION_LUCANIS_Context = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 3901334258, "Int32", 0)
+PROGRESSION_LUCANIS__Available = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 4103292835, "Boolean", True)
+
+PROGRESSION_LUCANIS_PROPERTIES = {
+    "Relationship XP": PROGRESSION_LUCANIS_Relationship_XP,
+}
+
+PROGRESSION_TAASH = registered_persistence_key(1259630094)  # Taash_RDA_1259630094
+PROGRESSION_TAASH__IsHardened = PersistencePropertyDefinition(PROGRESSION_TAASH, 1034336597, "Boolean", False)
+PROGRESSION_TAASH_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_TAASH, 1363998350, "Int32", 0)
+PROGRESSION_TAASH__UnavailableReasonString = PersistencePropertyDefinition(PROGRESSION_TAASH, 1534810185, "Int32", 0)
+PROGRESSION_TAASH_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_TAASH, 1801418090, "Boolean", False
+)
+PROGRESSION_TAASH__Unlocked = PersistencePropertyDefinition(PROGRESSION_TAASH, 2184345643, "Boolean", False)
+PROGRESSION_TAASH__IsHeroic = PersistencePropertyDefinition(PROGRESSION_TAASH, 2245837626, "Boolean", False)
+PROGRESSION_TAASH_Bit = PersistencePropertyDefinition(PROGRESSION_TAASH, 2295053469, "Int32", 0)
+PROGRESSION_TAASH__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_TAASH, 2599909908, "Boolean", False)
+PROGRESSION_TAASH_XP = PersistencePropertyDefinition(PROGRESSION_TAASH, 3442105829, "Int32", 0)
+PROGRESSION_TAASH__State = PersistencePropertyDefinition(PROGRESSION_TAASH, 3518571373, "Int32", 2)
+PROGRESSION_TAASH_Context = PersistencePropertyDefinition(PROGRESSION_TAASH, 3901334258, "Int32", 0)
+PROGRESSION_TAASH_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_TAASH, 3913848809, "Int32", 0)
+PROGRESSION_TAASH__Available = PersistencePropertyDefinition(PROGRESSION_TAASH, 4103292835, "Boolean", True)
+
+PROGRESSION_TAASH_PROPERTIES = {
+    "Relationship XP": PROGRESSION_TAASH_Relationship_XP,
+}
+
+PROGRESSION_EMMRICH = registered_persistence_key(1548220455)  # Emmrich_RDA_1548220455
+PROGRESSION_EMMRICH__IsHardened = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 1034336597, "Boolean", False)
+PROGRESSION_EMMRICH_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 1363998350, "Int32", 0)
+PROGRESSION_EMMRICH__UnavailableReasonString = PersistencePropertyDefinition(
+    PROGRESSION_EMMRICH, 1534810185, "Int32", 0
+)
+PROGRESSION_EMMRICH_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 1770605512, "Int32", 0)
+PROGRESSION_EMMRICH_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_EMMRICH, 1801418090, "Boolean", False
+)
+PROGRESSION_EMMRICH__Unlocked = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 2184345643, "Boolean", False)
+PROGRESSION_EMMRICH__IsHeroic = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 2245837626, "Boolean", False)
+PROGRESSION_EMMRICH_Bit = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 2295053469, "Int32", 0)
+PROGRESSION_EMMRICH__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 2599909908, "Boolean", False)
+PROGRESSION_EMMRICH_XP = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 3442105829, "Int32", 0)
+PROGRESSION_EMMRICH__State = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 3518571373, "Int32", 2)
+PROGRESSION_EMMRICH_Context = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 3901334258, "Int32", 0)
+PROGRESSION_EMMRICH__Available = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 4103292835, "Boolean", True)
+
+PROGRESSION_EMMRICH_PROPERTIES = {
+    "Relationship XP": PROGRESSION_EMMRICH_Relationship_XP,
+}
+
+PROGRESSION_DAVRIN = registered_persistence_key(1160045836)  # Davrin_RDA_1160045836
+PROGRESSION_DAVRIN_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 401913055, "Int32", 0)
+PROGRESSION_DAVRIN__IsHardened = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 1034336597, "Boolean", False)
+PROGRESSION_DAVRIN_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 1363998350, "Int32", 0)
+PROGRESSION_DAVRIN__UnavailableReasonString = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 1534810185, "Int32", 0)
+PROGRESSION_DAVRIN_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_DAVRIN, 1801418090, "Boolean", False
+)
+PROGRESSION_DAVRIN__Unlocked = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 2184345643, "Boolean", False)
+PROGRESSION_DAVRIN__IsHeroic = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 2245837626, "Boolean", False)
+PROGRESSION_DAVRIN_Bit = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 2295053469, "Int32", 0)
+PROGRESSION_DAVRIN__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 2599909908, "Boolean", False)
+PROGRESSION_DAVRIN_XP = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 3442105829, "Int32", 0)
+PROGRESSION_DAVRIN__State = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 3518571373, "Int32", 2)
+PROGRESSION_DAVRIN_Context = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 3901334258, "Int32", 0)
+PROGRESSION_DAVRIN__Available = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 4103292835, "Boolean", True)
+
+PROGRESSION_DAVRIN_PROPERTIES = {
+    "Relationship XP": PROGRESSION_DAVRIN_Relationship_XP,
+}
+
+PROGRESSION_BELLARA = registered_persistence_key(1135958718)  # Bellara_RDA_1135958718
+PROGRESSION_BELLARA__IsHardened = PersistencePropertyDefinition(PROGRESSION_BELLARA, 1034336597, "Boolean", False)
+PROGRESSION_BELLARA_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_BELLARA, 1363998350, "Int32", 0)
+PROGRESSION_BELLARA__UnavailableReasonString = PersistencePropertyDefinition(
+    PROGRESSION_BELLARA, 1534810185, "Int32", 0
+)
+PROGRESSION_BELLARA_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_BELLARA, 1801418090, "Boolean", False
+)
+PROGRESSION_BELLARA_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_BELLARA, 2074033460, "Int32", 0)
+PROGRESSION_BELLARA__Unlocked = PersistencePropertyDefinition(PROGRESSION_BELLARA, 2184345643, "Boolean", False)
+PROGRESSION_BELLARA__IsHeroic = PersistencePropertyDefinition(PROGRESSION_BELLARA, 2245837626, "Boolean", False)
+PROGRESSION_BELLARA_Bit = PersistencePropertyDefinition(PROGRESSION_BELLARA, 2295053469, "Int32", 0)
+PROGRESSION_BELLARA__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_BELLARA, 2599909908, "Boolean", False)
+PROGRESSION_BELLARA_XP = PersistencePropertyDefinition(PROGRESSION_BELLARA, 3442105829, "Int32", 0)
+PROGRESSION_BELLARA__State = PersistencePropertyDefinition(PROGRESSION_BELLARA, 3518571373, "Int32", 2)
+PROGRESSION_BELLARA_Context = PersistencePropertyDefinition(PROGRESSION_BELLARA, 3901334258, "Int32", 0)
+PROGRESSION_BELLARA__Available = PersistencePropertyDefinition(PROGRESSION_BELLARA, 4103292835, "Boolean", True)
+
+PROGRESSION_BELLARA_PROPERTIES = {
+    "Relationship XP": PROGRESSION_BELLARA_Relationship_XP,
+}
+
+PROGRESSION_HARDING = registered_persistence_key(1580103331)  # Harding_RDA_1580103331
+PROGRESSION_HARDING__IsHardened = PersistencePropertyDefinition(PROGRESSION_HARDING, 1034336597, "Boolean", False)
+PROGRESSION_HARDING_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSION_HARDING, 1226829174, "Int32", 0)
+PROGRESSION_HARDING_Relationship_XP = PersistencePropertyDefinition(PROGRESSION_HARDING, 1363998350, "Int32", 0)
+PROGRESSION_HARDING__UnavailableReasonString = PersistencePropertyDefinition(
+    PROGRESSION_HARDING, 1534810185, "Int32", 0
+)
+PROGRESSION_HARDING_HasTriggeredHeroicFTUE = PersistencePropertyDefinition(
+    PROGRESSION_HARDING, 1801418090, "Boolean", False
+)
+PROGRESSION_HARDING__Unlocked = PersistencePropertyDefinition(PROGRESSION_HARDING, 2184345643, "Boolean", False)
+PROGRESSION_HARDING__IsHeroic = PersistencePropertyDefinition(PROGRESSION_HARDING, 2245837626, "Boolean", False)
+PROGRESSION_HARDING_Bit = PersistencePropertyDefinition(PROGRESSION_HARDING, 2295053469, "Int32", 0)
+PROGRESSION_HARDING__WasInLastQuest = PersistencePropertyDefinition(PROGRESSION_HARDING, 2599909908, "Boolean", False)
+PROGRESSION_HARDING_XP = PersistencePropertyDefinition(PROGRESSION_HARDING, 3442105829, "Int32", 0)
+PROGRESSION_HARDING__State = PersistencePropertyDefinition(PROGRESSION_HARDING, 3518571373, "Int32", 2)
+PROGRESSION_HARDING_Context = PersistencePropertyDefinition(PROGRESSION_HARDING, 3901334258, "Int32", 0)
+PROGRESSION_HARDING__Available = PersistencePropertyDefinition(PROGRESSION_HARDING, 4103292835, "Boolean", True)
+
+PROGRESSION_HARDING_PROPERTIES = {
+    "Relationship XP": PROGRESSION_HARDING_Relationship_XP,
+}
+
 # Romance properties
 ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
 ROMANCE_NEVE_Rook_Can_Flirt_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 1309495461, "Boolean", True)

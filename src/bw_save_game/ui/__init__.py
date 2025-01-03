@@ -73,6 +73,13 @@ from bw_save_game.veilguard import (
     PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
     PAST_DA_INQUISITOR_ROMANCE_VALUES,
     PAST_DA_SHOULD_REFERENCE_PROPERTY,
+    PROGRESSION_BELLARA_PROPERTIES,
+    PROGRESSION_DAVRIN_PROPERTIES,
+    PROGRESSION_EMMRICH_PROPERTIES,
+    PROGRESSION_HARDING_PROPERTIES,
+    PROGRESSION_LUCANIS_PROPERTIES,
+    PROGRESSION_NEVE_PROPERTIES,
+    PROGRESSION_TAASH_PROPERTIES,
     ROMANCE_BELLARA_PROPERTIES,
     ROMANCE_DAVRIN_PROPERTIES,
     ROMANCE_EMMRICH_PROPERTIES,
@@ -699,6 +706,12 @@ def show_editor_companion_skills(state: State, archetype: CharacterArchetype):
         show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
 
 
+def show_editor_companion_progression(state: State, progression_properties: dict):
+    if imgui.collapsing_header("Progression", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        for label, prop in progression_properties.items():
+            show_persisted_value_editor(state, label, prop)
+
+
 def show_editor_companion_romance(state: State, romance_properties: dict):
     if imgui.collapsing_header("Romance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for label, prop in romance_properties.items():
@@ -710,36 +723,43 @@ def show_editor_companions(state: State):
         return
 
     if imgui.begin_tab_item("Neve")[0]:
+        show_editor_companion_progression(state, PROGRESSION_NEVE_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_NEVE_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Neve)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Davrin")[0]:
+        show_editor_companion_progression(state, PROGRESSION_DAVRIN_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_DAVRIN_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Davrin)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Bellara")[0]:
+        show_editor_companion_progression(state, PROGRESSION_BELLARA_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_BELLARA_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Bellara)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Taash")[0]:
+        show_editor_companion_progression(state, PROGRESSION_TAASH_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_TAASH_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Taash)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Emmrich")[0]:
+        show_editor_companion_progression(state, PROGRESSION_EMMRICH_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Emmrich)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Harding")[0]:
+        show_editor_companion_progression(state, PROGRESSION_HARDING_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_HARDING_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Harding)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Lucanis")[0]:
+        show_editor_companion_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
         imgui.end_tab_item()
