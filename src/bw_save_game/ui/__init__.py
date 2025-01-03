@@ -190,11 +190,17 @@ def ask_for_open(state: State):
 
 
 def show_app_about(state: State):
-    if imgui.begin_popup("About BWSaveGameEditor", imgui.WindowFlags_.always_auto_resize):
-        imgui.text("BWSaveGameEditor " + __version__)
+    imgui.set_next_window_pos(imgui.get_main_viewport().get_center(), imgui.Cond_.appearing, (0.5, 0.5))
+    if imgui.begin_popup("About", imgui.WindowFlags_.always_auto_resize):
+        imgui.text("DA:V Editor " + __version__)
         imgui.separator()
         imgui.text("By Tim & mons.")
-        imgui.text("BWSaveGameEditor is licensed under GNU General Public License v3.0.")
+        imgui.text("Website:")
+        imgui.same_line()
+        imgui.text_link_open_url(
+            "https://github.com/timniederhausen/bw_save_game", "https://github.com/timniederhausen/bw_save_game"
+        )
+        imgui.text("DA:V Editor is licensed under GNU General Public License v3.0.")
         imgui.separator()
         imgui.text("Using ImGui v" + imgui.get_version())
         imgui.end_popup()
@@ -260,7 +266,7 @@ def show_main_menu_bar(state: State):
     imgui.end_main_menu_bar()
 
     if need_about_open:
-        imgui.open_popup("About BWSaveGameEditor")
+        imgui.open_popup("About")
 
 
 def show_item_id_editor(obj):
@@ -651,7 +657,7 @@ def show_editor_appearances(state: State):
 
     imgui.text_wrapped(
         "You can manually edit the following JSON documents or copy them from another save game!\n"
-        + "Hint: It is probably easier to make a new character with the desired player or inquisitor appearance "
+        + "Hint: It is probably easier to make a new character with the desired Player or Inquisitor appearance "
         + "and copy their appearance documents over than trying to modify the values below."
     )
 
@@ -768,6 +774,12 @@ def show_editor_companions(state: State):
 
 
 def show_editor_collectibles(state: State):
+    imgui.text_wrapped(
+        "All collectibles (appearances, ...) are organized into sets. "
+        + "Select the appropriate set to view & edit all collectibles inside.\n"
+        + "Note: This includes many quest / storyline items and states that you probably shouldn't touch."
+    )
+
     imgui.text_disabled("Collectibles Set:")
     imgui.same_line()
     imgui.set_next_item_width(-1)
@@ -840,7 +852,18 @@ def show_editor_content(state: State):
 
 def show_empty_warning(state: State):
     imgui.push_style_var(imgui.StyleVar_.selectable_text_align, (0.5, 0.5))
-    if imgui.selectable("No save file loaded!\nClick here or use the menu to load or import files", False)[0]:
+
+    default_save_path_message = "No Dragon Age: Veilguard save games have been found."
+    if os.path.exists(state.default_save_path):
+        default_save_path_message = "Your Dragon Age: Veilguard save games can be found at:\n"
+        default_save_path_message += os.path.normpath(state.default_save_path)
+
+    if imgui.selectable(
+        "Welcome to the DA:V Save Editor - By Tim & mons\n\n"
+        + "No save file loaded!\nClick here or use the menu to load or import files.\n\n"
+        + default_save_path_message,
+        False,
+    )[0]:
         ask_for_open(state)
     imgui.pop_style_var()
 
