@@ -17,6 +17,7 @@
 # Website: https://github.com/timniederhausen/bw_save_game
 # -*- coding: utf-8 -*-
 import json
+import time
 import typing
 from enum import IntEnum
 from uuid import UUID
@@ -37,6 +38,7 @@ from bw_save_game.persistence import (
     get_persisted_value,
     parse_persistence_key_string,
     registered_persistence_key,
+    set_persisted_value,
 )
 
 
@@ -662,11 +664,30 @@ class VeilguardSaveGame(object):
                 return def_instance
         return None
 
+    def make_persistence_instance(self, key: PersistenceKey) -> dict:
+        new_instance = dict(
+            DefinitionId=Long(key.definition_id),
+            PersistenceVersion=12,
+            Key=str(key),
+            CreationTime=Long(time.time_ns() // 1000000000),
+            PropertyValueData=dict(DefinitionProperties=[]),
+        )
+        self.get_persistence_instances().append(new_instance)
+        self._persistence_key_to_instance[key] = new_instance
+        return new_instance
+
     def get_persistence_property(self, prop: PersistencePropertyDefinition):
         instance = self.get_persistence_instance(prop.key)
         if instance is None:
             return None
         return get_persisted_value(instance, prop.id, prop.type, prop.default)
+
+    def set_persistence_property(self, prop: PersistencePropertyDefinition, value):
+        # TODO: delete property if value == default
+        instance = self.get_persistence_instance(prop.key)
+        if instance is None:
+            instance = self.make_persistence_instance(prop.key)
+        set_persisted_value(instance, prop.id, prop.type, value)
 
     def refresh_derived_data(self):
         self._persistence_key_to_instance.clear()

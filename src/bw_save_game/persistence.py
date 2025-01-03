@@ -185,6 +185,17 @@ def get_persisted_value(def_instance: dict, property_id: int, property_type: str
     return found_prop[prop_name]
 
 
+def set_persisted_value(def_instance: dict, property_id: int, property_type: str, value):
+    prop_name = f",{property_id}:{property_type}"
+
+    all_props = def_instance["PropertyValueData"]["DefinitionProperties"]
+    for prop in all_props:
+        if prop_name in prop:
+            prop[prop_name] = PROPERTY_TYPES[property_type](value)
+            return
+    all_props.append({prop_name: PROPERTY_TYPES[property_type](value)})
+
+
 def get_or_create_persisted_value(def_instance: dict, property_id: int, property_type: str, default_value):
     prop_name = f",{property_id}:{property_type}"
 
