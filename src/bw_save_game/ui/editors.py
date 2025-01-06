@@ -29,6 +29,7 @@ from bw_save_game.db_object_codec import (
     float_struct,
     int32_struct,
     int64_struct,
+    uint64_struct,
 )
 from bw_save_game.ui.widgets import show_searchable_combo_box
 
@@ -74,6 +75,8 @@ def show_uuid_editor(label: str, value: UUID):
 
 
 def show_numeric_value_editor(obj, key, value):
+    # Unfortunately the DbObject type system doesn't save whether an integral type is signed or unsigned
+    # For the UI we thus support the whole unsigned range for positive numbers.
     typ = None
     encoded_value = None
     if isinstance(value, int):
@@ -84,8 +87,12 @@ def show_numeric_value_editor(obj, key, value):
             encoded_value = int64_struct.pack(value)
             typ = imgui.DataType_.s64
     if isinstance(value, Long):
-        encoded_value = int64_struct.pack(value.value)
-        typ = imgui.DataType_.s64
+        if value.value < 0:
+            encoded_value = int64_struct.pack(value.value)
+            typ = imgui.DataType_.s64
+        else:
+            encoded_value = uint64_struct.pack(value.value)
+            typ = imgui.DataType_.u64
     if isinstance(value, float):
         encoded_value = float_struct.pack(value)
         typ = imgui.DataType_.float
