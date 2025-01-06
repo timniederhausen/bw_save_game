@@ -1,7 +1,29 @@
 # bw_save_game: BioWare save game tools
 
 This pure-Python library can read and write _Dragon Age: The Veilguard_ save files (`*.csav`).
+Since version 1.0 it includes a graphical user interface to make editing the complex save data more accessible.
 It also comes with several tools (`csav2json`, `json2csav`) that can convert the save games to and from easily editable `.json` documents.
+
+<div align="center">
+<img alt="Editor GUI image" src="docs/screenshots/main.png" width="30%">
+<img alt="Editor GUI image" src="docs/screenshots/appearances.png" width="30%">
+<img alt="Editor GUI image" src="docs/screenshots/raw_data.png" width="30%">
+</div>
+
+<div align="center">
+<img alt="Editor GUI image" src="docs/screenshots/inventories.png" width="30%">
+<img alt="Editor GUI image" src="docs/screenshots/companions.png" width="30%">
+<img alt="Editor GUI image" src="docs/screenshots/collectibles.png" width="30%">
+</div>
+
+## Features
+
+- Edit your main character properties (Lineage, Faction, Class, Level, Skill points, ...)
+- Change your Player & Inquisitor appearance
+- Manage your and your companion's inventories.
+- Edit companion state (i.e. romance flags, skills, ...)
+- View and unlock all available collectibles (appearance items, ...)
+- A very powerful raw data editor that allows you to change every part of the save game (for advanced use cases).
 
 ## Installation
 
@@ -14,9 +36,20 @@ This package is available for download from [PyPI][1]. You can install it using 
 pip install --upgrade bw_save_game
 ```
 
+Binary versions of the UI can be found on the [Releases page][5].
+
 ## Usage
 
-For non-programmers this project ships two applications that can convert a save game into a human-readable JSON document and vice-versa.
+Using the graphical interface is pretty straightforward:
+Either run one of the standalone release binaries or use:
+```bash
+csav-ui
+```
+if you installed the project via `pip`.
+Open the menu to load / import save files after which you have multiple tabs (Main, Appearances, ...) available.
+Make the changes you like and don't forget to use the menu to save (or press Ctrl+S).
+
+This project also ships two CLI applications that can convert a save game into a human-readable JSON document and vice-versa.
 Editing this document allows you to change every part of a save, however, ensuring correctness and consistency is up to you.
 
 The following command converts `0-439591 Saria-Save 9 #874.csav` to JSON:
@@ -27,6 +60,8 @@ Converting the edited save file `my_wip_save.json` back to the game's binary sav
 ```bash
 json2csav my_wip_save.json "0-439591 Saria-Save 9 #874-NEW.csav"
 ```
+
+The GUI also supports importing / exporting these JSON documents.
 
 ## Contributing
 
@@ -55,3 +90,4 @@ either version 3 of the License, or (at your option) any later version.
 [2]: http://www.gnu.org/licenses/gpl-3.0.en.html
 [3]: https://www.gnu.org/licenses/gpl.html
 [4]: https://pre-commit.com/
+[5]: https://github.com/timniederhausen/bw_save_game/releases
