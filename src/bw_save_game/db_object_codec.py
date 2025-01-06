@@ -152,12 +152,13 @@ def encode_value(name, value, buf, on_unknown=None):
         buf.write(encode_prefix(TYPE_Bool, name))
         buf.write(byte_struct.pack(value))
     elif isinstance(value, int):
-        if value > 2**32 - 1 or value < -(2**31) - 1:
+        # Auto-upgrade ints to Long if we need to.
+        if value < -(2**31) or value >= 2**32:
             buf.write(encode_prefix(TYPE_Long, name))
-            buf.write(uint64_struct.pack(value))
+            buf.write(uint64_struct.pack(value & (2**64 - 1)))
         else:
             buf.write(encode_prefix(TYPE_Integer, name))
-            buf.write(uint32_struct.pack(value))
+            buf.write(uint32_struct.pack(value & (2**32 - 1)))
     elif isinstance(value, float):
         buf.write(encode_prefix(TYPE_Float, name))
         buf.write(float_struct.pack(value))
@@ -255,9 +256,9 @@ def decode_value(base: int, data: bytes):
 
     decode_name = (header & TYPE_Anonymous) == 0
     if decode_name:
-        ll = data.index(0, base + 1) + 1
-        name = data[base + 1 : ll - 1].decode("utf-8")
-        base = ll
+        base_after_name = data.index(0, base + 1) + 1
+        name = data[base + 1 : base_after_name - 1].decode("utf-8")
+        base = base_after_name
     else:
         name = None
         base = base + 1
