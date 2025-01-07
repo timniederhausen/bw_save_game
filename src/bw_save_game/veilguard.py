@@ -735,6 +735,10 @@ ARCHETYPE_TO_SKILL_DATA: typing.Dict[CharacterArchetype, typing.Tuple[int, Persi
     CharacterArchetype.Follower_Lucanis: (2545231076, LUCANIS_SKILLS),
 }
 
+SKILLS_REQUIRED_MAGE = [2231077721, 2488445902, 2488445993, 2800769157, 2800769186, 514330679, 514330450]
+SKILLS_REQUIRED_ROGUE = [514330392, 2231077684, 2488445733, 2488445902, 2800769186, 2800769417, 514330547]
+SKILLS_REQUIRED_WARRIOR = [514330551, 514330615, 2231077531, 2231077723, 2488445600, 2800769548, 2488445573]
+
 # from data files:
 ALL_ITEMS = json.loads(files("bw_save_game.data").joinpath("veilguard", "item_list.json").read_text("utf-8"))
 ALL_CURRENCIES = json.loads(files("bw_save_game.data").joinpath("veilguard", "currencies.json").read_text("utf-8"))
@@ -862,6 +866,9 @@ class VeilguardSaveGame(object):
             self._persistence_key_to_instance[key] = def_instance
 
     def replace_character_archetype(self, old_archetype: int, new_archetype: int):
+        if old_archetype == new_archetype:
+            return
+
         self.meta["archetype"] = new_archetype
 
         client_rpg_player = self.get_client_rpg_extents(loadpass=0)
@@ -879,6 +886,19 @@ class VeilguardSaveGame(object):
                 continue
             if to_native(parent["parentArchetype"]["id"]) == old_archetype:
                 parent["parentArchetype"]["id"] = Long(new_archetype)
+
+        if new_archetype == CharacterArchetype.Mage:
+            skills_to_add = SKILLS_REQUIRED_MAGE
+        elif new_archetype == CharacterArchetype.Rogue:
+            skills_to_add = SKILLS_REQUIRED_ROGUE
+        elif new_archetype == CharacterArchetype.Warrior:
+            skills_to_add = SKILLS_REQUIRED_WARRIOR
+        else:
+            skills_to_add = []
+
+        for property_id in skills_to_add:
+            prop = PersistencePropertyDefinition(PLAYER_SKILLS, property_id, "Boolean", False)
+            self.set_persistence_property(prop, True)
 
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:
