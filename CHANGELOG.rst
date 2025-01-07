@@ -2,6 +2,14 @@
 Changelog
 =========
 
+Version 1.0.1
+=============
+
+- feat: Grant class default skills on archetype change
+- fix(ui): Use SHGetFolderPathW on Windows & ensure "Open" start paths are valid
+- fix: Correct edge case handling for Integer to Long upgrade
+- fix(ui): Support the full uint64 range for positive numbers in the UI
+
 Version 1.0.0
 =============
 
