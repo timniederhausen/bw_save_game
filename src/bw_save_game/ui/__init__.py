@@ -106,6 +106,25 @@ _ITEM_KEYS = [item["key"] for item in ALL_ITEMS]
 WINDOW_TITLE = "DA:V Save Editor - By Tim & mons"
 
 
+def detect_save_game_path():
+    if sys.platform.startswith("win"):
+        # https://stackoverflow.com/a/3859336
+        import ctypes.wintypes
+
+        CSIDL_PERSONAL = 5  # My Documents
+        SHGFP_TYPE_CURRENT = 0  # Want current, not default value
+
+        buf = ctypes.create_unicode_buffer(ctypes.wintypes.MAX_PATH)
+        ctypes.windll.shell32.SHGetFolderPathW(0, CSIDL_PERSONAL, 0, SHGFP_TYPE_CURRENT, buf)
+        full_path = f"{buf.value}/BioWare/Dragon Age The Veilguard/save games"
+        if os.path.exists(full_path):
+            return full_path
+        return ""
+
+    # TODO: maybe support Wine etc. here? I don't know how they map the Documents path.
+    return ""
+
+
 class State(object):
     def __init__(self):
         # UI state
@@ -113,9 +132,7 @@ class State(object):
         self.add_item_object = None  # type: typing.Optional[dict]
         self.selected_collectible_set_index = 0
 
-        self.default_save_path = os.path.expandvars(
-            "%USERPROFILE%/Documents/BioWare/Dragon Age The Veilguard/save games"
-        )
+        self.default_save_path = detect_save_game_path()
 
         # loaded save game
         self.active_filename = None  # type: typing.Optional[str]
@@ -854,7 +871,7 @@ def show_empty_warning(state: State):
     imgui.push_style_var(imgui.StyleVar_.selectable_text_align, (0.5, 0.5))
 
     default_save_path_message = "No Dragon Age: Veilguard save games have been found."
-    if os.path.exists(state.default_save_path):
+    if state.default_save_path:
         default_save_path_message = "Your Dragon Age: Veilguard save games can be found at:\n"
         default_save_path_message += os.path.normpath(state.default_save_path)
 
