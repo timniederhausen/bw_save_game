@@ -57,6 +57,9 @@ from bw_save_game.veilguard import (
     CHARACTER_GENERATOR_LINEAGE,
     CHARACTER_GENERATOR_LINEAGE_LABELS,
     CHARACTER_GENERATOR_LINEAGE_VALUES,
+    CHARACTER_GENERATOR_PRONOUN_OPTION_LABELS,
+    CHARACTER_GENERATOR_PRONOUN_OPTION_VALUES,
+    CHARACTER_GENERATOR_PRONOUNS,
     CLASS_KEYBINDING_LABELS,
     CLASS_KEYBINDING_VALUES,
     COLLECTIBLE_LABELS,
@@ -620,6 +623,17 @@ def show_editor_main(state: State):
             )
             show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
             show_persisted_value_editor(state, "Skill points:", PLAYER_SKILLS_SkillPoints)
+            if show_persisted_value_options_editor(
+                state,
+                "Pronouns",
+                CHARACTER_GENERATOR_PRONOUNS,
+                CHARACTER_GENERATOR_PRONOUN_OPTION_VALUES,
+                CHARACTER_GENERATOR_PRONOUN_OPTION_LABELS,
+            ):
+                # value is duplicated!
+                state.save_game.meta["projdata"]["pronoun"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_PRONOUNS
+                )
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
