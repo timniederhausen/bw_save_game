@@ -68,6 +68,12 @@ from bw_save_game.veilguard import (
     DIFFICULTY_COMBAT_PRESET_VALUES,
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
     DIFFICULTY_EXPLORATION_PRESET_VALUES,
+    FACTION_ANTIVANCROWS_PROPERTIES,
+    FACTION_GREYWARDENS_PROPERTIES,
+    FACTION_LORDSOFFORTUNE_PROPERTIES,
+    FACTION_MOURNWATCH_PROPERTIES,
+    FACTION_SHADOWDRAGONS_PROPERTIES,
+    FACTION_VEILJUMPERS_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -763,6 +769,12 @@ def show_editor_appearances(state: State):
         imgui.pop_item_width()
 
 
+def show_editor_progression(state: State, progression_properties: dict):
+    if imgui.collapsing_header("Progression", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        for label, prop in progression_properties.items():
+            show_persisted_value_editor(state, label, prop)
+
+
 def show_editor_skills_list(state: State, graph: dict, persistence_key: PersistenceKey):
     if imgui.begin_table("Skills", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Skill Name")
@@ -793,12 +805,6 @@ def show_editor_companion_skills(state: State, archetype: CharacterArchetype):
         show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
 
 
-def show_editor_companion_progression(state: State, progression_properties: dict):
-    if imgui.collapsing_header("Progression", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        for label, prop in progression_properties.items():
-            show_persisted_value_editor(state, label, prop)
-
-
 def show_editor_companion_romance(state: State, romance_properties: dict):
     if imgui.collapsing_header("Romance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for label, prop in romance_properties.items():
@@ -810,43 +816,43 @@ def show_editor_companions(state: State):
         return
 
     if imgui.begin_tab_item("Neve")[0]:
-        show_editor_companion_progression(state, PROGRESSION_NEVE_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_NEVE_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_NEVE_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Neve)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Davrin")[0]:
-        show_editor_companion_progression(state, PROGRESSION_DAVRIN_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_DAVRIN_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_DAVRIN_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Davrin)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Bellara")[0]:
-        show_editor_companion_progression(state, PROGRESSION_BELLARA_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_BELLARA_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_BELLARA_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Bellara)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Taash")[0]:
-        show_editor_companion_progression(state, PROGRESSION_TAASH_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_TAASH_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_TAASH_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Taash)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Emmrich")[0]:
-        show_editor_companion_progression(state, PROGRESSION_EMMRICH_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_EMMRICH_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Emmrich)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Harding")[0]:
-        show_editor_companion_progression(state, PROGRESSION_HARDING_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_HARDING_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_HARDING_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Harding)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Lucanis")[0]:
-        show_editor_companion_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
+        show_editor_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
         imgui.end_tab_item()
@@ -900,6 +906,37 @@ def show_editor_collectibles(state: State):
     imgui.end_table()
 
 
+def show_editor_factions(state: State):
+    if not imgui.begin_tab_bar("factions"):
+        return
+
+    if imgui.begin_tab_item("The Mourn Watch")[0]:
+        show_editor_progression(state, FACTION_MOURNWATCH_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Antivan Crows")[0]:
+        show_editor_progression(state, FACTION_ANTIVANCROWS_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Lords Of Fortune")[0]:
+        show_editor_progression(state, FACTION_LORDSOFFORTUNE_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Veil Jumpers")[0]:
+        show_editor_progression(state, FACTION_VEILJUMPERS_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Grey Wardens")[0]:
+        show_editor_progression(state, FACTION_GREYWARDENS_PROPERTIES)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Shadow Dragons")[0]:
+        show_editor_progression(state, FACTION_SHADOWDRAGONS_PROPERTIES)
+        imgui.end_tab_item()
+
+    imgui.end_tab_bar()
+
+
 def show_editor_content(state: State):
     if not imgui.begin_tab_bar("editors"):
         return
@@ -922,6 +959,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Collectibles")[0]:
         show_editor_collectibles(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Factions")[0]:
+        show_editor_factions(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Raw Data")[0]:

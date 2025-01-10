@@ -291,12 +291,12 @@ CHARACTER_GENERATOR_LINEAGE_LABELS = list(CHARACTER_GENERATOR_LINEAGES.values())
 
 CHARACTER_GENERATOR_FACTIONS = {
     # Globals/RPG/FactionTypes
-    0: "GreyWardens",
-    1: "VeilJumpers",
-    2: "ShadowDragons",
-    3: "LordsOfFortune",
-    4: "TheMournWatch",
-    5: "AntivanCrows",
+    0: "Grey Wardens",
+    1: "Veil Jumpers",
+    2: "Shadow Dragons",
+    3: "Lords Of Fortune",
+    4: "The Mourn Watch",
+    5: "Antivan Crows",
 }
 CHARACTER_GENERATOR_FACTION_VALUES = list(CHARACTER_GENERATOR_FACTIONS.keys())
 CHARACTER_GENERATOR_FACTION_LABELS = list(CHARACTER_GENERATOR_FACTIONS.values())
@@ -558,6 +558,199 @@ PROGRESSION_HARDING__Available = PersistencePropertyDefinition(PROGRESSION_HARDI
 
 PROGRESSION_HARDING_PROPERTIES = {
     "Relationship XP": PROGRESSION_HARDING_Relationship_XP,
+}
+
+# Factions
+FACTION_MOURNWATCH = registered_persistence_key(1648677464)  # Faction_Mournwatch_RDA_1648677464
+FACTION_MOURNWATCH_Faction_XP = PersistencePropertyDefinition(FACTION_MOURNWATCH, 836139687, "Int32", 0)
+FACTION_MOURNWATCH_FinaleStrength = PersistencePropertyDefinition(FACTION_MOURNWATCH, 873206043, "Int32", 1)
+FACTION_MOURNWATCH__IsHardened = PersistencePropertyDefinition(FACTION_MOURNWATCH, 1034336597, "Boolean", False)
+FACTION_MOURNWATCH_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_MOURNWATCH, 1508987368, "Int32", 3200
+)
+FACTION_MOURNWATCH__UnavailableReasonString = PersistencePropertyDefinition(FACTION_MOURNWATCH, 1534810185, "Int32", 0)
+FACTION_MOURNWATCH__Unlocked = PersistencePropertyDefinition(FACTION_MOURNWATCH, 2184345643, "Boolean", False)
+FACTION_MOURNWATCH__IsHeroic = PersistencePropertyDefinition(FACTION_MOURNWATCH, 2245837626, "Boolean", False)
+FACTION_MOURNWATCH_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_MOURNWATCH, 2274850050, "Int32", 1600
+)
+FACTION_MOURNWATCH_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_MOURNWATCH, 2370141904, "Int32", 500
+)
+FACTION_MOURNWATCH_Faction_Level_1_Threshold = PersistencePropertyDefinition(FACTION_MOURNWATCH, 2501250810, "Int32", 0)
+FACTION_MOURNWATCH__WasInLastQuest = PersistencePropertyDefinition(FACTION_MOURNWATCH, 2599909908, "Boolean", False)
+FACTION_MOURNWATCH_Faction_Power = PersistencePropertyDefinition(FACTION_MOURNWATCH, 3250645730, "Int32", 0)
+FACTION_MOURNWATCH__State = PersistencePropertyDefinition(FACTION_MOURNWATCH, 3518571373, "Int32", 2)
+FACTION_MOURNWATCH__Available = PersistencePropertyDefinition(FACTION_MOURNWATCH, 4103292835, "Boolean", True)
+
+FACTION_MOURNWATCH_PROPERTIES = {
+    "Faction XP": FACTION_MOURNWATCH_Faction_XP,
+    "Faction Power": FACTION_MOURNWATCH_Faction_Power,
+    "Finale Strength": FACTION_MOURNWATCH_FinaleStrength,
+}
+
+FACTION_ANTIVANCROWS = registered_persistence_key(1947141027)  # Faction_AntivanCrows_RDA_1947141027
+FACTION_ANTIVANCROWS_Faction_XP = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 836139687, "Int32", 0)
+FACTION_ANTIVANCROWS__IsHardened = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 1034336597, "Boolean", False)
+FACTION_ANTIVANCROWS_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_ANTIVANCROWS, 1508987368, "Int32", 3200
+)
+FACTION_ANTIVANCROWS__UnavailableReasonString = PersistencePropertyDefinition(
+    FACTION_ANTIVANCROWS, 1534810185, "Int32", 0
+)
+FACTION_ANTIVANCROWS_FinaleStrength = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 1840556428, "Int32", 1)
+FACTION_ANTIVANCROWS__Unlocked = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 2184345643, "Boolean", False)
+FACTION_ANTIVANCROWS__IsHeroic = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 2245837626, "Boolean", False)
+FACTION_ANTIVANCROWS_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_ANTIVANCROWS, 2274850050, "Int32", 1600
+)
+FACTION_ANTIVANCROWS_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_ANTIVANCROWS, 2370141904, "Int32", 500
+)
+FACTION_ANTIVANCROWS_Faction_Power = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 2374116801, "Int32", 0)
+FACTION_ANTIVANCROWS_Faction_Level_1_Threshold = PersistencePropertyDefinition(
+    FACTION_ANTIVANCROWS, 2501250810, "Int32", 0
+)
+FACTION_ANTIVANCROWS__WasInLastQuest = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 2599909908, "Boolean", False)
+FACTION_ANTIVANCROWS__State = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 3518571373, "Int32", 2)
+FACTION_ANTIVANCROWS__Available = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 4103292835, "Boolean", True)
+
+FACTION_ANTIVANCROWS_PROPERTIES = {
+    "Faction XP": FACTION_ANTIVANCROWS_Faction_XP,
+    "Faction Power": FACTION_ANTIVANCROWS_Faction_Power,
+    "Finale Strength": FACTION_ANTIVANCROWS_FinaleStrength,
+}
+
+FACTION_LORDSOFFORTUNE = registered_persistence_key(1604031236)  # Faction_LordsOfFortune_RDA_1604031236
+FACTION_LORDSOFFORTUNE_Faction_Power = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 5185996, "Int32", 0)
+FACTION_LORDSOFFORTUNE_Faction_XP = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 836139687, "Int32", 0)
+FACTION_LORDSOFFORTUNE__IsHardened = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 1034336597, "Boolean", False)
+FACTION_LORDSOFFORTUNE_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 1508987368, "Int32", 3200
+)
+FACTION_LORDSOFFORTUNE__UnavailableReasonString = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 1534810185, "Int32", 0
+)
+FACTION_LORDSOFFORTUNE_FinaleStrength = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 2016182132, "Int32", 1)
+FACTION_LORDSOFFORTUNE__Unlocked = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 2184345643, "Boolean", False)
+FACTION_LORDSOFFORTUNE__IsHeroic = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 2245837626, "Boolean", False)
+FACTION_LORDSOFFORTUNE_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 2274850050, "Int32", 1600
+)
+FACTION_LORDSOFFORTUNE_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 2370141904, "Int32", 500
+)
+FACTION_LORDSOFFORTUNE_Faction_Level_1_Threshold = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 2501250810, "Int32", 0
+)
+FACTION_LORDSOFFORTUNE__WasInLastQuest = PersistencePropertyDefinition(
+    FACTION_LORDSOFFORTUNE, 2599909908, "Boolean", False
+)
+FACTION_LORDSOFFORTUNE__State = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 3518571373, "Int32", 2)
+FACTION_LORDSOFFORTUNE__Available = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 4103292835, "Boolean", True)
+
+FACTION_LORDSOFFORTUNE_PROPERTIES = {
+    "Faction XP": FACTION_LORDSOFFORTUNE_Faction_XP,
+    "Faction Power": FACTION_LORDSOFFORTUNE_Faction_Power,
+    "Finale Strength": FACTION_LORDSOFFORTUNE_FinaleStrength,
+}
+
+FACTION_VEILJUMPERS = registered_persistence_key(1822830084)  # Faction_VeilJumpers_RDA_1822830084
+FACTION_VEILJUMPERS_Faction_XP = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 836139687, "Int32", 0)
+FACTION_VEILJUMPERS__IsHardened = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 1034336597, "Boolean", False)
+FACTION_VEILJUMPERS_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_VEILJUMPERS, 1508987368, "Int32", 3200
+)
+FACTION_VEILJUMPERS__UnavailableReasonString = PersistencePropertyDefinition(
+    FACTION_VEILJUMPERS, 1534810185, "Int32", 0
+)
+FACTION_VEILJUMPERS_Faction_Power = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 1997498116, "Int32", 0)
+FACTION_VEILJUMPERS__Unlocked = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 2184345643, "Boolean", False)
+FACTION_VEILJUMPERS__IsHeroic = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 2245837626, "Boolean", False)
+FACTION_VEILJUMPERS_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_VEILJUMPERS, 2274850050, "Int32", 1600
+)
+FACTION_VEILJUMPERS_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_VEILJUMPERS, 2370141904, "Int32", 500
+)
+FACTION_VEILJUMPERS_Faction_Level_1_Threshold = PersistencePropertyDefinition(
+    FACTION_VEILJUMPERS, 2501250810, "Int32", 0
+)
+FACTION_VEILJUMPERS_FinaleStrength = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 2598850265, "Int32", 1)
+FACTION_VEILJUMPERS__WasInLastQuest = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 2599909908, "Boolean", False)
+FACTION_VEILJUMPERS__State = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 3518571373, "Int32", 2)
+FACTION_VEILJUMPERS__Available = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 4103292835, "Boolean", True)
+
+FACTION_VEILJUMPERS_PROPERTIES = {
+    "Faction XP": FACTION_VEILJUMPERS_Faction_XP,
+    "Faction Power": FACTION_VEILJUMPERS_Faction_Power,
+    "Finale Strength": FACTION_VEILJUMPERS_FinaleStrength,
+}
+
+FACTION_GREYWARDENS = registered_persistence_key(1793983220)  # Faction_GreyWardens_RDA_1793983220
+FACTION_GREYWARDENS_FinaleStrength = PersistencePropertyDefinition(FACTION_GREYWARDENS, 143290146, "Int32", 1)
+FACTION_GREYWARDENS_Faction_XP = PersistencePropertyDefinition(FACTION_GREYWARDENS, 836139687, "Int32", 0)
+FACTION_GREYWARDENS__IsHardened = PersistencePropertyDefinition(FACTION_GREYWARDENS, 1034336597, "Boolean", False)
+FACTION_GREYWARDENS_Faction_Power = PersistencePropertyDefinition(FACTION_GREYWARDENS, 1381090647, "Int32", 0)
+FACTION_GREYWARDENS_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_GREYWARDENS, 1508987368, "Int32", 3200
+)
+FACTION_GREYWARDENS__UnavailableReasonString = PersistencePropertyDefinition(
+    FACTION_GREYWARDENS, 1534810185, "Int32", 0
+)
+FACTION_GREYWARDENS__Unlocked = PersistencePropertyDefinition(FACTION_GREYWARDENS, 2184345643, "Boolean", False)
+FACTION_GREYWARDENS__IsHeroic = PersistencePropertyDefinition(FACTION_GREYWARDENS, 2245837626, "Boolean", False)
+FACTION_GREYWARDENS_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_GREYWARDENS, 2274850050, "Int32", 1600
+)
+FACTION_GREYWARDENS_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_GREYWARDENS, 2370141904, "Int32", 500
+)
+FACTION_GREYWARDENS_Faction_Level_1_Threshold = PersistencePropertyDefinition(
+    FACTION_GREYWARDENS, 2501250810, "Int32", 0
+)
+FACTION_GREYWARDENS__WasInLastQuest = PersistencePropertyDefinition(FACTION_GREYWARDENS, 2599909908, "Boolean", False)
+FACTION_GREYWARDENS__State = PersistencePropertyDefinition(FACTION_GREYWARDENS, 3518571373, "Int32", 2)
+FACTION_GREYWARDENS__Available = PersistencePropertyDefinition(FACTION_GREYWARDENS, 4103292835, "Boolean", True)
+
+FACTION_GREYWARDENS_PROPERTIES = {
+    "Faction XP": FACTION_GREYWARDENS_Faction_XP,
+    "Faction Power": FACTION_GREYWARDENS_Faction_Power,
+    "Finale Strength": FACTION_GREYWARDENS_FinaleStrength,
+}
+
+FACTION_SHADOWDRAGONS = registered_persistence_key(1235554634)  # Faction_ShadowDragons_RDA_1235554634
+FACTION_SHADOWDRAGONS_Faction_XP = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 836139687, "Int32", 0)
+FACTION_SHADOWDRAGONS__IsHardened = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 1034336597, "Boolean", False)
+FACTION_SHADOWDRAGONS_FinaleStrength = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 1206563472, "Int32", 1)
+FACTION_SHADOWDRAGONS_Faction_Level_4_Threshold = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 1508987368, "Int32", 3200
+)
+FACTION_SHADOWDRAGONS__UnavailableReasonString = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 1534810185, "Int32", 0
+)
+FACTION_SHADOWDRAGONS__Unlocked = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 2184345643, "Boolean", False)
+FACTION_SHADOWDRAGONS__IsHeroic = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 2245837626, "Boolean", False)
+FACTION_SHADOWDRAGONS_Faction_Level_3_Threshold = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 2274850050, "Int32", 1600
+)
+FACTION_SHADOWDRAGONS_Faction_Level_2_Threshold = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 2370141904, "Int32", 500
+)
+FACTION_SHADOWDRAGONS_Faction_Level_1_Threshold = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 2501250810, "Int32", 0
+)
+FACTION_SHADOWDRAGONS__WasInLastQuest = PersistencePropertyDefinition(
+    FACTION_SHADOWDRAGONS, 2599909908, "Boolean", False
+)
+FACTION_SHADOWDRAGONS_Faction_Power = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 2983243664, "Int32", 0)
+FACTION_SHADOWDRAGONS__State = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 3518571373, "Int32", 2)
+FACTION_SHADOWDRAGONS__Available = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 4103292835, "Boolean", True)
+
+FACTION_SHADOWDRAGONS_PROPERTIES = {
+    "Faction XP": FACTION_SHADOWDRAGONS_Faction_XP,
+    "Faction Power": FACTION_SHADOWDRAGONS_Faction_Power,
+    "Finale Strength": FACTION_SHADOWDRAGONS_FinaleStrength,
 }
 
 # Romance properties
