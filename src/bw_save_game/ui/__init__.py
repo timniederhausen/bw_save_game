@@ -938,4 +938,9 @@ def show_ui(state: State):
 
 def main():
     state = State()
+
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+        state.load(filename)
+
     immapp.run(gui_function=lambda: show_ui(state), window_title=WINDOW_TITLE)
