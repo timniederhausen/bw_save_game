@@ -94,6 +94,9 @@ from bw_save_game.veilguard import (
     CharacterArchetype,
     CollectibleSetFlag,
     ItemAttachmentType,
+    PAST_DA_INQUISITOR_Keep_Trespasser,
+    PAST_DA_INQUISITOR_Keep_Trespasser_LABELS,
+    PAST_DA_INQUISITOR_Keep_Trespasser_VALUES,
     PLAYER_SKILLS_SkillPoints,
     PROGRESSION_CurrentLevel,
     VeilguardSaveGame,
@@ -675,6 +678,13 @@ def show_editor_main(state: State):
                 PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
                 PAST_DA_INQUISITOR_ROMANCE_VALUES,
                 PAST_DA_INQUISITOR_ROMANCE_LABELS,
+            )
+            show_persisted_value_options_editor(
+                state,
+                "Objective",
+                PAST_DA_INQUISITOR_Keep_Trespasser,
+                PAST_DA_INQUISITOR_Keep_Trespasser_VALUES,
+                PAST_DA_INQUISITOR_Keep_Trespasser_LABELS,
             )
         if imgui.collapsing_header("Caretaker", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
             show_persisted_value_editor(state, "Caretaker XP", CARETAKERPROGRESSION_XP)

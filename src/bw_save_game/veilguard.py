@@ -328,7 +328,17 @@ PAST_DA_INQUISITOR_ROMANCES = {
 }
 PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
 PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
-PAST_DA_INQUISITOR_ROMANCE_DEFAULT_INDEX = 7  # Solas
+
+PAST_DA_INQUISITOR_Keep_Trespasser = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3170937725, "Int32", 1)
+PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS = {
+    0: "Vowed to save Solas",
+    1: "Vowed to stop Solas",
+}
+PAST_DA_INQUISITOR_Keep_Trespasser_VALUES = list(PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS.keys())
+PAST_DA_INQUISITOR_Keep_Trespasser_LABELS = list(PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS.values())
+
+PAST_DA_INQUISITOR_Keep_WellOfSorrows = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3196298401, "Int32", 1)
+PAST_DA_INQUISITOR_Inquisitor_Voice = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3572077324, "Int32", 1)
 
 PROGRESSION = registered_persistence_key(1576630552)  # Progression_RDA_1576630552
 PROGRESSION_DEPRECATED_Dagger_CanUseChests = PersistencePropertyDefinition(PROGRESSION, 21147654, "Boolean", False)
