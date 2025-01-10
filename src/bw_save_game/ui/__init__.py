@@ -72,10 +72,6 @@ from bw_save_game.veilguard import (
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
-    PAST_DA_INQUISITOR_ROMANCE_LABELS,
-    PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
-    PAST_DA_INQUISITOR_ROMANCE_VALUES,
-    PAST_DA_SHOULD_REFERENCE_PROPERTY,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -93,10 +89,26 @@ from bw_save_game.veilguard import (
     SKILL_GRAPHS,
     CharacterArchetype,
     CollectibleSetFlag,
+    INQUISITION_CHOICES_Inquisitor_Gender,
+    INQUISITION_CHOICES_Inquisitor_Gender_LABELS,
+    INQUISITION_CHOICES_Inquisitor_Gender_VALUES,
+    INQUISITION_CHOICES_Inquisitor_Lineage,
+    INQUISITION_CHOICES_Inquisitor_Lineage_LABELS,
+    INQUISITION_CHOICES_Inquisitor_Lineage_VALUES,
+    INQUISITION_CHOICES_Inquisitor_Voice,
+    INQUISITION_CHOICES_Inquisitor_Voice_LABELS,
+    INQUISITION_CHOICES_Inquisitor_Voice_VALUES,
+    INQUISITION_CHOICES_Keep_Inquisition,
+    INQUISITION_CHOICES_Keep_Inquisition_LABELS,
+    INQUISITION_CHOICES_Keep_Inquisition_VALUES,
+    INQUISITION_CHOICES_Keep_Romance,
+    INQUISITION_CHOICES_Keep_Romance_LABELS,
+    INQUISITION_CHOICES_Keep_Romance_VALUES,
+    INQUISITION_CHOICES_Keep_Trespasser,
+    INQUISITION_CHOICES_Keep_Trespasser_LABELS,
+    INQUISITION_CHOICES_Keep_Trespasser_VALUES,
+    INQUISITION_CHOICES_LegacyReferences,
     ItemAttachmentType,
-    PAST_DA_INQUISITOR_Keep_Trespasser,
-    PAST_DA_INQUISITOR_Keep_Trespasser_LABELS,
-    PAST_DA_INQUISITOR_Keep_Trespasser_VALUES,
     PLAYER_SKILLS_SkillPoints,
     PROGRESSION_CurrentLevel,
     VeilguardSaveGame,
@@ -671,20 +683,48 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
-            show_persisted_value_editor(state, "Reference past DA?", PAST_DA_SHOULD_REFERENCE_PROPERTY)
+            show_persisted_value_editor(state, "Reference past DA?", INQUISITION_CHOICES_LegacyReferences)
+            show_persisted_value_options_editor(
+                state,
+                "Lineage",
+                INQUISITION_CHOICES_Inquisitor_Lineage,
+                INQUISITION_CHOICES_Inquisitor_Lineage_VALUES,
+                INQUISITION_CHOICES_Inquisitor_Lineage_LABELS,
+            )
+            show_persisted_value_options_editor(
+                state,
+                "Gender",
+                INQUISITION_CHOICES_Inquisitor_Gender,
+                INQUISITION_CHOICES_Inquisitor_Gender_VALUES,
+                INQUISITION_CHOICES_Inquisitor_Gender_LABELS,
+            )
+            show_persisted_value_options_editor(
+                state,
+                "Voice",
+                INQUISITION_CHOICES_Inquisitor_Voice,
+                INQUISITION_CHOICES_Inquisitor_Voice_VALUES,
+                INQUISITION_CHOICES_Inquisitor_Voice_LABELS,
+            )
             show_persisted_value_options_editor(
                 state,
                 "Romance option",
-                PAST_DA_INQUISITOR_ROMANCE_PROPERTY,
-                PAST_DA_INQUISITOR_ROMANCE_VALUES,
-                PAST_DA_INQUISITOR_ROMANCE_LABELS,
+                INQUISITION_CHOICES_Keep_Romance,
+                INQUISITION_CHOICES_Keep_Romance_VALUES,
+                INQUISITION_CHOICES_Keep_Romance_LABELS,
             )
             show_persisted_value_options_editor(
                 state,
                 "Objective",
-                PAST_DA_INQUISITOR_Keep_Trespasser,
-                PAST_DA_INQUISITOR_Keep_Trespasser_VALUES,
-                PAST_DA_INQUISITOR_Keep_Trespasser_LABELS,
+                INQUISITION_CHOICES_Keep_Trespasser,
+                INQUISITION_CHOICES_Keep_Trespasser_VALUES,
+                INQUISITION_CHOICES_Keep_Trespasser_LABELS,
+            )
+            show_persisted_value_options_editor(
+                state,
+                "Fate of Inquisition",
+                INQUISITION_CHOICES_Keep_Inquisition,
+                INQUISITION_CHOICES_Keep_Inquisition_VALUES,
+                INQUISITION_CHOICES_Keep_Inquisition_LABELS,
             )
         if imgui.collapsing_header("Caretaker", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
             show_persisted_value_editor(state, "Caretaker XP", CARETAKERPROGRESSION_XP)

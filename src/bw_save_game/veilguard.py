@@ -311,11 +311,45 @@ CHARACTER_GENERATOR_PRONOUN_OPTION_VALUES = list(CHARACTER_GENERATOR_PRONOUN_OPT
 CHARACTER_GENERATOR_PRONOUN_OPTION_LABELS = list(CHARACTER_GENERATOR_PRONOUN_OPTIONS.values())
 
 # Globals/Persistence/InquisitorGeneratorDataAsset
-PAST_DA_INQUISITOR_DEF = registered_persistence_key(1250272560)
+INQUISITION_CHOICES = registered_persistence_key(1250272560)  # InquisitionChoices_RDA_1250272560
+INQUISITION_CHOICES_Inquisitor_Lineage = PersistencePropertyDefinition(INQUISITION_CHOICES, 589036284, "Int32", 1)
 # DesignContent/PlotLogic/Global/PastDAChoices/UseReferences/Reference_Past_DA_fc
-PAST_DA_SHOULD_REFERENCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 746726984, "Boolean", False)
-PAST_DA_INQUISITOR_ROMANCE_PROPERTY = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 2643758781, "Int32", 8)
-PAST_DA_INQUISITOR_ROMANCES = {
+INQUISITION_CHOICES_LegacyReferences = PersistencePropertyDefinition(INQUISITION_CHOICES, 746726984, "Boolean", False)
+INQUISITION_CHOICES_Keep_Inquisition = PersistencePropertyDefinition(INQUISITION_CHOICES, 1504326507, "Int32", 0)
+INQUISITION_CHOICES_Inquisitor_Gender = PersistencePropertyDefinition(INQUISITION_CHOICES, 1557862999, "Int32", 1)
+INQUISITION_CHOICES_Keep_Romance = PersistencePropertyDefinition(INQUISITION_CHOICES, 2643758781, "Int32", 8)
+INQUISITION_CHOICES_Inquisitor_Class = PersistencePropertyDefinition(INQUISITION_CHOICES, 2647290538, "Int32", 2)
+INQUISITION_CHOICES_Keep_Trespasser = PersistencePropertyDefinition(INQUISITION_CHOICES, 3170937725, "Int32", 1)
+INQUISITION_CHOICES_Keep_WellOfSorrows = PersistencePropertyDefinition(INQUISITION_CHOICES, 3196298401, "Int32", 1)
+INQUISITION_CHOICES_Inquisitor_Voice = PersistencePropertyDefinition(INQUISITION_CHOICES, 3572077324, "Int32", 1)
+
+INQUISITION_CHOICES_Inquisitor_Lineage_OPTIONS = {
+    # UI/SCREENS/Keep/DesignerEnum/Keep_InquisitorLineage
+    0: "Dwarf",
+    1: "Elf",
+    2: "Human",
+    3: "Qunari",
+}
+INQUISITION_CHOICES_Inquisitor_Lineage_VALUES = list(INQUISITION_CHOICES_Inquisitor_Lineage_OPTIONS.keys())
+INQUISITION_CHOICES_Inquisitor_Lineage_LABELS = list(INQUISITION_CHOICES_Inquisitor_Lineage_OPTIONS.values())
+
+INQUISITION_CHOICES_Keep_Inquisition_OPTIONS = {
+    # manual
+    0: "Disband",
+    1: "Part of Chantry",
+}
+INQUISITION_CHOICES_Keep_Inquisition_VALUES = list(INQUISITION_CHOICES_Keep_Inquisition_OPTIONS.keys())
+INQUISITION_CHOICES_Keep_Inquisition_LABELS = list(INQUISITION_CHOICES_Keep_Inquisition_OPTIONS.values())
+
+INQUISITION_CHOICES_Inquisitor_Gender_OPTIONS = {
+    # manual
+    0: "Male",
+    1: "Female",
+}
+INQUISITION_CHOICES_Inquisitor_Gender_VALUES = list(INQUISITION_CHOICES_Inquisitor_Gender_OPTIONS.keys())
+INQUISITION_CHOICES_Inquisitor_Gender_LABELS = list(INQUISITION_CHOICES_Inquisitor_Gender_OPTIONS.values())
+
+INQUISITION_CHOICES_Keep_Romance_OPTIONS = {
     # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
     1: "Blackwall",
     2: "Cassandra",
@@ -326,19 +360,24 @@ PAST_DA_INQUISITOR_ROMANCES = {
     7: "Sera",
     8: "Solas",
 }
-PAST_DA_INQUISITOR_ROMANCE_VALUES = list(PAST_DA_INQUISITOR_ROMANCES.keys())
-PAST_DA_INQUISITOR_ROMANCE_LABELS = list(PAST_DA_INQUISITOR_ROMANCES.values())
+INQUISITION_CHOICES_Keep_Romance_VALUES = list(INQUISITION_CHOICES_Keep_Romance_OPTIONS.keys())
+INQUISITION_CHOICES_Keep_Romance_LABELS = list(INQUISITION_CHOICES_Keep_Romance_OPTIONS.values())
 
-PAST_DA_INQUISITOR_Keep_Trespasser = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3170937725, "Int32", 1)
-PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS = {
+INQUISITION_CHOICES_Keep_Trespasser_OPTIONS = {
+    # manual
     0: "Vowed to save Solas",
     1: "Vowed to stop Solas",
 }
-PAST_DA_INQUISITOR_Keep_Trespasser_VALUES = list(PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS.keys())
-PAST_DA_INQUISITOR_Keep_Trespasser_LABELS = list(PAST_DA_INQUISITOR_Keep_Trespasser_OPTIONS.values())
+INQUISITION_CHOICES_Keep_Trespasser_VALUES = list(INQUISITION_CHOICES_Keep_Trespasser_OPTIONS.keys())
+INQUISITION_CHOICES_Keep_Trespasser_LABELS = list(INQUISITION_CHOICES_Keep_Trespasser_OPTIONS.values())
 
-PAST_DA_INQUISITOR_Keep_WellOfSorrows = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3196298401, "Int32", 1)
-PAST_DA_INQUISITOR_Inquisitor_Voice = PersistencePropertyDefinition(PAST_DA_INQUISITOR_DEF, 3572077324, "Int32", 1)
+INQUISITION_CHOICES_Inquisitor_Voice_OPTIONS = {
+    # manual
+    0: "Voice 2",
+    1: "Voice 1",
+}
+INQUISITION_CHOICES_Inquisitor_Voice_VALUES = list(INQUISITION_CHOICES_Inquisitor_Voice_OPTIONS.keys())
+INQUISITION_CHOICES_Inquisitor_Voice_LABELS = list(INQUISITION_CHOICES_Inquisitor_Voice_OPTIONS.values())
 
 PROGRESSION = registered_persistence_key(1576630552)  # Progression_RDA_1576630552
 PROGRESSION_DEPRECATED_Dagger_CanUseChests = PersistencePropertyDefinition(PROGRESSION, 21147654, "Boolean", False)
