@@ -752,12 +752,14 @@ def show_editor_appearances(state: State):
         + "and copy their appearance documents over than trying to modify the values below."
     )
 
+    editor_size = (-1, imgui.get_window_size().y / 2 - 75)
+
     if imgui.collapsing_header(
         "Player appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
     ):
         # https://github.com/ocornut/imgui/issues/623
         imgui.push_item_width(-1)
-        changed, new_value = show_json_editor("##Player", data["playerData"])
+        changed, new_value = show_json_editor("##Player", data["playerData"], editor_size)
         if changed:
             data["playerData"] = new_value
         imgui.pop_item_width()
@@ -767,7 +769,7 @@ def show_editor_appearances(state: State):
     ):
         # https://github.com/ocornut/imgui/issues/623
         imgui.push_item_width(-1)
-        changed, new_value = show_json_editor("##Inquisitor", data["inquisitorData"])
+        changed, new_value = show_json_editor("##Inquisitor", data["inquisitorData"], editor_size)
         if changed:
             data["inquisitorData"] = new_value
         imgui.pop_item_width()

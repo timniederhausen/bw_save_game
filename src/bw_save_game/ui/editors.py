@@ -48,8 +48,8 @@ def _wrap_bytes_for_imgui(buffer: bytearray):
     return PyCapsule_New(raw, _NANOBIND_VOIDP_CAPSULE_TYPE, PyCapsule_Destructor(0))
 
 
-def show_json_editor(label: str, value):
-    changed, new_value = imgui.input_text_multiline(label, json.dumps(value, indent=2, default=to_raw_dict))
+def show_json_editor(label: str, value, size=None):
+    changed, new_value = imgui.input_text_multiline(label, json.dumps(value, indent=2, default=to_raw_dict), size)
     error = None
     if changed:
         try:
