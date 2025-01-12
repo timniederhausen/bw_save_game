@@ -158,6 +158,26 @@ class CollectibleSetFlag(IntFlag):
     IsSecret = 1 << 5
 
 
+class BWFollowerStateFlag(IntFlag):
+    NoFlags = 0
+    Unlocked = 1
+    Available = 2
+    WasInLastQuest = 4
+    IsHardened = 8
+    IsHeroic = 16
+    IsWaiting = 32
+    IsDead = 64
+
+
+class EcoQuestRegisteredStateFlags(IntFlag):
+    Unset = 0
+    Eligible = 1
+    Completed = 2
+    MissionUnlocked = 4
+    Expired = 8
+    Cheated = 128
+
+
 class CharacterArchetype(IntEnum):
     Fortune = 624386075
     Follower_Solas = 394763556
@@ -777,6 +797,14 @@ LUCANIS_AND_NEVE_PROPERTIES = {
     "Made Pie": LUCANIS_AND_NEVE_Made_Pie,
 }
 
+LUCANIS_M21 = registered_persistence_key(1232360751)  # Luc_2_1_140_m21_request_QST_RDA_1232360751
+LUCANIS_M21__QuestState = PersistencePropertyDefinition(LUCANIS_M21, 1, "Uint8", 0)
+LUCANIS_M21__ActiveQuestPhaseId = PersistencePropertyDefinition(LUCANIS_M21, 2, "Uint32", 0)
+LUCANIS_M21__NumTimesCompleted = PersistencePropertyDefinition(LUCANIS_M21, 3, "Uint32", 0)
+LUCANIS_M21__ResetTime = PersistencePropertyDefinition(LUCANIS_M21, 302578490, "Uint64", 0)
+LUCANIS_M21__RewardsAvailable = PersistencePropertyDefinition(LUCANIS_M21, 3215455463, "Boolean", False)
+LUCANIS_M21__EligibleNotified = PersistencePropertyDefinition(LUCANIS_M21, 3821129581, "Boolean", False)
+
 # Romance properties
 ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
 ROMANCE_NEVE_Rook_Can_Flirt_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 1309495461, "Boolean", True)
@@ -1221,3 +1249,11 @@ def item_attachment_to_string(item: dict):
             parent = CharacterArchetype(parent).name
         return f"{typ.name} {parent}: {attach_slot}"
     return "Not Attached"
+
+
+def force_complete_quest(save_game: VeilguardSaveGame, quest_key: PersistenceKey):
+    save_game.set_persistence_property(
+        PersistencePropertyDefinition(quest_key, 1, "Uint8", 0),
+        EcoQuestRegisteredStateFlags.Eligible | EcoQuestRegisteredStateFlags.Completed,
+    )
+    save_game.set_persistence_property(PersistencePropertyDefinition(LUCANIS_M21, 3, "Uint32", 0), 1)

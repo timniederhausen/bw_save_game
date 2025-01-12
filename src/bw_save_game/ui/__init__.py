@@ -80,6 +80,7 @@ from bw_save_game.veilguard import (
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
     LUCANIS_AND_NEVE_PROPERTIES,
+    LUCANIS_M21,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -122,6 +123,7 @@ from bw_save_game.veilguard import (
     VeilguardSaveGame,
     construct_item_attachment,
     deconstruct_item_attachment,
+    force_complete_quest,
     item_attachment_to_string,
 )
 
@@ -777,6 +779,22 @@ def show_editor_progression(state: State, progression_properties: dict):
             show_persisted_value_editor(state, label, prop)
 
 
+def show_editor_scripts(scripts: dict):
+    if imgui.collapsing_header("Scripts", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
+        for label, script in scripts.items():
+            imgui.push_id(label)
+            imgui.columns(2)
+            imgui.text(label)
+            imgui.next_column()
+
+            imgui.set_next_item_width(-1)
+            if imgui.button("Run"):
+                script()
+
+            imgui.columns(1)
+            imgui.pop_id()
+
+
 def show_editor_skills_list(state: State, graph: dict, persistence_key: PersistenceKey):
     if imgui.begin_table("Skills", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Skill Name")
@@ -856,6 +874,9 @@ def show_editor_companions(state: State):
     if imgui.begin_tab_item("Lucanis")[0]:
         show_editor_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
+        show_editor_scripts(
+            {'Force-start "Inner Demons" quest': lambda: force_complete_quest(state.save_game, LUCANIS_M21)}
+        )
         show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
         imgui.end_tab_item()
 
