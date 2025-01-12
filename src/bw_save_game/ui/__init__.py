@@ -74,10 +74,12 @@ from bw_save_game.veilguard import (
     FACTION_MOURNWATCH_PROPERTIES,
     FACTION_SHADOWDRAGONS_PROPERTIES,
     FACTION_VEILJUMPERS_PROPERTIES,
+    HARDING_AND_TASH_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
     LOOT_RARITY_NAMES,
+    LUCANIS_AND_NEVE_PROPERTIES,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -855,6 +857,19 @@ def show_editor_companions(state: State):
         show_editor_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
         show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Misc")[0]:
+        if imgui.collapsing_header(
+            "Harding & Taash", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            for label, prop in HARDING_AND_TASH_PROPERTIES.items():
+                show_persisted_value_editor(state, label, prop)
+        if imgui.collapsing_header(
+            "Lucanis & Neve", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            for label, prop in LUCANIS_AND_NEVE_PROPERTIES.items():
+                show_persisted_value_editor(state, label, prop)
         imgui.end_tab_item()
 
     imgui.end_tab_bar()

@@ -753,6 +753,30 @@ FACTION_SHADOWDRAGONS_PROPERTIES = {
     "Finale Strength": FACTION_SHADOWDRAGONS_FinaleStrength,
 }
 
+HARDING_AND_TASH = registered_persistence_key(1395335409)  # Hrd_Tsh_General_1395335409
+HARDING_AND_TASH_hrd_tsh_romance_active = PersistencePropertyDefinition(HARDING_AND_TASH, 30545043, "Boolean", False)
+HARDING_AND_TASH_gift_chose_jewelry = PersistencePropertyDefinition(HARDING_AND_TASH, 1782945647, "Boolean", False)
+HARDING_AND_TASH_gift_chose_archery = PersistencePropertyDefinition(HARDING_AND_TASH, 2246275998, "Boolean", False)
+HARDING_AND_TASH_gift_chose_flowers = PersistencePropertyDefinition(HARDING_AND_TASH, 3930540536, "Boolean", False)
+
+HARDING_AND_TASH_PROPERTIES = {
+    "Romanced?": HARDING_AND_TASH_hrd_tsh_romance_active,
+    "Gift: Jewelry": HARDING_AND_TASH_gift_chose_jewelry,
+    "Gift: Archery": HARDING_AND_TASH_gift_chose_archery,
+    "Gift: Flowers": HARDING_AND_TASH_gift_chose_flowers,
+}
+
+LUCANIS_AND_NEVE = registered_persistence_key(1592749924)  # Luc_Nev_General_1592749924
+LUCANIS_AND_NEVE_Neve_Lucanis_Romance = PersistencePropertyDefinition(LUCANIS_AND_NEVE, 227845584, "Boolean", False)
+LUCANIS_AND_NEVE_No_Pie = PersistencePropertyDefinition(LUCANIS_AND_NEVE, 1738918478, "Boolean", False)
+LUCANIS_AND_NEVE_Made_Pie = PersistencePropertyDefinition(LUCANIS_AND_NEVE, 2632247097, "Boolean", False)
+
+LUCANIS_AND_NEVE_PROPERTIES = {
+    "Romanced?": LUCANIS_AND_NEVE_Neve_Lucanis_Romance,
+    "No Pie": LUCANIS_AND_NEVE_No_Pie,
+    "Made Pie": LUCANIS_AND_NEVE_Made_Pie,
+}
+
 # Romance properties
 ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
 ROMANCE_NEVE_Rook_Can_Flirt_Neve = PersistencePropertyDefinition(ROMANCE_NEVE, 1309495461, "Boolean", True)
