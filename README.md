@@ -27,27 +27,24 @@ It also comes with several tools (`csav2json`, `json2csav`) that can convert the
 
 ## Installation
 
-Make sure you have these programs installed:
+Easy-to-use single-file binaries for the UI can be found on the [Releases page][5].
+This is the preferred way for Windows users that only need the GUI version of the save file editor.
 
-* Python 3.8 or newer
-
-This package is available for download from [PyPI][1]. You can install it using `pip`:
+The full project is available for download from [PyPI][1]. You can install it using `pip`:
 ```bash
-pip install --upgrade bw_save_game
+pip install --upgrade bw_save_game[ui]
 ```
-
-Binary versions of the UI can be found on the [Releases page][5].
+This will give you the library, all the command-line tools and the UI.
+Please note that this project requires at least Python 3.8.
 
 ## Usage
 
 Using the graphical interface is pretty straightforward:
-Either run one of the standalone release binaries or use:
-```bash
-csav-ui
-```
-if you installed the project via `pip`.
-Open the menu to load / import save files after which you have multiple tabs (Main, Appearances, ...) available.
-Make the changes you like and don't forget to use the menu to save (or press Ctrl+S).
+- Open the menu to load / import save files after which you have multiple tabs (Main, Appearances, ...) available.
+- Make the changes you like and don't forget to use the menu to save (or press Ctrl+S).
+- For more detailed guides, please visit our [Nexus Mods page][6].
+
+If you installed the project via `pip` use `csav-ui [filename]` to launch the UI.
 
 This project also ships two CLI applications that can convert a save game into a human-readable JSON document and vice-versa.
 Editing this document allows you to change every part of a save, however, ensuring correctness and consistency is up to you.
@@ -91,3 +88,4 @@ either version 3 of the License, or (at your option) any later version.
 [3]: https://www.gnu.org/licenses/gpl.html
 [4]: https://pre-commit.com/
 [5]: https://github.com/timniederhausen/bw_save_game/releases
+[6]: https://www.nexusmods.com/dragonagetheveilguard/mods/1688
