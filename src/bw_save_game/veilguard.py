@@ -1074,9 +1074,7 @@ class VeilguardSaveGame(object):
         self.meta = meta
         self.data = data
 
-        self._persistence_key_to_instance = {}  # type: typing.Dict[PersistenceKey, dict]
-
-        self.refresh_derived_data()
+        self._persistence_key_to_instance = self.build_persistence_instance_map()
 
     @staticmethod
     def from_file(fp):
@@ -1172,11 +1170,10 @@ class VeilguardSaveGame(object):
             instance = self.make_persistence_instance(prop.key)
         set_persisted_value(instance, prop.id, prop.type, value)
 
-    def refresh_derived_data(self):
-        self._persistence_key_to_instance.clear()
-        for def_instance in self.get_persistence_instances():
-            key = parse_persistence_key_string(def_instance["Key"])
-            self._persistence_key_to_instance[key] = def_instance
+    def build_persistence_instance_map(self):
+        return {
+            parse_persistence_key_string(instance["Key"]): instance for instance in self.get_persistence_instances()
+        }
 
     def replace_character_archetype(self, old_archetype: int, new_archetype: int):
         if old_archetype == new_archetype:
