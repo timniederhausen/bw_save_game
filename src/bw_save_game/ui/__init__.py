@@ -51,9 +51,13 @@ from bw_save_game.veilguard import (
     ALL_ITEMS,
     ARCHETYPE_TO_SKILL_DATA,
     CARETAKERPROGRESSION_XP,
+    CHARACTER_GENDER_LABELS,
+    CHARACTER_GENDER_VALUES,
     CHARACTER_GENERATOR_FACTION,
     CHARACTER_GENERATOR_FACTION_LABELS,
     CHARACTER_GENERATOR_FACTION_VALUES,
+    CHARACTER_GENERATOR_GENDER,
+    CHARACTER_GENERATOR_IS_TRANS,
     CHARACTER_GENERATOR_LINEAGE,
     CHARACTER_GENERATOR_LINEAGE_LABELS,
     CHARACTER_GENERATOR_LINEAGE_VALUES,
@@ -650,6 +654,17 @@ def show_editor_main(state: State):
             show_persisted_value_editor(state, "Skill points:", PLAYER_SKILLS_SkillPoints)
             if show_persisted_value_options_editor(
                 state,
+                "Gender",
+                CHARACTER_GENERATOR_GENDER,
+                CHARACTER_GENDER_VALUES,
+                CHARACTER_GENDER_LABELS,
+            ):
+                # value is duplicated!
+                state.save_game.meta["projdata"]["gender"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_GENDER
+                )
+            if show_persisted_value_options_editor(
+                state,
                 "Pronouns",
                 CHARACTER_GENERATOR_PRONOUNS,
                 CHARACTER_GENERATOR_PRONOUN_OPTION_VALUES,
@@ -659,6 +674,7 @@ def show_editor_main(state: State):
                 state.save_game.meta["projdata"]["pronoun"] = state.save_game.get_persistence_property(
                     CHARACTER_GENERATOR_PRONOUNS
                 )
+            show_persisted_value_editor(state, "Is Trans?", CHARACTER_GENERATOR_IS_TRANS)
 
         if imgui.collapsing_header(
             "Currencies", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap

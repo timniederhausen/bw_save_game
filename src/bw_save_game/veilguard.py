@@ -138,6 +138,16 @@ ItemAttachmentSlot.None_._name_ = "None"
 ItemAttachmentSlot._member_map_["None"] = ItemAttachmentSlot.None_
 
 
+class CharacterGender(IntEnum):
+    Male = 0
+    Female = 1
+    NonBinary = 2
+
+
+CHARACTER_GENDER_LABELS = [e.name for e in CharacterGender]
+CHARACTER_GENDER_VALUES = [e.value for e in CharacterGender]
+
+
 class LootRarity(IntEnum):
     Rarity_None = 0
     Rarity_Common = 1
