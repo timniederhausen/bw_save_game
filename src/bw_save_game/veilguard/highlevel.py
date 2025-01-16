@@ -18,12 +18,14 @@ from bw_save_game.persistence import (
     parse_persistence_key_string,
     set_persisted_value,
 )
-from bw_save_game.veilguard import (
+from bw_save_game.veilguard.persistence import (
     PLAYER_SKILLS,
     SKILLS_REQUIRED_MAGE,
     SKILLS_REQUIRED_ROGUE,
     SKILLS_REQUIRED_WARRIOR,
     CharacterArchetype,
+)
+from bw_save_game.veilguard.types import (
     EcoQuestRegisteredStateFlags,
     ItemAttachmentType,
 )
