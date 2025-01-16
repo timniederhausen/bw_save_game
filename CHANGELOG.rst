@@ -2,6 +2,28 @@
 Changelog
 =========
 
+Version 1.2.0
+=============
+
+- feat: Add editor for Emmrich & Strife romance properties
+- feat: Add script for force-starting Lucanis' A Moment's Peace quest
+- fix: Prevent circular imports in `veilguard` package
+- fix(ui): Always create "Inquisition Choices" definition instance
+- fix: Use correct type for quest completion count
+- chore: Make install / usage instructions less ambiguous
+- refactor!: Split `veilguard` into multiple smaller modules
+- chore: Use dict comprehension for persistence key <> instance cache
+- feat: Add editors for Gender and is-trans state
+- chore(ui): Make appearance JSON editors scale with window size
+- feat: Add script to force-complete "Inner Demons" pre-reqs
+- feat: Support editing NPC romances (Luc & Neve, Harding & Taash)
+- feat: Support faction XP editing
+- feat: Support more inquisition choices (lineage, gender, voice, fate)
+- feat(ui): Accept save file to open as first command-line argument
+- feat: Add Inquisitor objective
+- feat: Support changing pronouns
+
+
 Version 1.0.1
 =============
 
