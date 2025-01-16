@@ -72,6 +72,7 @@ from bw_save_game.veilguard import (
     DIFFICULTY_COMBAT_PRESET_VALUES,
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
     DIFFICULTY_EXPLORATION_PRESET_VALUES,
+    EMMRICH_AND_STRIFE_PROPERTIES,
     FACTION_ANTIVANCROWS_PROPERTIES,
     FACTION_GREYWARDENS_PROPERTIES,
     FACTION_LORDSOFFORTUNE_PROPERTIES,
@@ -916,6 +917,11 @@ def show_editor_companions(state: State):
             "Lucanis & Neve", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
             for label, prop in LUCANIS_AND_NEVE_PROPERTIES.items():
+                show_persisted_value_editor(state, label, prop)
+        if imgui.collapsing_header(
+            "Emmrich & Strife", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            for label, prop in EMMRICH_AND_STRIFE_PROPERTIES.items():
                 show_persisted_value_editor(state, label, prop)
         imgui.end_tab_item()
 

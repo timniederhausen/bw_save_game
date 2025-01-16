@@ -547,6 +547,26 @@ LUCANIS_AND_NEVE_PROPERTIES = {
     "Made Pie": LUCANIS_AND_NEVE_Made_Pie,
 }
 
+EMMRICH_GENERAL = registered_persistence_key(1496155608)  # Emmrich_00_General_1496155608
+EMMRICH_GENERAL_Manfred_Is_Revived = PersistencePropertyDefinition(EMMRICH_GENERAL, 2031954296, "Boolean", False)
+EMMRICH_GENERAL_Emmrich_Is_Lich = PersistencePropertyDefinition(EMMRICH_GENERAL, 2156617276, "Boolean", False)
+EMMRICH_GENERAL_Rook_Dislikes_Necromancy = PersistencePropertyDefinition(EMMRICH_GENERAL, 2902701791, "Int32", 0)
+EMMRICH_GENERAL_Emmrich_Strife_Dating = PersistencePropertyDefinition(EMMRICH_GENERAL, 3132677744, "Boolean", False)
+
+EMMRICH_STRIFE_DATE = registered_persistence_key(1791028401)  # Emmrich_99_StrifeDateScene_1791028401
+EMMRICH_STRIFE_DATE_Emmrich_Strife_Caves = PersistencePropertyDefinition(
+    EMMRICH_STRIFE_DATE, 2383745674, "Boolean", False
+)
+EMMRICH_STRIFE_DATE_Emmrich_Strife_Grove = PersistencePropertyDefinition(
+    EMMRICH_STRIFE_DATE, 3776408187, "Boolean", False
+)
+
+EMMRICH_AND_STRIFE_PROPERTIES = {
+    "Romanced?": EMMRICH_GENERAL_Emmrich_Strife_Dating,
+    "Date at Caves?": EMMRICH_STRIFE_DATE_Emmrich_Strife_Caves,
+    "Date at Grove?": EMMRICH_STRIFE_DATE_Emmrich_Strife_Grove,
+}
+
 LUCANIS_M21 = registered_persistence_key(1232360751)  # Luc_2_1_140_m21_request_QST_RDA_1232360751
 LUCANIS_M23 = registered_persistence_key(1744784847)  # Luc_2_3_100_m23_request_QST_RDA_1744784847
 
