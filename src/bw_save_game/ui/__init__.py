@@ -85,6 +85,7 @@ from bw_save_game.veilguard import (
     LOOT_RARITY_NAMES,
     LUCANIS_AND_NEVE_PROPERTIES,
     LUCANIS_M21,
+    LUCANIS_M23,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -897,7 +898,10 @@ def show_editor_companions(state: State):
         show_editor_progression(state, PROGRESSION_LUCANIS_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_LUCANIS_PROPERTIES)
         show_editor_scripts(
-            {'Force-start "Inner Demons" quest': lambda: force_complete_quest(state.save_game, LUCANIS_M21)}
+            {
+                'Force-start "Inner Demons" quest': lambda: force_complete_quest(state.save_game, LUCANIS_M21),
+                'Force-start "A Moment\'s Peace" quest': lambda: force_complete_quest(state.save_game, LUCANIS_M23),
+            }
         )
         show_editor_companion_skills(state, CharacterArchetype.Follower_Lucanis)
         imgui.end_tab_item()

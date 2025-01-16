@@ -548,12 +548,7 @@ LUCANIS_AND_NEVE_PROPERTIES = {
 }
 
 LUCANIS_M21 = registered_persistence_key(1232360751)  # Luc_2_1_140_m21_request_QST_RDA_1232360751
-LUCANIS_M21__QuestState = PersistencePropertyDefinition(LUCANIS_M21, 1, "Uint8", 0)
-LUCANIS_M21__ActiveQuestPhaseId = PersistencePropertyDefinition(LUCANIS_M21, 2, "Uint32", 0)
-LUCANIS_M21__NumTimesCompleted = PersistencePropertyDefinition(LUCANIS_M21, 3, "Uint32", 0)
-LUCANIS_M21__ResetTime = PersistencePropertyDefinition(LUCANIS_M21, 302578490, "Uint64", 0)
-LUCANIS_M21__RewardsAvailable = PersistencePropertyDefinition(LUCANIS_M21, 3215455463, "Boolean", False)
-LUCANIS_M21__EligibleNotified = PersistencePropertyDefinition(LUCANIS_M21, 3821129581, "Boolean", False)
+LUCANIS_M23 = registered_persistence_key(1744784847)  # Luc_2_3_100_m23_request_QST_RDA_1744784847
 
 # Romance properties
 ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
