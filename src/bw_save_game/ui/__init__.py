@@ -709,6 +709,10 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Inquisitor", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
+            # XXX: Hacky for now: people always want the inquisition choices
+            if not state.save_game.get_persistence_instance(INQUISITION_CHOICES_LegacyReferences.key):
+                state.save_game.make_persistence_instance(INQUISITION_CHOICES_LegacyReferences.key)
+
             show_persisted_value_editor(state, "Reference past DA?", INQUISITION_CHOICES_LegacyReferences)
             show_persisted_value_options_editor(
                 state,
