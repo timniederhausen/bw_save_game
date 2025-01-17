@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.2.1
+=============
+
+- fix: Consistently use Long for Uint32 persistence properties
+
 Version 1.2.0
 =============
 
@@ -22,7 +27,6 @@ Version 1.2.0
 - feat(ui): Accept save file to open as first command-line argument
 - feat: Add Inquisitor objective
 - feat: Support changing pronouns
-
 
 Version 1.0.1
 =============
