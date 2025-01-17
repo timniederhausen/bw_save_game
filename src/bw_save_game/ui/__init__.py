@@ -36,10 +36,11 @@ from bw_save_game.persistence import (
 )
 from bw_save_game.ui.editors import (
     show_json_editor,
-    show_key_value_options_editor,
-    show_raw_key_value_editor,
-    show_raw_value_editor,
+    show_labeled_options_editor_in_place,
+    show_labeled_value_editor_in_place,
     show_uuid_editor,
+    show_value_editor_in_place,
+    show_value_tree_editor_in_place,
 )
 from bw_save_game.ui.utils import ask_for_file_to_open, ask_for_file_to_save, show_error
 from bw_save_game.ui.widgets import (
@@ -354,8 +355,8 @@ def show_persisted_value_editor(state: State, label: typing.Optional[str], prop:
 
     obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
     if label:
-        return show_raw_key_value_editor(obj, key, label)
-    return show_raw_value_editor(obj, key, obj[key])
+        return show_labeled_value_editor_in_place(label, obj, key)
+    return show_labeled_value_editor_in_place(key, obj, key)
 
 
 def show_persisted_value_options_editor(
@@ -366,7 +367,7 @@ def show_persisted_value_options_editor(
         return False
 
     obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
-    return show_key_value_options_editor(
+    return show_labeled_options_editor_in_place(
         label, obj, key, option_values, option_names, option_values.index(prop.default)
     )
 
@@ -375,13 +376,13 @@ def show_editor_raw_data(game: VeilguardSaveGame):
     if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in game.meta:
             imgui.push_id(key)
-            show_raw_key_value_editor(game.meta, key)
+            show_value_tree_editor_in_place(game.meta, key)
             imgui.pop_id()
     imgui.separator()
     if imgui.collapsing_header("Content", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for key in game.data:
             imgui.push_id(key)
-            show_raw_key_value_editor(game.data, key)
+            show_value_tree_editor_in_place(game.data, key)
             imgui.pop_id()
 
 
@@ -593,10 +594,10 @@ def show_currency_editor(state: State):
         obj = next((c for c in currencies if c["currency"] == currency_def["id"]), None)
         if obj is None:
             tmp = dict(currency=currency_def["id"], value=0)
-            if show_raw_value_editor(tmp, "value"):
+            if show_value_editor_in_place(tmp, "value"):
                 currencies.append(tmp)
         else:
-            show_raw_value_editor(obj, "value")
+            show_value_editor_in_place(obj, "value")
         imgui.pop_id()
     imgui.end_table()
 
@@ -606,8 +607,8 @@ def show_editor_main(state: State):
 
     if imgui.begin_child("##first column", child_flags=imgui.ChildFlags_.auto_resize_y):
         if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-            show_raw_key_value_editor(state.save_game.meta, "description", "Description")
-            show_raw_key_value_editor(state.save_game.meta, "uid", "Unique Identifier")
+            show_labeled_value_editor_in_place("Description", state.save_game.meta, "description")
+            show_labeled_value_editor_in_place("Unique Identifier", state.save_game.meta, "uid")
 
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -634,7 +635,7 @@ def show_editor_main(state: State):
                 state.save_game.meta["projdata"]["faction"] = state.save_game.get_persistence_property(
                     CHARACTER_GENERATOR_FACTION
                 )
-            if show_key_value_options_editor(
+            if show_labeled_options_editor_in_place(
                 "Class",
                 state.save_game.meta["projdata"],
                 "archetype",
@@ -645,7 +646,7 @@ def show_editor_main(state: State):
                 state.save_game.replace_character_archetype(
                     old_archetype, state.save_game.meta["projdata"]["archetype"]
                 )
-            show_key_value_options_editor(
+            show_labeled_options_editor_in_place(
                 "Class keybinding profile",
                 state.save_game.meta["projdata"],
                 "keybindingprofile",
@@ -691,7 +692,7 @@ def show_editor_main(state: State):
             "Difficulty", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
             difficulty = state.save_game.get_client_difficulty()
-            if show_key_value_options_editor(
+            if show_labeled_options_editor_in_place(
                 "Combat Difficulty",
                 difficulty,
                 "difficultyIndex",
@@ -700,7 +701,7 @@ def show_editor_main(state: State):
             ):
                 # value is duplicated!
                 state.save_game.meta["projdata"]["difficulty"] = difficulty["difficultyIndex"]
-            show_key_value_options_editor(
+            show_labeled_options_editor_in_place(
                 "Exploration Difficulty",
                 difficulty,
                 "explorationIndex",

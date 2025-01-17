@@ -18,7 +18,6 @@
 # -*- coding: utf-8 -*-
 import ctypes
 import json
-import typing
 from uuid import UUID, uuid1
 
 from imgui_bundle import icons_fontawesome, imgui
@@ -74,7 +73,7 @@ def show_uuid_editor(label: str, value: UUID):
     return False, None
 
 
-def show_numeric_value_editor(obj, key, value):
+def show_numeric_value_editor(value):
     # Unfortunately the DbObject type system doesn't save whether an integral type is signed or unsigned
     # For the UI we thus support the whole unsigned range for positive numbers.
     typ = None
@@ -102,58 +101,51 @@ def show_numeric_value_editor(obj, key, value):
 
     if typ is None:
         # not numeric
-        return False, False
+        return False, False, None
 
     new_value = bytearray(encoded_value)
     capsule = _wrap_bytes_for_imgui(new_value)
-    changed = imgui.input_scalar(f"##{key}", typ, capsule)
+    changed = imgui.input_scalar("##editor", typ, capsule)
     if not changed:
-        return True, False  # nothing to do
+        return True, False, None  # nothing to do
 
     if isinstance(value, int):
         if typ == imgui.DataType_.s64:
-            obj[key] = int64_struct.unpack(new_value)[0]
+            new_value = int64_struct.unpack(new_value)[0]
         else:
-            obj[key] = int32_struct.unpack(new_value)[0]
+            new_value = int32_struct.unpack(new_value)[0]
     if isinstance(value, Long):
-        obj[key] = Long(int64_struct.unpack(new_value)[0])
+        new_value = Long(int64_struct.unpack(new_value)[0])
     if isinstance(value, float):
-        obj[key] = float_struct.unpack(new_value)[0]
+        new_value = float_struct.unpack(new_value)[0]
     if isinstance(value, Double):
-        obj[key] = Double(double_struct.unpack(new_value)[0])
-    return True, True
+        new_value = Double(double_struct.unpack(new_value)[0])
+    return True, True, new_value
 
 
-def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
-    if value is None:
-        value = obj[key]
-
+def show_value_editor(value):
     supported = False
     if isinstance(value, bool):
         # https://github.com/ocornut/imgui/issues/623
         imgui.set_next_item_width(-1)
-        changed, new_value = imgui.checkbox(f"##{key}", value)
-        if changed:
-            obj[key] = new_value
+        changed, new_value = imgui.checkbox("##editor", value)
         supported = True
 
     if not supported:
         # https://github.com/ocornut/imgui/issues/623
         imgui.set_next_item_width(-1)
-        supported, changed = show_numeric_value_editor(obj, key, value)
+        supported, changed, new_value = show_numeric_value_editor(value)
 
     if not supported and isinstance(value, str):
         # https://github.com/ocornut/imgui/issues/623
         imgui.set_next_item_width(-1)
-        changed, new_value = imgui.input_text(f"##{key}", value)
-        if changed:
-            obj[key] = new_value
+        changed, new_value = imgui.input_text("##editor", value)
         supported = True
 
     if not supported and isinstance(value, UUID):
         # https://github.com/ocornut/imgui/issues/623
         imgui.set_next_item_width(-1 - 30)
-        changed, new_value = show_uuid_editor(f"##{key}", value)
+        changed, new_value = show_uuid_editor("##editor", value)
         imgui.same_line()
         if imgui.button(icons_fontawesome.ICON_FA_SYNC):
             changed = True
@@ -161,22 +153,45 @@ def show_raw_value_editor(obj: typing.MutableMapping, key, value=None):
         if imgui.begin_item_tooltip():
             imgui.text("Re-generate GUID")
             imgui.end_tooltip()
-        if changed:
-            obj[key] = new_value
         supported = True
 
     if not supported:
         raise TypeError(f"Unsupported type {type(value)}")
-    return changed
+    return changed, new_value
 
 
-def show_raw_key_value_editor(obj, key, label=None):
+def show_value_editor_in_place(obj, key):
+    imgui.push_id(key)
+    changed, new_value = show_value_editor(obj[key])
+    if changed:
+        obj[key] = new_value
+    imgui.pop_id()
+
+
+def show_labeled_value_editor(label, value):
+    imgui.columns(2)
+    imgui.text(label)
+    imgui.next_column()
+
+    changed, new_value = show_value_editor(value)
+
+    imgui.columns(1)
+    return changed, new_value
+
+
+def show_labeled_value_editor_in_place(label, obj, key):
+    imgui.push_id(key)
+    changed, new_value = show_labeled_value_editor(label, obj[key])
+    if changed:
+        obj[key] = new_value
+    imgui.pop_id()
+
+
+def show_value_tree_editor_in_place(obj, key):
     value = obj[key]
-    if label is None:
-        label = str(key)
 
     if isinstance(value, (dict, list)):
-        is_open, is_removed = imgui.collapsing_header(label, True, imgui.TreeNodeFlags_.allow_overlap)
+        is_open, is_removed = imgui.collapsing_header(key, True, imgui.TreeNodeFlags_.allow_overlap)
         if not is_open:
             return
 
@@ -184,35 +199,28 @@ def show_raw_key_value_editor(obj, key, label=None):
         imgui.indent()
         if isinstance(value, dict):
             for sub_key in value:
-                show_raw_key_value_editor(value, sub_key)
+                show_value_tree_editor_in_place(value, sub_key)
         if isinstance(value, list):
             for sub_key in range(len(value)):
-                show_raw_key_value_editor(value, sub_key)
+                show_value_tree_editor_in_place(value, sub_key)
         imgui.unindent()
         imgui.pop_id()
         return
 
     imgui.push_id(key)
-    imgui.columns(2)
-    imgui.text(label)
-    imgui.next_column()
-
-    changed = show_raw_value_editor(obj, key, value)
-
-    imgui.columns(1)
+    changed, new_value = show_labeled_value_editor(key, value)
+    if changed:
+        obj[key] = new_value
     imgui.pop_id()
     return changed
 
 
-def show_key_value_options_editor(
-    label: str, obj, key, option_values: list, option_names: list[str], default_option_index: int = 0
+def show_labeled_options_editor(
+    label: str, value, option_values: list, option_names: list[str], default_option_index: int = 0
 ):
-    value = obj.get(key)
     if value is None:
         value = option_values[default_option_index]
     native_value = to_native(value)
-
-    imgui.push_id(key)
 
     imgui.columns(2)
     imgui.text(label)
@@ -230,8 +238,24 @@ def show_key_value_options_editor(
     imgui.set_next_item_width(-1)
     changed, current_item = show_searchable_combo_box("##combo", option_names, current_item)
     if changed:
-        obj[key] = option_values[current_item]
+        new_value = option_values[current_item]
+    else:
+        new_value = None
 
     imgui.columns(1)
+    return changed, new_value
+
+
+def show_labeled_options_editor_in_place(
+    label: str, obj, key, option_values: list, option_names: list[str], default_option_index: int = 0
+):
+    imgui.push_id(key)
+    changed, new_value = show_labeled_options_editor(
+        label, obj.get(key), option_values, option_names, default_option_index
+    )
     imgui.pop_id()
+
+    if changed:
+        obj[key] = new_value
+
     return changed
