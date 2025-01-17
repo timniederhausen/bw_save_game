@@ -225,4 +225,4 @@ def force_complete_quest(save_game: VeilguardSaveGame, quest_key: PersistenceKey
         PersistencePropertyDefinition(quest_key, 1, "Uint8", 0),
         EcoQuestRegisteredStateFlags.Eligible | EcoQuestRegisteredStateFlags.Completed,
     )
-    save_game.set_persistence_property(PersistencePropertyDefinition(quest_key, 3, "Uint32", 0), Long(1))
+    save_game.set_persistence_property(PersistencePropertyDefinition(quest_key, 3, "Uint32", 0), 1)

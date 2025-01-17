@@ -37,7 +37,7 @@ PROPERTY_TYPES = {
     "Boolean": bool,
     "Uint8": int,
     "Uint16": int,
-    "Uint32": int,
+    "Uint32": Long,
     "Uint64": Long,
     "Int8": int,
     "Int16": int,
