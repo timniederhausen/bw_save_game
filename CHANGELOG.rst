@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 1.2.2
+=============
+
+* fix: Correct some wrong defaults in CharacterGenerator_RDA_1647819227
+* refactor!(ui): Split our custom editors into normal & in-place variants
+
 Version 1.2.1
 =============
 
