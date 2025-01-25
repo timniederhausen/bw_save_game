@@ -31,13 +31,14 @@ from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
     PersistenceKey,
     PersistencePropertyDefinition,
-    get_or_create_persisted_value,
     registered_persistence_key,
 )
 from bw_save_game.ui.editors import (
     show_editor_bit_flags,
     show_json_editor,
+    show_labeled_options_editor,
     show_labeled_options_editor_in_place,
+    show_labeled_value_editor,
     show_labeled_value_editor_in_place,
     show_uuid_editor,
     show_value_editor_in_place,
@@ -350,28 +351,34 @@ def show_item_id_editor(obj):
     # show_simple_value_editor(obj, "itemDataId")
 
 
-def show_persisted_value_editor(state: State, label: typing.Optional[str], prop: PersistencePropertyDefinition):
-    def_instance = state.save_game.get_persistence_instance(prop.key)
-    if not def_instance:
-        return False
+def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
+    # XXX: nanobind only accepts signed values for PushID(int)
+    signed_id = prop.id
+    imgui.push_id(signed_id - (signed_id & (1 << 31)))
 
-    obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
-    if label:
-        return show_labeled_value_editor_in_place(label, obj, key)
-    return show_labeled_value_editor_in_place(key, obj, key)
+    changed, new_value = show_labeled_value_editor(label, state.save_game.get_persistence_property(prop))
+    if changed:
+        state.save_game.set_persistence_property(prop, new_value)
+    imgui.pop_id()
 
 
 def show_persisted_value_options_editor(
     state: State, label: str, prop: PersistencePropertyDefinition, option_values: list, option_names: list[str]
 ):
-    def_instance = state.save_game.get_persistence_instance(prop.key)
-    if not def_instance:
-        return False
+    # XXX: nanobind only accepts signed values for PushID(int)
+    signed_id = prop.id
+    imgui.push_id(signed_id - (signed_id & (1 << 31)))
 
-    obj, key = get_or_create_persisted_value(def_instance, prop.id, prop.type, prop.default)
-    return show_labeled_options_editor_in_place(
-        label, obj, key, option_values, option_names, option_values.index(prop.default)
+    changed, new_value = show_labeled_options_editor(
+        label,
+        state.save_game.get_persistence_property(prop),
+        option_values,
+        option_names,
+        option_values.index(prop.default),
     )
+    if changed:
+        state.save_game.set_persistence_property(prop, new_value)
+    imgui.pop_id()
 
 
 def show_editor_raw_data(game: VeilguardSaveGame):
@@ -843,7 +850,7 @@ def show_editor_skills_list(state: State, graph: dict, persistence_key: Persiste
             imgui.table_next_column()
             imgui.text(skill["name"])
             imgui.table_next_column()
-            show_persisted_value_editor(state, None, unlock_property)
+            show_persisted_value_editor(state, "", unlock_property)
             imgui.pop_id()
         imgui.end_table()
 

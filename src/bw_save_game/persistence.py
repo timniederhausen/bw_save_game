@@ -20,7 +20,7 @@ import typing
 from dataclasses import dataclass
 from enum import Enum
 
-from bw_save_game.db_object import Long
+from bw_save_game.db_object import Long, to_native
 
 
 class PersistenceFamilyId(Enum):
@@ -181,8 +181,8 @@ def get_persisted_value(def_instance: dict, property_id: int, property_type: str
         if prop_name in prop:
             found_prop = prop
     if found_prop is None:
-        return PROPERTY_TYPES[property_type](default_value)
-    return found_prop[prop_name]
+        return default_value
+    return to_native(found_prop[prop_name])
 
 
 def set_persisted_value(def_instance: dict, property_id: int, property_type: str, value):
