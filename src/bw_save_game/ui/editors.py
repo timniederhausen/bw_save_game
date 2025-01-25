@@ -259,3 +259,23 @@ def show_labeled_options_editor_in_place(
         obj[key] = new_value
 
     return changed
+
+
+def show_editor_bit_flags(label: str, flag_type, value: int):
+    imgui.columns(2)
+    imgui.text(label)
+    imgui.next_column()
+
+    changed = False
+    new_value = value
+    for state_flag in flag_type:
+        this_changed, this_new_value = imgui.checkbox(state_flag.name, 0 != (value & state_flag.value))
+        if this_changed:
+            changed = True
+            if this_new_value:
+                new_value |= state_flag.value
+            else:
+                new_value &= ~state_flag.value
+
+    imgui.columns(1)
+    return changed, new_value

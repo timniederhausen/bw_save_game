@@ -35,6 +35,7 @@ from bw_save_game.persistence import (
     registered_persistence_key,
 )
 from bw_save_game.ui.editors import (
+    show_editor_bit_flags,
     show_json_editor,
     show_labeled_options_editor_in_place,
     show_labeled_value_editor_in_place,
@@ -103,6 +104,7 @@ from bw_save_game.veilguard import (
     ROMANCE_NEVE_PROPERTIES,
     ROMANCE_TAASH_PROPERTIES,
     SKILL_GRAPHS,
+    BWFollowerStateFlag,
     CharacterArchetype,
     CollectibleSetFlag,
     INQUISITION_CHOICES_Inquisitor_Gender,
@@ -801,7 +803,14 @@ def show_editor_appearances(state: State):
 def show_editor_progression(state: State, progression_properties: dict):
     if imgui.collapsing_header("Progression", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
         for label, prop in progression_properties.items():
-            show_persisted_value_editor(state, label, prop)
+            if label == "State":
+                changed, new_value = show_editor_bit_flags(
+                    label, BWFollowerStateFlag, state.save_game.get_persistence_property(prop)
+                )
+                if changed:
+                    state.save_game.set_persistence_property(prop, new_value)
+            else:
+                show_persisted_value_editor(state, label, prop)
 
 
 def show_editor_scripts(scripts: dict):

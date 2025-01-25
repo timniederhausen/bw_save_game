@@ -122,7 +122,7 @@ class VeilguardSaveGame(object):
     def get_persistence_property(self, prop: PersistencePropertyDefinition):
         instance = self.get_persistence_instance(prop.key)
         if instance is None:
-            return None
+            return prop.default
         return get_persisted_value(instance, prop.id, prop.type, prop.default)
 
     def set_persistence_property(self, prop: PersistencePropertyDefinition, value):

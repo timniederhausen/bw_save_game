@@ -193,6 +193,7 @@ PROGRESSION_NEVE_Context = PersistencePropertyDefinition(PROGRESSION_NEVE, 39013
 PROGRESSION_NEVE__Available = PersistencePropertyDefinition(PROGRESSION_NEVE, 4103292835, "Boolean", True)
 
 PROGRESSION_NEVE_PROPERTIES = {
+    "State": PROGRESSION_NEVE__State,
     "Relationship XP": PROGRESSION_NEVE_Relationship_XP,
 }
 
@@ -216,6 +217,7 @@ PROGRESSION_LUCANIS_Context = PersistencePropertyDefinition(PROGRESSION_LUCANIS,
 PROGRESSION_LUCANIS__Available = PersistencePropertyDefinition(PROGRESSION_LUCANIS, 4103292835, "Boolean", True)
 
 PROGRESSION_LUCANIS_PROPERTIES = {
+    "State": PROGRESSION_LUCANIS__State,
     "Relationship XP": PROGRESSION_LUCANIS_Relationship_XP,
 }
 
@@ -237,6 +239,7 @@ PROGRESSION_TAASH_ExploreAbilityUnlock = PersistencePropertyDefinition(PROGRESSI
 PROGRESSION_TAASH__Available = PersistencePropertyDefinition(PROGRESSION_TAASH, 4103292835, "Boolean", True)
 
 PROGRESSION_TAASH_PROPERTIES = {
+    "State": PROGRESSION_TAASH__State,
     "Relationship XP": PROGRESSION_TAASH_Relationship_XP,
 }
 
@@ -260,6 +263,7 @@ PROGRESSION_EMMRICH_Context = PersistencePropertyDefinition(PROGRESSION_EMMRICH,
 PROGRESSION_EMMRICH__Available = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 4103292835, "Boolean", True)
 
 PROGRESSION_EMMRICH_PROPERTIES = {
+    "State": PROGRESSION_EMMRICH__State,
     "Relationship XP": PROGRESSION_EMMRICH_Relationship_XP,
 }
 
@@ -281,6 +285,7 @@ PROGRESSION_DAVRIN_Context = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 3
 PROGRESSION_DAVRIN__Available = PersistencePropertyDefinition(PROGRESSION_DAVRIN, 4103292835, "Boolean", True)
 
 PROGRESSION_DAVRIN_PROPERTIES = {
+    "State": PROGRESSION_DAVRIN__State,
     "Relationship XP": PROGRESSION_DAVRIN_Relationship_XP,
 }
 
@@ -304,6 +309,7 @@ PROGRESSION_BELLARA_Context = PersistencePropertyDefinition(PROGRESSION_BELLARA,
 PROGRESSION_BELLARA__Available = PersistencePropertyDefinition(PROGRESSION_BELLARA, 4103292835, "Boolean", True)
 
 PROGRESSION_BELLARA_PROPERTIES = {
+    "State": PROGRESSION_BELLARA__State,
     "Relationship XP": PROGRESSION_BELLARA_Relationship_XP,
 }
 
@@ -327,6 +333,7 @@ PROGRESSION_HARDING_Context = PersistencePropertyDefinition(PROGRESSION_HARDING,
 PROGRESSION_HARDING__Available = PersistencePropertyDefinition(PROGRESSION_HARDING, 4103292835, "Boolean", True)
 
 PROGRESSION_HARDING_PROPERTIES = {
+    "State": PROGRESSION_HARDING__State,
     "Relationship XP": PROGRESSION_HARDING_Relationship_XP,
 }
 
@@ -354,6 +361,7 @@ FACTION_MOURNWATCH__State = PersistencePropertyDefinition(FACTION_MOURNWATCH, 35
 FACTION_MOURNWATCH__Available = PersistencePropertyDefinition(FACTION_MOURNWATCH, 4103292835, "Boolean", True)
 
 FACTION_MOURNWATCH_PROPERTIES = {
+    "State": FACTION_MOURNWATCH__State,
     "Faction XP": FACTION_MOURNWATCH_Faction_XP,
     "Faction Power": FACTION_MOURNWATCH_Faction_Power,
     "Finale Strength": FACTION_MOURNWATCH_FinaleStrength,
@@ -386,6 +394,7 @@ FACTION_ANTIVANCROWS__State = PersistencePropertyDefinition(FACTION_ANTIVANCROWS
 FACTION_ANTIVANCROWS__Available = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 4103292835, "Boolean", True)
 
 FACTION_ANTIVANCROWS_PROPERTIES = {
+    "State": FACTION_ANTIVANCROWS__State,
     "Faction XP": FACTION_ANTIVANCROWS_Faction_XP,
     "Faction Power": FACTION_ANTIVANCROWS_Faction_Power,
     "Finale Strength": FACTION_ANTIVANCROWS_FinaleStrength,
@@ -420,6 +429,7 @@ FACTION_LORDSOFFORTUNE__State = PersistencePropertyDefinition(FACTION_LORDSOFFOR
 FACTION_LORDSOFFORTUNE__Available = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 4103292835, "Boolean", True)
 
 FACTION_LORDSOFFORTUNE_PROPERTIES = {
+    "State": FACTION_LORDSOFFORTUNE__State,
     "Faction XP": FACTION_LORDSOFFORTUNE_Faction_XP,
     "Faction Power": FACTION_LORDSOFFORTUNE_Faction_Power,
     "Finale Strength": FACTION_LORDSOFFORTUNE_FinaleStrength,
@@ -452,6 +462,7 @@ FACTION_VEILJUMPERS__State = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 
 FACTION_VEILJUMPERS__Available = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 4103292835, "Boolean", True)
 
 FACTION_VEILJUMPERS_PROPERTIES = {
+    "State": FACTION_VEILJUMPERS__State,
     "Faction XP": FACTION_VEILJUMPERS_Faction_XP,
     "Faction Power": FACTION_VEILJUMPERS_Faction_Power,
     "Finale Strength": FACTION_VEILJUMPERS_FinaleStrength,
@@ -484,6 +495,7 @@ FACTION_GREYWARDENS__State = PersistencePropertyDefinition(FACTION_GREYWARDENS, 
 FACTION_GREYWARDENS__Available = PersistencePropertyDefinition(FACTION_GREYWARDENS, 4103292835, "Boolean", True)
 
 FACTION_GREYWARDENS_PROPERTIES = {
+    "State": FACTION_GREYWARDENS__State,
     "Faction XP": FACTION_GREYWARDENS_Faction_XP,
     "Faction Power": FACTION_GREYWARDENS_Faction_Power,
     "Finale Strength": FACTION_GREYWARDENS_FinaleStrength,
@@ -518,6 +530,7 @@ FACTION_SHADOWDRAGONS__State = PersistencePropertyDefinition(FACTION_SHADOWDRAGO
 FACTION_SHADOWDRAGONS__Available = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 4103292835, "Boolean", True)
 
 FACTION_SHADOWDRAGONS_PROPERTIES = {
+    "State": FACTION_SHADOWDRAGONS__State,
     "Faction XP": FACTION_SHADOWDRAGONS_Faction_XP,
     "Faction Power": FACTION_SHADOWDRAGONS_Faction_Power,
     "Finale Strength": FACTION_SHADOWDRAGONS_FinaleStrength,
