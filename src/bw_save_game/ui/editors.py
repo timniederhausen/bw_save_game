@@ -191,7 +191,7 @@ def show_value_tree_editor_in_place(obj, key):
     value = obj[key]
 
     if isinstance(value, (dict, list)):
-        is_open, is_removed = imgui.collapsing_header(key, True, imgui.TreeNodeFlags_.allow_overlap)
+        is_open, is_removed = imgui.collapsing_header(str(key), True, imgui.TreeNodeFlags_.allow_overlap)
         if not is_open:
             return
 
