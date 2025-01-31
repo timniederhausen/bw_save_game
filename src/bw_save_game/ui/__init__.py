@@ -76,6 +76,8 @@ from bw_save_game.veilguard import (
     DIFFICULTY_EXPLORATION_PRESET_LABELS,
     DIFFICULTY_EXPLORATION_PRESET_VALUES,
     EMMRICH_AND_STRIFE_PROPERTIES,
+    EMMRICH_M23_LICHBECOMING,
+    EMMRICH_M23_MANFREDREVIVE,
     FACTION_ANTIVANCROWS_PROPERTIES,
     FACTION_GREYWARDENS_PROPERTIES,
     FACTION_LORDSOFFORTUNE_PROPERTIES,
@@ -903,6 +905,16 @@ def show_editor_companions(state: State):
     if imgui.begin_tab_item("Emmrich")[0]:
         show_editor_progression(state, PROGRESSION_EMMRICH_PROPERTIES)
         show_editor_companion_romance(state, ROMANCE_EMMRICH_PROPERTIES)
+        show_editor_scripts(
+            {
+                'Force-start "Will and Testament" quest': lambda: force_complete_quest(
+                    state.save_game, EMMRICH_M23_LICHBECOMING
+                ),
+                'Force-start "Heir to the Dead" quest': lambda: force_complete_quest(
+                    state.save_game, EMMRICH_M23_MANFREDREVIVE
+                ),
+            }
+        )
         show_editor_companion_skills(state, CharacterArchetype.Follower_Emmrich)
         imgui.end_tab_item()
 

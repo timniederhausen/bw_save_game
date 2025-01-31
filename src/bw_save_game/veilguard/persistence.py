@@ -582,6 +582,12 @@ EMMRICH_AND_STRIFE_PROPERTIES = {
 
 LUCANIS_M21 = registered_persistence_key(1232360751)  # Luc_2_1_140_m21_request_QST_RDA_1232360751
 LUCANIS_M23 = registered_persistence_key(1744784847)  # Luc_2_3_100_m23_request_QST_RDA_1744784847
+EMMRICH_M23_LICHBECOMING = registered_persistence_key(
+    1170183125
+)  # Emm_2_3_100_m23_LichBecoming_request_QST_RDA_1170183125
+EMMRICH_M23_MANFREDREVIVE = registered_persistence_key(
+    2083352105
+)  # Emm_2_3_100_m23_ManfredRevive_request_QST_RDA_2083352105
 
 # Romance properties
 ROMANCE_NEVE = registered_persistence_key(2022350065)  # Neve_00_Romance_2022350065
