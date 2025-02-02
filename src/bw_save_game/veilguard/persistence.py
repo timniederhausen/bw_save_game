@@ -262,9 +262,28 @@ PROGRESSION_EMMRICH__State = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 
 PROGRESSION_EMMRICH_Context = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 3901334258, "Int32", 0)
 PROGRESSION_EMMRICH__Available = PersistencePropertyDefinition(PROGRESSION_EMMRICH, 4103292835, "Boolean", True)
 
+EMMRICH_GENERAL = registered_persistence_key(1496155608)  # Emmrich_00_General_1496155608
+EMMRICH_GENERAL_Manfred_Is_Revived = PersistencePropertyDefinition(EMMRICH_GENERAL, 2031954296, "Boolean", False)
+EMMRICH_GENERAL_Emmrich_Is_Lich = PersistencePropertyDefinition(EMMRICH_GENERAL, 2156617276, "Boolean", False)
+EMMRICH_GENERAL_Rook_Dislikes_Necromancy = PersistencePropertyDefinition(EMMRICH_GENERAL, 2902701791, "Int32", 0)
+EMMRICH_GENERAL_Emmrich_Strife_Dating = PersistencePropertyDefinition(EMMRICH_GENERAL, 3132677744, "Boolean", False)
+
+EMMRICH_SACRIFICE = registered_persistence_key(1146399126)  # Emmrich_22_Sacrifice_1146399126
+EMMRICH_SACRIFICE_Hezenkoss_Noticed_Romance = PersistencePropertyDefinition(
+    EMMRICH_SACRIFICE, 2658489548, "Boolean", False
+)
+EMMRICH_SACRIFICE_Emmrich_Chooses_Manfred = PersistencePropertyDefinition(
+    EMMRICH_SACRIFICE, 3304176969, "Boolean", False
+)
+EMMRICH_SACRIFICE_Emmrich_Chooses_Lich = PersistencePropertyDefinition(EMMRICH_SACRIFICE, 3980442991, "Boolean", False)
+
 PROGRESSION_EMMRICH_PROPERTIES = {
     "State": PROGRESSION_EMMRICH__State,
     "Relationship XP": PROGRESSION_EMMRICH_Relationship_XP,
+    # "Is Manfred revived?": EMMRICH_GENERAL_Manfred_Is_Revived,
+    # "Is Emmrich a Lich?": EMMRICH_GENERAL_Emmrich_Is_Lich,
+    "Emmrich chose Manfred?": EMMRICH_SACRIFICE_Emmrich_Chooses_Manfred,
+    "Emmrich chose Lichdom?": EMMRICH_SACRIFICE_Emmrich_Chooses_Lich,
 }
 
 PROGRESSION_DAVRIN = registered_persistence_key(1160045836)  # Davrin_RDA_1160045836
@@ -361,7 +380,7 @@ FACTION_MOURNWATCH__State = PersistencePropertyDefinition(FACTION_MOURNWATCH, 35
 FACTION_MOURNWATCH__Available = PersistencePropertyDefinition(FACTION_MOURNWATCH, 4103292835, "Boolean", True)
 
 FACTION_MOURNWATCH_PROPERTIES = {
-    "State": FACTION_MOURNWATCH__State,
+    # "State": FACTION_MOURNWATCH__State,
     "Faction XP": FACTION_MOURNWATCH_Faction_XP,
     "Faction Power": FACTION_MOURNWATCH_Faction_Power,
     "Finale Strength": FACTION_MOURNWATCH_FinaleStrength,
@@ -394,7 +413,7 @@ FACTION_ANTIVANCROWS__State = PersistencePropertyDefinition(FACTION_ANTIVANCROWS
 FACTION_ANTIVANCROWS__Available = PersistencePropertyDefinition(FACTION_ANTIVANCROWS, 4103292835, "Boolean", True)
 
 FACTION_ANTIVANCROWS_PROPERTIES = {
-    "State": FACTION_ANTIVANCROWS__State,
+    # "State": FACTION_ANTIVANCROWS__State,
     "Faction XP": FACTION_ANTIVANCROWS_Faction_XP,
     "Faction Power": FACTION_ANTIVANCROWS_Faction_Power,
     "Finale Strength": FACTION_ANTIVANCROWS_FinaleStrength,
@@ -429,7 +448,7 @@ FACTION_LORDSOFFORTUNE__State = PersistencePropertyDefinition(FACTION_LORDSOFFOR
 FACTION_LORDSOFFORTUNE__Available = PersistencePropertyDefinition(FACTION_LORDSOFFORTUNE, 4103292835, "Boolean", True)
 
 FACTION_LORDSOFFORTUNE_PROPERTIES = {
-    "State": FACTION_LORDSOFFORTUNE__State,
+    # "State": FACTION_LORDSOFFORTUNE__State,
     "Faction XP": FACTION_LORDSOFFORTUNE_Faction_XP,
     "Faction Power": FACTION_LORDSOFFORTUNE_Faction_Power,
     "Finale Strength": FACTION_LORDSOFFORTUNE_FinaleStrength,
@@ -462,7 +481,7 @@ FACTION_VEILJUMPERS__State = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 
 FACTION_VEILJUMPERS__Available = PersistencePropertyDefinition(FACTION_VEILJUMPERS, 4103292835, "Boolean", True)
 
 FACTION_VEILJUMPERS_PROPERTIES = {
-    "State": FACTION_VEILJUMPERS__State,
+    # "State": FACTION_VEILJUMPERS__State,
     "Faction XP": FACTION_VEILJUMPERS_Faction_XP,
     "Faction Power": FACTION_VEILJUMPERS_Faction_Power,
     "Finale Strength": FACTION_VEILJUMPERS_FinaleStrength,
@@ -495,7 +514,7 @@ FACTION_GREYWARDENS__State = PersistencePropertyDefinition(FACTION_GREYWARDENS, 
 FACTION_GREYWARDENS__Available = PersistencePropertyDefinition(FACTION_GREYWARDENS, 4103292835, "Boolean", True)
 
 FACTION_GREYWARDENS_PROPERTIES = {
-    "State": FACTION_GREYWARDENS__State,
+    # "State": FACTION_GREYWARDENS__State,
     "Faction XP": FACTION_GREYWARDENS_Faction_XP,
     "Faction Power": FACTION_GREYWARDENS_Faction_Power,
     "Finale Strength": FACTION_GREYWARDENS_FinaleStrength,
@@ -530,7 +549,7 @@ FACTION_SHADOWDRAGONS__State = PersistencePropertyDefinition(FACTION_SHADOWDRAGO
 FACTION_SHADOWDRAGONS__Available = PersistencePropertyDefinition(FACTION_SHADOWDRAGONS, 4103292835, "Boolean", True)
 
 FACTION_SHADOWDRAGONS_PROPERTIES = {
-    "State": FACTION_SHADOWDRAGONS__State,
+    # "State": FACTION_SHADOWDRAGONS__State,
     "Faction XP": FACTION_SHADOWDRAGONS_Faction_XP,
     "Faction Power": FACTION_SHADOWDRAGONS_Faction_Power,
     "Finale Strength": FACTION_SHADOWDRAGONS_FinaleStrength,
@@ -559,12 +578,6 @@ LUCANIS_AND_NEVE_PROPERTIES = {
     "No Pie": LUCANIS_AND_NEVE_No_Pie,
     "Made Pie": LUCANIS_AND_NEVE_Made_Pie,
 }
-
-EMMRICH_GENERAL = registered_persistence_key(1496155608)  # Emmrich_00_General_1496155608
-EMMRICH_GENERAL_Manfred_Is_Revived = PersistencePropertyDefinition(EMMRICH_GENERAL, 2031954296, "Boolean", False)
-EMMRICH_GENERAL_Emmrich_Is_Lich = PersistencePropertyDefinition(EMMRICH_GENERAL, 2156617276, "Boolean", False)
-EMMRICH_GENERAL_Rook_Dislikes_Necromancy = PersistencePropertyDefinition(EMMRICH_GENERAL, 2902701791, "Int32", 0)
-EMMRICH_GENERAL_Emmrich_Strife_Dating = PersistencePropertyDefinition(EMMRICH_GENERAL, 3132677744, "Boolean", False)
 
 EMMRICH_STRIFE_DATE = registered_persistence_key(1791028401)  # Emmrich_99_StrifeDateScene_1791028401
 EMMRICH_STRIFE_DATE_Emmrich_Strife_Caves = PersistencePropertyDefinition(
