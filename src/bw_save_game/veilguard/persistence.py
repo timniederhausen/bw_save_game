@@ -784,6 +784,160 @@ ROMANCE_LUCANIS_PROPERTIES = {
     "Afterglow: Complete?": ROMANCE_LUCANIS_Lucanis_Afterglow_Complete,
 }
 
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION = registered_persistence_key(
+    1898131446
+)  # QST_SHD_2_1_SoulOfACity_Lighthouse_Acquisition_RDA_1898131446
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__QuestState = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 1, "Uint8", 0
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__ActiveQuestPhaseId = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 2, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__NumTimesCompleted = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 3, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__ResetTime = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 302578490, "Uint64", 0
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION_HasSeenNote = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 782031478, "Boolean", False
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__RewardsAvailable = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 3215455463, "Boolean", False
+)
+QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION__EligibleNotified = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_LIGHTHOUSE_ACQUISITION, 3821129581, "Boolean", False
+)
+
+QST_SHD_2_1_SOULOFACITY_ACQUISITION = registered_persistence_key(
+    1586564090
+)  # QST_SHD_2_1_SoulOfACity_Acquisition_RDA_1586564090
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__QuestState = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 1, "Uint8", 0
+)
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__ActiveQuestPhaseId = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 2, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__NumTimesCompleted = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 3, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__ResetTime = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 302578490, "Uint64", 0
+)
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__RewardsAvailable = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 3215455463, "Boolean", False
+)
+QST_SHD_2_1_SOULOFACITY_ACQUISITION__EligibleNotified = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_ACQUISITION, 3821129581, "Boolean", False
+)
+
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN = registered_persistence_key(
+    1928917107
+)  # QST_SHD_2_1_SoulOfACity_DockTown_RDA_1928917107
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__QuestState = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 1, "Uint8", 0
+)
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__ActiveQuestPhaseId = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 2, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__NumTimesCompleted = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 3, "Uint32", 0
+)
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__ResetTime = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 302578490, "Uint64", 0
+)
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__RewardsAvailable = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 3215455463, "Boolean", False
+)
+QST_SHD_2_1_SOULOFACITY_DOCKTOWN__EligibleNotified = PersistencePropertyDefinition(
+    QST_SHD_2_1_SOULOFACITY_DOCKTOWN, 3821129581, "Boolean", False
+)
+
+ISLEOFTHEGODS_00_CHOICES = registered_persistence_key(1619648310)  # IsleOfTheGods_00_Choices_1619648310
+ISLEOFTHEGODS_00_CHOICES_Freed_Lucanis = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 389089548, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_ReturnedBlightedFollower = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 393652444, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Neve = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 396051283, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Taash = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 764712764, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Taash = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 1158431396, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Davrin = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 1474940403, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Chose_Bellara = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 1789587008, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Neve = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 1869660478, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Davrin = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 1885778107, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Harding = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2035009497, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Emmrich = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2156074536, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Lucanis = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2400693220, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Chose_Neve = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2438401137, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Bellara = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2605951304, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Chose_Harding = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2745032273, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Chose_Davrin = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 2804938228, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Harding = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 3237531616, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_I_Love_the_Gods = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 3658555516, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_RandomFollower_Emmrich = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 3682322430, "Boolean", False
+)
+ISLEOFTHEGODS_00_CHOICES_Freed_Bellara = PersistencePropertyDefinition(
+    ISLEOFTHEGODS_00_CHOICES, 4109623615, "Boolean", False
+)
+
+ISLEOFTHEGODS_00_CHOICES_PROPERTIES = {
+    "Freed Lucanis": ISLEOFTHEGODS_00_CHOICES_Freed_Lucanis,
+    "ReturnedBlightedFollower": ISLEOFTHEGODS_00_CHOICES_ReturnedBlightedFollower,
+    "RandomFollower Neve": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Neve,
+    "Freed Taash": ISLEOFTHEGODS_00_CHOICES_Freed_Taash,
+    "RandomFollower Taash": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Taash,
+    "Freed Davrin": ISLEOFTHEGODS_00_CHOICES_Freed_Davrin,
+    "Chose Bellara": ISLEOFTHEGODS_00_CHOICES_Chose_Bellara,
+    "Freed Neve": ISLEOFTHEGODS_00_CHOICES_Freed_Neve,
+    "RandomFollower Davrin": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Davrin,
+    "RandomFollower Harding": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Harding,
+    "Freed Emmrich": ISLEOFTHEGODS_00_CHOICES_Freed_Emmrich,
+    "RandomFollower Lucanis": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Lucanis,
+    "Chose Neve": ISLEOFTHEGODS_00_CHOICES_Chose_Neve,
+    "RandomFollower Bellara": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Bellara,
+    "Chose Harding": ISLEOFTHEGODS_00_CHOICES_Chose_Harding,
+    "Chose Davrin": ISLEOFTHEGODS_00_CHOICES_Chose_Davrin,
+    "Freed Harding": ISLEOFTHEGODS_00_CHOICES_Freed_Harding,
+    "I Love the Gods": ISLEOFTHEGODS_00_CHOICES_I_Love_the_Gods,
+    "RandomFollower Emmrich": ISLEOFTHEGODS_00_CHOICES_RandomFollower_Emmrich,
+    "Freed Bellara": ISLEOFTHEGODS_00_CHOICES_Freed_Bellara,
+}
+
 # Skills
 NEVE_SKILLS = registered_persistence_key(1218516147)  # NeveSkillRDA_1218516147
 NEVE_SKILLS_MaxSkills = PersistencePropertyDefinition(NEVE_SKILLS, 610427180, "Uint32", 160)

@@ -5,6 +5,7 @@ from importlib_resources import files
 
 from .highlevel import *  # noqa: F401,F403
 from .persistence import *  # noqa: F401,F403
+from .scripts import *  # noqa: F401,F403
 from .types import *  # noqa: F401,F403
 
 # from data files:

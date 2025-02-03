@@ -85,6 +85,7 @@ from bw_save_game.veilguard import (
     FACTION_SHADOWDRAGONS_PROPERTIES,
     FACTION_VEILJUMPERS_PROPERTIES,
     HARDING_AND_TASH_PROPERTIES,
+    ISLEOFTHEGODS_00_CHOICES_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -136,6 +137,7 @@ from bw_save_game.veilguard import (
     construct_item_attachment,
     deconstruct_item_attachment,
     force_complete_quest,
+    force_start_soul_of_a_city,
     item_attachment_to_string,
 )
 
@@ -809,33 +811,41 @@ def show_editor_appearances(state: State):
         imgui.pop_item_width()
 
 
-def show_editor_progression(state: State, progression_properties: dict):
-    if imgui.collapsing_header("Progression", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        for label, prop in progression_properties.items():
-            if label == "State":
-                changed, new_value = show_editor_bit_flags(
-                    label, BWFollowerStateFlag, state.save_game.get_persistence_property(prop)
-                )
-                if changed:
-                    state.save_game.set_persistence_property(prop, new_value)
-            else:
-                show_persisted_value_editor(state, label, prop)
+def show_editor_progression(state: State, progression_properties: dict, header="Progression"):
+    if header and not imgui.collapsing_header(
+        header, imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+    ):
+        return
+
+    for label, prop in progression_properties.items():
+        if label == "State":
+            changed, new_value = show_editor_bit_flags(
+                label, BWFollowerStateFlag, state.save_game.get_persistence_property(prop)
+            )
+            if changed:
+                state.save_game.set_persistence_property(prop, new_value)
+        else:
+            show_persisted_value_editor(state, label, prop)
 
 
-def show_editor_scripts(scripts: dict):
-    if imgui.collapsing_header("Scripts", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        for label, script in scripts.items():
-            imgui.push_id(label)
-            imgui.columns(2)
-            imgui.text(label)
-            imgui.next_column()
+def show_editor_scripts(scripts: dict, header="Scripts"):
+    if header and not imgui.collapsing_header(
+        header, imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+    ):
+        return
 
-            imgui.set_next_item_width(-1)
-            if imgui.button("Run"):
-                script()
+    for label, script in scripts.items():
+        imgui.push_id(label)
+        imgui.columns(2)
+        imgui.text(label)
+        imgui.next_column()
 
-            imgui.columns(1)
-            imgui.pop_id()
+        imgui.set_next_item_width(-1)
+        if imgui.button("Run"):
+            script()
+
+        imgui.columns(1)
+        imgui.pop_id()
 
 
 def show_editor_skills_list(state: State, graph: dict, persistence_key: PersistenceKey):
@@ -1034,6 +1044,26 @@ def show_editor_factions(state: State):
     imgui.end_tab_bar()
 
 
+def show_editor_quests(state: State):
+    if not imgui.begin_tab_bar("quests"):
+        return
+
+    if imgui.begin_tab_item("All")[0]:
+        show_editor_progression(state, ISLEOFTHEGODS_00_CHOICES_PROPERTIES, "Isle of the Gods")
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Scripts")[0]:
+        show_editor_scripts(
+            {
+                'Force-start "Soul of a City" quest': lambda: force_start_soul_of_a_city(state.save_game),
+            },
+            header=None,
+        )
+        imgui.end_tab_item()
+
+    imgui.end_tab_bar()
+
+
 def show_editor_content(state: State):
     if not imgui.begin_tab_bar("editors"):
         return
@@ -1048,6 +1078,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Companions")[0]:
         show_editor_companions(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Quests")[0]:
+        show_editor_quests(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Inventories")[0]:
