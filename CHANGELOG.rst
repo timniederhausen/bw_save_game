@@ -2,6 +2,20 @@
 Changelog
 =========
 
+Version 1.3.0
+=============
+
+* chore: Re-normalize line endings after .gitattributes introduction
+* refactor!: Add more data files and move them to LFS
+* chore: Add .gitattributes and start storing data files in LFS
+* fix(ui): Don't crash when encountering primitive arrays in raw view
+* feat: Add scripts & properties for Isle of the Gods and Soul of a City
+* feat: Add Emmrich sacrifice choices
+* fix(ui): Don't fail for non-string keys in raw data (e.g. array indices)
+* feat: Add scripts for force-starting Emmrich Lich/Manfred quests
+* feat(ui): Support editing definitions the game hasn't loaded yet
+* feat(ui): Add editors for follower states (available, dead, hardened, etc.)
+
 Version 1.2.2
 =============
 
