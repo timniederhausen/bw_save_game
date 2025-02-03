@@ -1,0 +1,16 @@
+* text=auto
+
+*.txt text
+*.md text
+
+*.c text
+*.h text
+*.cpp text
+*.hpp text
+*.py text
+*.js
+
+*.sh text eol=lf
+
+# just store those in LFS
+/src/bw_save_game/data/veilguard/*.json filter=lfs diff=lfs merge=lfs -text
