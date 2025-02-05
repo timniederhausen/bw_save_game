@@ -1,4 +1,4 @@
-# bw_save_game: BioWare save game tools
+# Dragon Age: Save Game tools
 
 This pure-Python library can read and write _Dragon Age: The Veilguard_ save files (`*.csav`).
 Since version 1.0 it includes a graphical user interface to make editing the complex save data more accessible.
