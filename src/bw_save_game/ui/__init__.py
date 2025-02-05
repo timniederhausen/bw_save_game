@@ -34,13 +34,15 @@ from bw_save_game.persistence import (
     registered_persistence_key,
 )
 from bw_save_game.ui.editors import (
-    show_editor_bit_flags,
+    show_bit_flags_editor,
     show_json_editor,
+    show_labeled_bit_flags_editor,
     show_labeled_options_editor,
     show_labeled_options_editor_in_place,
     show_labeled_value_editor,
     show_labeled_value_editor_in_place,
     show_uuid_editor,
+    show_value_editor,
     show_value_editor_in_place,
     show_value_tree_editor_in_place,
 )
@@ -52,6 +54,7 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
+    ALL_QUESTS,
     ARCHETYPE_TO_SKILL_DATA,
     CARETAKERPROGRESSION_XP,
     CHARACTER_GENDER_LABELS,
@@ -85,7 +88,6 @@ from bw_save_game.veilguard import (
     FACTION_SHADOWDRAGONS_PROPERTIES,
     FACTION_VEILJUMPERS_PROPERTIES,
     HARDING_AND_TASH_PROPERTIES,
-    ISLEOFTHEGODS_00_CHOICES_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -93,6 +95,7 @@ from bw_save_game.veilguard import (
     LUCANIS_AND_NEVE_PROPERTIES,
     LUCANIS_M21,
     LUCANIS_M23,
+    PERSISTENCE_DEFINITIONS,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -100,6 +103,7 @@ from bw_save_game.veilguard import (
     PROGRESSION_LUCANIS_PROPERTIES,
     PROGRESSION_NEVE_PROPERTIES,
     PROGRESSION_TAASH_PROPERTIES,
+    QUEST_LABELS,
     ROMANCE_BELLARA_PROPERTIES,
     ROMANCE_DAVRIN_PROPERTIES,
     ROMANCE_EMMRICH_PROPERTIES,
@@ -111,6 +115,7 @@ from bw_save_game.veilguard import (
     BWFollowerStateFlag,
     CharacterArchetype,
     CollectibleSetFlag,
+    EcoQuestRegisteredStateFlags,
     INQUISITION_CHOICES_Inquisitor_Gender,
     INQUISITION_CHOICES_Inquisitor_Gender_LABELS,
     INQUISITION_CHOICES_Inquisitor_Gender_VALUES,
@@ -173,6 +178,7 @@ class State(object):
         self.show_app_about = False
         self.add_item_object = None  # type: typing.Optional[dict]
         self.selected_collectible_set_index = 0
+        self.selected_quest_index = 0
 
         self.default_save_path = detect_save_game_path()
 
@@ -819,7 +825,7 @@ def show_editor_progression(state: State, progression_properties: dict, header="
 
     for label, prop in progression_properties.items():
         if label == "State":
-            changed, new_value = show_editor_bit_flags(
+            changed, new_value = show_labeled_bit_flags_editor(
                 label, BWFollowerStateFlag, state.save_game.get_persistence_property(prop)
             )
             if changed:
@@ -1044,12 +1050,70 @@ def show_editor_factions(state: State):
     imgui.end_tab_bar()
 
 
+def show_editor_quests_all(state: State):
+    imgui.text_wrapped(
+        'This list contains all "ecosystem" quests the game contains.\n'
+        + "Note: This includes many internal quests and states that you probably shouldn't touch."
+    )
+
+    imgui.text_disabled("Quest:")
+    imgui.same_line()
+    imgui.set_next_item_width(-1)
+    changed, new_index = show_searchable_combo_box("##Quests", QUEST_LABELS, state.selected_quest_index)
+    if changed:
+        state.selected_quest_index = new_index
+
+    quest_info = ALL_QUESTS[state.selected_quest_index]
+    persistence_definition = PERSISTENCE_DEFINITIONS[quest_info["definition_id"]]
+
+    imgui.text_disabled("Persistence Definition:")
+    imgui.same_line()
+    imgui.text(f"{persistence_definition['name']} v{persistence_definition['version']}")
+
+    if not imgui.begin_table("Quest Properties", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+        return
+
+    persistence_key = registered_persistence_key(quest_info["definition_id"])
+
+    imgui.table_setup_column("Property name")
+    imgui.table_setup_column("Value")
+    imgui.table_headers_row()
+    for property_info in persistence_definition["properties"]:
+        prop = PersistencePropertyDefinition(
+            persistence_key, property_info["id"], property_info["type"], property_info["default"]
+        )
+
+        # XXX: nanobind only accepts signed values for PushID(int)
+        signed_id = prop.id
+        imgui.push_id(signed_id - (signed_id & (1 << 31)))
+
+        imgui.table_next_row()
+        imgui.table_next_column()
+        imgui.text(property_info["name"])
+        imgui.table_next_column()
+
+        value = state.save_game.get_persistence_property(prop)
+        if property_info["name"] == "_QuestState":
+            changed, new_value = show_bit_flags_editor(EcoQuestRegisteredStateFlags, value)
+            if changed:
+                state.save_game.set_persistence_property(prop, new_value)
+        else:
+            changed, new_value = show_value_editor(value)
+
+        if changed:
+            state.save_game.set_persistence_property(prop, new_value)
+
+        imgui.pop_id()
+
+    imgui.end_table()
+
+
 def show_editor_quests(state: State):
     if not imgui.begin_tab_bar("quests"):
         return
 
     if imgui.begin_tab_item("All")[0]:
-        show_editor_progression(state, ISLEOFTHEGODS_00_CHOICES_PROPERTIES, "Isle of the Gods")
+        show_editor_quests_all(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Scripts")[0]:

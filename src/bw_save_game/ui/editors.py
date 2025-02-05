@@ -261,11 +261,7 @@ def show_labeled_options_editor_in_place(
     return changed
 
 
-def show_editor_bit_flags(label: str, flag_type, value: int):
-    imgui.columns(2)
-    imgui.text(label)
-    imgui.next_column()
-
+def show_bit_flags_editor(flag_type, value: int):
     changed = False
     new_value = value
     for state_flag in flag_type:
@@ -276,6 +272,15 @@ def show_editor_bit_flags(label: str, flag_type, value: int):
                 new_value |= state_flag.value
             else:
                 new_value &= ~state_flag.value
+    return changed, new_value
+
+
+def show_labeled_bit_flags_editor(label: str, flag_type, value: int):
+    imgui.columns(2)
+    imgui.text(label)
+    imgui.next_column()
+
+    changed, new_value = show_bit_flags_editor(flag_type, value)
 
     imgui.columns(1)
     return changed, new_value

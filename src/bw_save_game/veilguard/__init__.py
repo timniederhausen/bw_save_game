@@ -22,7 +22,7 @@ ALL_CURRENCIES = _load_data_file("currencies")
 ALL_SKILL_GRAPHS = _load_data_file("skill_graphs")
 ALL_COLLECTIBLES = _load_data_file("collectibles")
 ALL_QUESTS = _load_data_file("quests")
-ALL_PERSISTENCE = _load_data_file("persistence")
+ALL_PERSISTENCE_DEFINITIONS = _load_data_file("persistence")
 
 # post-processing for data files:
 for item in ALL_ITEMS:
@@ -33,3 +33,7 @@ SKILL_GRAPHS = {g["id"]: g for g in ALL_SKILL_GRAPHS}
 
 COLLECTIBLES = sorted(ALL_COLLECTIBLES, key=lambda s: s["name"])
 COLLECTIBLE_LABELS = [s["name"] for s in COLLECTIBLES]
+
+PERSISTENCE_DEFINITIONS = {d["id"]: d for d in ALL_PERSISTENCE_DEFINITIONS}
+QUESTS = {q["id"]: q for q in ALL_QUESTS}
+QUEST_LABELS = [f"{q['debug_name']} ({q['name']})" if q["debug_name"] else q["name"] for q in ALL_QUESTS]
