@@ -612,9 +612,11 @@ def show_currency_editor(state: State):
         imgui.table_next_column()
         obj = next((c for c in currencies if c["currency"] == currency_def["id"]), None)
         if obj is None:
-            tmp = dict(currency=currency_def["id"], value=0)
-            if show_value_editor_in_place(tmp, "value"):
-                currencies.append(tmp)
+            imgui.push_id(currency_def["id"])
+            changed, new_value = show_value_editor(0)
+            imgui.pop_id()
+            if changed:
+                currencies.append(dict(currency=currency_def["id"], value=new_value))
         else:
             show_value_editor_in_place(obj, "value")
         imgui.pop_id()
