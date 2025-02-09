@@ -85,6 +85,10 @@ class VeilguardSaveGame(object):
         first_extent = self.get_server_rpg_extents(0)
         return first_extent.setdefault("currencies", []), first_extent.setdefault("discoveredCurrencies", [])
 
+    def get_party(self):
+        first_extent = self.get_server_rpg_extents(0)
+        return first_extent.setdefault("party", [])
+
     def get_items(self) -> list:
         first_extent = self.get_server_rpg_extents(0)
         return first_extent.setdefault("items", [])

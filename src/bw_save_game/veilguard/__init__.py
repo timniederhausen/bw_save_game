@@ -23,6 +23,7 @@ ALL_SKILL_GRAPHS = _load_data_file("skill_graphs")
 ALL_COLLECTIBLES = _load_data_file("collectibles")
 ALL_QUESTS = _load_data_file("quests")
 ALL_PERSISTENCE_DEFINITIONS = _load_data_file("persistence")
+ALL_FOLLOWERS = _load_data_file("followers")
 
 # post-processing for data files:
 for item in ALL_ITEMS:
@@ -35,5 +36,9 @@ COLLECTIBLES = sorted(ALL_COLLECTIBLES, key=lambda s: s["name"])
 COLLECTIBLE_LABELS = [s["name"] for s in COLLECTIBLES]
 
 PERSISTENCE_DEFINITIONS = {d["id"]: d for d in ALL_PERSISTENCE_DEFINITIONS}
+
 QUESTS = {q["id"]: q for q in ALL_QUESTS}
 QUEST_LABELS = [f"{q['debug_name']} ({q['name']})" if q["debug_name"] else q["name"] for q in ALL_QUESTS]
+
+FOLLOWER_IDS = [0] + [f["id"] for f in ALL_FOLLOWERS]
+FOLLOWER_LABELS = ["<empty>"] + [f["name"] for f in ALL_FOLLOWERS]

@@ -87,6 +87,8 @@ from bw_save_game.veilguard import (
     FACTION_MOURNWATCH_PROPERTIES,
     FACTION_SHADOWDRAGONS_PROPERTIES,
     FACTION_VEILJUMPERS_PROPERTIES,
+    FOLLOWER_IDS,
+    FOLLOWER_LABELS,
     HARDING_AND_TASH_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
@@ -780,8 +782,20 @@ def show_editor_main(state: State):
                 INQUISITION_CHOICES_Keep_Inquisition_VALUES,
                 INQUISITION_CHOICES_Keep_Inquisition_LABELS,
             )
+
         if imgui.collapsing_header("Caretaker", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
             show_persisted_value_editor(state, "Caretaker XP", CARETAKERPROGRESSION_XP)
+
+        if imgui.collapsing_header(
+            "Current party", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
+        ):
+            for i, follower_id_o in enumerate(state.save_game.get_party()):
+                imgui.push_id(i)
+                show_labeled_options_editor_in_place(
+                    f"Follower {i+1}", follower_id_o, "id", FOLLOWER_IDS, FOLLOWER_LABELS, 0
+                )
+                imgui.pop_id()
+
     imgui.end_child()
 
     imgui.columns(1)
