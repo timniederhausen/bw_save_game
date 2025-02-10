@@ -179,6 +179,7 @@ class State(object):
         # UI state
         self.show_app_about = False
         self.add_item_object = None  # type: typing.Optional[dict]
+        self.inventory_filter = ""
         self.selected_collectible_set_index = 0
         self.selected_quest_index = 0
 
@@ -199,6 +200,7 @@ class State(object):
             show_error(f"Cannot load {filename}: {repr(e)}")
             return False
 
+        self.close()
         self.active_filename = filename
         self.save_game = new_save_game
         return True
@@ -222,7 +224,7 @@ class State(object):
             show_error(f"Cannot load {filename}: {repr(e)}")
             return
 
-        self.active_filename = None
+        self.close()
         self.save_game = new_save_game
 
     def export_json(self, filename: str):
@@ -238,6 +240,7 @@ class State(object):
     def close(self):
         self.active_filename = None
         self.save_game = None
+        self.inventory_filter = ""
 
 
 def set_window_title(title: str):
@@ -514,6 +517,31 @@ def show_item_level_editor(item: dict):
     imgui.pop_item_width()
 
 
+def _does_item_match(item, filter_str: str):
+    item_def_index = _ITEM_ID_TO_INDEX.get(to_native(item["itemDataId"]))
+    if item_def_index is not None:
+        item_def = ALL_ITEMS[item_def_index]
+        if filter_str in item_def["key"]:
+            return True
+
+    typ, parent, attach_slot = deconstruct_item_attachment(item)
+    if typ == ItemAttachmentType.None_:
+        return False
+
+    if filter_str in attach_slot:
+        return True
+
+    if typ == ItemAttachmentType.Character:
+        try:
+            current_item = KNOWN_CHARACTER_ARCHETYPE_VALUES.index(parent)
+            if filter_str in KNOWN_CHARACTER_ARCHETYPE_LABELS[current_item]:
+                return True
+        except ValueError:
+            pass
+
+    return False
+
+
 def show_editor_inventories(state: State):
     items = state.save_game.get_items()
 
@@ -558,6 +586,17 @@ def show_editor_inventories(state: State):
             imgui.close_current_popup()
         imgui.end_popup()
 
+    imgui.text("Filter:")
+    imgui.same_line()
+    imgui.set_next_item_width(-1)
+    changed, new_value = imgui.input_text("##filter", state.inventory_filter)
+    if changed:
+        state.inventory_filter = new_value
+
+    filtered_items = enumerate(items)
+    if state.inventory_filter:
+        filtered_items = filter(lambda i_item: _does_item_match(i_item[1], state.inventory_filter), filtered_items)
+
     removed_items = []
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         imgui.table_setup_column("Item")
@@ -566,7 +605,7 @@ def show_editor_inventories(state: State):
         imgui.table_setup_column("Rarity")
         imgui.table_setup_column("Level")
         imgui.table_headers_row()
-        for i, item in enumerate(items):
+        for i, item in filtered_items:
             imgui.push_id(i)
             imgui.table_next_row()
             imgui.table_next_column()
@@ -792,7 +831,7 @@ def show_editor_main(state: State):
             for i, follower_id_o in enumerate(state.save_game.get_party()):
                 imgui.push_id(i)
                 show_labeled_options_editor_in_place(
-                    f"Follower {i+1}", follower_id_o, "id", FOLLOWER_IDS, FOLLOWER_LABELS, 0
+                    f"Follower {i + 1}", follower_id_o, "id", FOLLOWER_IDS, FOLLOWER_LABELS, 0
                 )
                 imgui.pop_id()
 
