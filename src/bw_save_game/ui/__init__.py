@@ -114,6 +114,7 @@ from bw_save_game.veilguard import (
     ROMANCE_NEVE_PROPERTIES,
     ROMANCE_TAASH_PROPERTIES,
     SKILL_GRAPHS,
+    TRANSITION_START_POINTS,
     BWFollowerStateFlag,
     CharacterArchetype,
     CollectibleSetFlag,
@@ -671,6 +672,13 @@ def show_editor_main(state: State):
         if imgui.collapsing_header("Metadata", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
             show_labeled_value_editor_in_place("Description", state.save_game.meta, "description")
             show_labeled_value_editor_in_place("Unique Identifier", state.save_game.meta, "uid")
+            show_labeled_options_editor_in_place(
+                "Transition start point",
+                state.save_game.meta["projdata"],
+                "transitionpointname",
+                TRANSITION_START_POINTS,
+                TRANSITION_START_POINTS,
+            )
 
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap

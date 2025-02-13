@@ -40,5 +40,16 @@ PERSISTENCE_DEFINITIONS = {d["id"]: d for d in ALL_PERSISTENCE_DEFINITIONS}
 QUESTS = {q["id"]: q for q in ALL_QUESTS}
 QUEST_LABELS = [f"{q['debug_name']} ({q['name']})" if q["debug_name"] else q["name"] for q in ALL_QUESTS]
 
+
+def _make_transition_start_points():
+    transition_start_points = set()
+    for q in ALL_QUESTS:
+        for n in q["transition_start_point_names"]:
+            transition_start_points.add(n)
+    return transition_start_points
+
+
+TRANSITION_START_POINTS = sorted(_make_transition_start_points())
+
 FOLLOWER_IDS = [0] + [f["id"] for f in ALL_FOLLOWERS]
 FOLLOWER_LABELS = ["<empty>"] + [f["name"] for f in ALL_FOLLOWERS]
