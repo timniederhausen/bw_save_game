@@ -1063,7 +1063,6 @@ def show_editor_collectibles(state: State):
     imgui.table_headers_row()
     for collectible in collectibles_set["collectibles"]:
         flags_property = PersistencePropertyDefinition(persistence_key, collectible["id"], "Uint8", 0)
-
         flags = state.save_game.get_persistence_property(flags_property) or 0
 
         # XXX: nanobind only accepts signed values for PushID(int)
@@ -1073,10 +1072,9 @@ def show_editor_collectibles(state: State):
         imgui.table_next_column()
         imgui.text(collectible["name"])
         imgui.table_next_column()
-        changed, new_value = imgui.checkbox("##collected", 0 != (flags & CollectibleSetFlag.IsCollected))
+        changed, new_value = show_bit_flags_editor(CollectibleSetFlag, flags)
         if changed:
-            flags = flags | CollectibleSetFlag.IsCollected if new_value else flags & ~CollectibleSetFlag.IsCollected
-            state.save_game.set_persistence_property(flags_property, flags)
+            state.save_game.set_persistence_property(flags_property, new_value)
         imgui.pop_id()
 
     imgui.end_table()
