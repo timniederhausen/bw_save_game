@@ -264,7 +264,10 @@ def show_labeled_options_editor_in_place(
 def show_bit_flags_editor(flag_type, value: int):
     changed = False
     new_value = value
+    is_first = True
     for state_flag in flag_type:
+        if not is_first:
+            imgui.same_line()
         this_changed, this_new_value = imgui.checkbox(state_flag.name, 0 != (value & state_flag.value))
         if this_changed:
             changed = True
@@ -272,6 +275,7 @@ def show_bit_flags_editor(flag_type, value: int):
                 new_value |= state_flag.value
             else:
                 new_value &= ~state_flag.value
+        is_first = False
     return changed, new_value
 
 
