@@ -1043,6 +1043,18 @@ def show_editor_collectibles(state: State):
         + "Note: This includes many quest / storyline items and states that you probably shouldn't touch."
     )
 
+    imgui.text_disabled("Quick actions:")
+    imgui.same_line()
+    if imgui.button("Grant all appearances"):
+        for collectibles_set in COLLECTIBLES:
+            if collectibles_set["name"].startswith("CollectibleAppearanceParts"):
+                persistence_key = registered_persistence_key(collectibles_set["definition_id"])
+                for collectible in collectibles_set["collectibles"]:
+                    flags_property = PersistencePropertyDefinition(persistence_key, collectible["id"], "Uint8", 0)
+                    flags = state.save_game.get_persistence_property(flags_property) or 0
+                    flags |= CollectibleSetFlag.IsCollected
+                    state.save_game.set_persistence_property(flags_property, flags)
+
     imgui.text_disabled("Collectibles Set:")
     imgui.same_line()
     imgui.set_next_item_width(-1)
