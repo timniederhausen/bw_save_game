@@ -70,6 +70,12 @@ from bw_save_game.veilguard import (
     CHARACTER_GENERATOR_PRONOUN_OPTION_LABELS,
     CHARACTER_GENERATOR_PRONOUN_OPTION_VALUES,
     CHARACTER_GENERATOR_PRONOUNS,
+    CHARACTER_GENERATOR_VOICE,
+    CHARACTER_GENERATOR_VOICE_LABELS,
+    CHARACTER_GENERATOR_VOICE_TONE,
+    CHARACTER_GENERATOR_VOICE_TONE_LABELS,
+    CHARACTER_GENERATOR_VOICE_TONE_VALUES,
+    CHARACTER_GENERATOR_VOICE_VALUES,
     CLASS_KEYBINDING_LABELS,
     CLASS_KEYBINDING_VALUES,
     COLLECTIBLE_LABELS,
@@ -723,6 +729,28 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_LABELS,
             )
             show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
+            if show_persisted_value_options_editor(
+                state,
+                "Voice",
+                CHARACTER_GENERATOR_VOICE,
+                CHARACTER_GENERATOR_VOICE_VALUES,
+                CHARACTER_GENERATOR_VOICE_LABELS,
+            ):
+                # value is duplicated!
+                state.save_game.meta["projdata"]["voice"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_VOICE
+                )
+            if show_persisted_value_options_editor(
+                state,
+                "Voice tone",
+                CHARACTER_GENERATOR_VOICE_TONE,
+                CHARACTER_GENERATOR_VOICE_TONE_VALUES,
+                CHARACTER_GENERATOR_VOICE_TONE_LABELS,
+            ):
+                # value is duplicated!
+                state.save_game.meta["projdata"]["tone"] = state.save_game.get_persistence_property(
+                    CHARACTER_GENERATOR_VOICE_TONE
+                )
             if show_persisted_value_options_editor(
                 state,
                 "Gender",
