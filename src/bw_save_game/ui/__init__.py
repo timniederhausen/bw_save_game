@@ -139,7 +139,6 @@ from bw_save_game.veilguard import (
     INQUISITION_CHOICES_Keep_Trespasser_VALUES,
     INQUISITION_CHOICES_LegacyReferences,
     ItemAttachmentType,
-    PLAYER_SKILLS_SkillPoints,
     PROGRESSION_CurrentLevel,
     VeilguardSaveGame,
     construct_item_attachment,
@@ -724,7 +723,6 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_LABELS,
             )
             show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
-            show_persisted_value_editor(state, "Skill points:", PLAYER_SKILLS_SkillPoints)
             if show_persisted_value_options_editor(
                 state,
                 "Gender",
@@ -936,15 +934,19 @@ def show_editor_skills_list(state: State, graph: dict, persistence_key: Persiste
         imgui.end_table()
 
 
+def show_editor_skills(state: State, archetype: CharacterArchetype):
+    graph_id, persistence_key = ARCHETYPE_TO_SKILL_DATA[archetype]
+
+    # see BELLARA_SKILLS_SkillPoints, ...
+    skill_points = PersistencePropertyDefinition(persistence_key, 2271481620, "Uint32", 0)
+
+    show_persisted_value_editor(state, "Skill points:", skill_points)
+    show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
+
+
 def show_editor_companion_skills(state: State, archetype: CharacterArchetype):
     if imgui.collapsing_header("Skills", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap):
-        graph_id, persistence_key = ARCHETYPE_TO_SKILL_DATA[archetype]
-
-        # see BELLARA_SKILLS_SkillPoints, ...
-        skill_points = PersistencePropertyDefinition(persistence_key, 2271481620, "Uint32", 0)
-
-        show_persisted_value_editor(state, "Skill points:", skill_points)
-        show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
+        show_editor_skills(state, archetype)
 
 
 def show_editor_companion_romance(state: State, romance_properties: dict):
@@ -1207,6 +1209,10 @@ def show_editor_content(state: State):
 
     if imgui.begin_tab_item("Main")[0]:
         show_editor_main(state)
+        imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Skills")[0]:
+        show_editor_skills(state, state.save_game.meta["projdata"]["archetype"])
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Appearances")[0]:
