@@ -121,6 +121,7 @@ INQUISITION_CHOICES_Inquisitor_Gender_LABELS = list(INQUISITION_CHOICES_Inquisit
 
 INQUISITION_CHOICES_Keep_Romance_OPTIONS = {
     # DesignContent/PlotLogic/Global/PastDAChoices/InquisitorRomance/...
+    0: "None",
     1: "Blackwall",
     2: "Cassandra",
     3: "Cullen",
