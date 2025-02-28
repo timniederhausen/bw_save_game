@@ -24,6 +24,7 @@ ALL_COLLECTIBLES = _load_data_file("collectibles")
 ALL_QUESTS = _load_data_file("quests")
 ALL_PERSISTENCE_DEFINITIONS = _load_data_file("persistence")
 ALL_FOLLOWERS = _load_data_file("followers")
+ALL_MAPS = _load_data_file("maps")
 
 # post-processing for data files:
 for item in ALL_ITEMS:
@@ -43,8 +44,10 @@ QUEST_LABELS = [f"{q['debug_name']} ({q['name']})" if q["debug_name"] else q["na
 
 def _make_transition_start_points():
     transition_start_points = set()
-    for q in ALL_QUESTS:
-        for n in q["transition_start_point_names"]:
+    for m in ALL_MAPS:
+        if m["transition_start_point_name"]:
+            transition_start_points.add(m["transition_start_point_name"])
+        for n in m["region_transition_point_names"]:
             transition_start_points.add(n)
     return transition_start_points
 
