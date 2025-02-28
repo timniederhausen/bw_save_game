@@ -2,6 +2,23 @@
 Changelog
 =========
 
+Version 1.4.0
+=============
+
+* feat: Add complete transition point & map list
+* feat: Add editors for voice & voice tone
+* feat(ui): Add tab for player skills
+* fix: Add missing "None" option for inquisitor romance
+* feat(ui): Add quick action to grant all normal appearance collectibles
+* feat(ui): Allow editing all collectible flags
+* chore(ui): Make bit flag editors more compact
+* feat: Support changing the current transition spawn point
+* feat(ui): Add text search / filter for the inventory list
+* feat: Support editing the active follower party
+* fix(ui): Don't ignore currency changes if previous value was default
+* chore: Change README heading for now
+* feat: Add general quest state editor
+
 Version 1.3.0
 =============
 
