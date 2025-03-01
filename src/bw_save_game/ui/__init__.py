@@ -96,6 +96,7 @@ from bw_save_game.veilguard import (
     FOLLOWER_IDS,
     FOLLOWER_LABELS,
     HARDING_AND_TASH_PROPERTIES,
+    ISLEOFTHEGODS_00_CHOICES_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -1215,8 +1216,12 @@ def show_editor_quests(state: State):
     if not imgui.begin_tab_bar("quests"):
         return
 
-    if imgui.begin_tab_item("All")[0]:
-        show_editor_quests_all(state)
+    # if imgui.begin_tab_item("All")[0]:
+    #    show_editor_quests_all(state)
+    #    imgui.end_tab_item()
+
+    if imgui.begin_tab_item("Misc")[0]:
+        show_editor_progression(state, ISLEOFTHEGODS_00_CHOICES_PROPERTIES, "Isle of the Gods")
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Scripts")[0]:
