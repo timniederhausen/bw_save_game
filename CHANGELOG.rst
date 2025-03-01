@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.4.1
+=============
+
+chore(ui): Disable general editor for now & bring back IsleOfTheGods options
+
 Version 1.4.0
 =============
 
