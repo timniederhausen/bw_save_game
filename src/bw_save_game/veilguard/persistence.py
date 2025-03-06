@@ -193,6 +193,12 @@ PROGRESSION_DaggerRank = PersistencePropertyDefinition(PROGRESSION, 4125407861, 
 PROGRESSION_DEPRECATED_Dagger_CanUseGates = PersistencePropertyDefinition(PROGRESSION, 4228552677, "Boolean", False)
 PROGRESSION_CanDropMaterials = PersistencePropertyDefinition(PROGRESSION, 4282910745, "Boolean", False)
 
+PROGRESSION_XP = registered_persistence_key(2027853126)  # Progression_XP_RDA_2027853126
+PROGRESSION_XP_XP = PersistencePropertyDefinition(PROGRESSION_XP, 264381177, "Int32", 0)
+
+DEFAULTXPBUCKET = registered_persistence_key(1137295114)  # DefaultXPBucketRDA_1137295114
+DEFAULTXPBUCKET_XP = PersistencePropertyDefinition(DEFAULTXPBUCKET, 264381177, "Int32", 0)
+
 CARETAKERPROGRESSION = registered_persistence_key(1570166263)  # CaretakerProgression_RDA_1570166263
 CARETAKERPROGRESSION_XP = PersistencePropertyDefinition(CARETAKERPROGRESSION, 3442105829, "Int32", 0)
 

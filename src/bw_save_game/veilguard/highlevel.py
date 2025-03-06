@@ -18,12 +18,16 @@ from bw_save_game.persistence import (
     parse_persistence_key_string,
     set_persisted_value,
 )
+from bw_save_game.veilguard.data import XP_THRESHOLDS
 from bw_save_game.veilguard.persistence import (
+    DEFAULTXPBUCKET_XP,
     PLAYER_SKILLS,
+    PROGRESSION_XP_XP,
     SKILLS_REQUIRED_MAGE,
     SKILLS_REQUIRED_ROGUE,
     SKILLS_REQUIRED_WARRIOR,
     CharacterArchetype,
+    PROGRESSION_CurrentLevel,
 )
 from bw_save_game.veilguard.types import (
     EcoQuestRegisteredStateFlags,
@@ -145,7 +149,7 @@ class VeilguardSaveGame(object):
         if old_archetype == new_archetype:
             return
 
-        self.meta["archetype"] = new_archetype
+        self.meta["archetype"] = new_archetype  # for save preview
 
         client_rpg_player = self.get_client_rpg_extents(loadpass=0)
         for transmogSlot in client_rpg_player["transmogSlots"]:
@@ -175,6 +179,23 @@ class VeilguardSaveGame(object):
         for property_id in skills_to_add:
             prop = PersistencePropertyDefinition(PLAYER_SKILLS, property_id, "Boolean", False)
             self.set_persistence_property(prop, True)
+
+    def change_level(self, new_level: int):
+        self.set_persistence_property(PROGRESSION_CurrentLevel, new_level)
+        self.meta["projdata"]["level"] = new_level  # for save preview
+
+        min_xp_for_level = 0
+        for bucket in XP_THRESHOLDS["DefaultProgressionMap"]["level_thresholds"]:
+            if bucket["level"] == new_level:
+                min_xp_for_level = bucket["value"]
+
+        cur_xp = self.get_persistence_property(PROGRESSION_XP_XP)
+        if cur_xp < min_xp_for_level:
+            self.set_persistence_property(PROGRESSION_XP_XP, min_xp_for_level)
+
+        cur_xp = self.get_persistence_property(DEFAULTXPBUCKET_XP)
+        if cur_xp < min_xp_for_level:
+            self.set_persistence_property(DEFAULTXPBUCKET_XP, min_xp_for_level)
 
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:
