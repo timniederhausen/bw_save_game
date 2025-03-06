@@ -2,10 +2,16 @@
 Changelog
 =========
 
+Version 1.4.2
+=============
+
+* fix(ui): Change player XP when the level is changed
+* feat: Better support for changing levels & XP
+
 Version 1.4.1
 =============
 
-chore(ui): Disable general editor for now & bring back IsleOfTheGods options
+* chore(ui): Disable general editor for now & bring back IsleOfTheGods options
 
 Version 1.4.0
 =============
