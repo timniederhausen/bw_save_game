@@ -382,6 +382,7 @@ def show_persisted_value_editor(state: State, label: str, prop: PersistencePrope
     if changed:
         state.save_game.set_persistence_property(prop, new_value)
     imgui.pop_id()
+    return changed
 
 
 def show_persisted_value_options_editor(
@@ -729,7 +730,8 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_VALUES,
                 CLASS_KEYBINDING_LABELS,
             )
-            show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel)
+            if show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel):
+                state.save_game.change_level(state.save_game.get_persistence_property(PROGRESSION_CurrentLevel))
             if show_persisted_value_options_editor(
                 state,
                 "Voice",
