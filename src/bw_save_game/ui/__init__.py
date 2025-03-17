@@ -1186,11 +1186,14 @@ def show_editor_persistence(state: State):
     imgui.same_line()
     imgui.text(str(def_id))
 
-    imgui.text_disabled("Version:")
+    imgui.text_disabled("Definition Version:")
     imgui.same_line()
     imgui.text(str(persistence_definition["version"]))
 
     if quest_info:
+        imgui.text_disabled("Quest Id:")
+        imgui.same_line()
+        imgui.text(str(quest_info["id"]))
         imgui.text_disabled("Journal Id:")
         imgui.same_line()
         imgui.text(str(quest_info["journal_id"]))

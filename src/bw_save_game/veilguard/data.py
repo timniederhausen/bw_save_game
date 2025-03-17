@@ -33,7 +33,7 @@ COLLECTIBLES = sorted(ALL_COLLECTIBLES, key=lambda s: s["name"])
 COLLECTIBLE_LABELS = [s["name"] for s in COLLECTIBLES]
 
 PERSISTENCE_DEFINITIONS = {d["id"]: d for d in ALL_PERSISTENCE_DEFINITIONS}
-PERSISTENCE_DEFINITION_LABELS = [f"{d['name']} ({d['id']})" for d in ALL_PERSISTENCE_DEFINITIONS]
+PERSISTENCE_DEFINITION_LABELS = [d["name"] for d in ALL_PERSISTENCE_DEFINITIONS]
 
 QUESTS = {q["id"]: q for q in ALL_QUESTS}
 QUEST_LABELS = [f"{q['debug_name']} ({q['name']})" if q["debug_name"] else q["name"] for q in ALL_QUESTS]
