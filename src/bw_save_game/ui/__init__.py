@@ -564,7 +564,8 @@ def show_editor_inventories(state: State):
         )
         imgui.open_popup("Add Item")
 
-    if imgui.begin_popup_modal("Add Item", None, imgui.WindowFlags_.always_auto_resize)[0]:
+    imgui.set_next_window_size_constraints((400, 190), (imgui.FLT_MAX, imgui.FLT_MAX))
+    if imgui.begin_popup_modal("Add Item", None)[0]:
         item = state.add_item_object
 
         imgui.text_disabled("Item: ")
