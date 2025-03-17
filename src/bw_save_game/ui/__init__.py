@@ -56,7 +56,7 @@ from bw_save_game.ui.widgets import (
 from bw_save_game.veilguard import (
     ALL_CURRENCIES,
     ALL_ITEMS,
-    ALL_QUESTS,
+    ALL_PERSISTENCE_DEFINITIONS,
     ARCHETYPE_TO_SKILL_DATA,
     CARETAKERPROGRESSION_XP,
     CHARACTER_GENDER_LABELS,
@@ -98,7 +98,6 @@ from bw_save_game.veilguard import (
     FOLLOWER_IDS,
     FOLLOWER_LABELS,
     HARDING_AND_TASH_PROPERTIES,
-    ISLEOFTHEGODS_00_CHOICES_PROPERTIES,
     ITEM_ATTACHMENT_SLOT_NAMES,
     KNOWN_CHARACTER_ARCHETYPE_LABELS,
     KNOWN_CHARACTER_ARCHETYPE_VALUES,
@@ -106,7 +105,8 @@ from bw_save_game.veilguard import (
     LUCANIS_AND_NEVE_PROPERTIES,
     LUCANIS_M21,
     LUCANIS_M23,
-    PERSISTENCE_DEFINITIONS,
+    PERSISTENCE_DEFINITION_LABELS,
+    PERSISTENCE_DEFINITION_TO_QUEST,
     PROGRESSION_BELLARA_PROPERTIES,
     PROGRESSION_DAVRIN_PROPERTIES,
     PROGRESSION_EMMRICH_PROPERTIES,
@@ -114,7 +114,6 @@ from bw_save_game.veilguard import (
     PROGRESSION_LUCANIS_PROPERTIES,
     PROGRESSION_NEVE_PROPERTIES,
     PROGRESSION_TAASH_PROPERTIES,
-    QUEST_LABELS,
     ROMANCE_BELLARA_PROPERTIES,
     ROMANCE_DAVRIN_PROPERTIES,
     ROMANCE_EMMRICH_PROPERTIES,
@@ -153,7 +152,6 @@ from bw_save_game.veilguard import (
     construct_item_attachment,
     deconstruct_item_attachment,
     force_complete_quest,
-    force_start_soul_of_a_city,
     item_attachment_to_string,
 )
 
@@ -191,7 +189,7 @@ class State(object):
         self.inventory_filter = ""
         self.inventory_filter_compiled = None  # type: typing.Optional[re.Pattern]
         self.selected_collectible_set_index = 0
-        self.selected_quest_index = 0
+        self.selected_persistence_index = 0
 
         self.default_save_path = detect_save_game_path()
 
@@ -1163,30 +1161,44 @@ def show_editor_factions(state: State):
     imgui.end_tab_bar()
 
 
-def show_editor_quests_all(state: State):
+def show_editor_persistence(state: State):
     imgui.text_wrapped(
-        'This list contains all "ecosystem" quests the game contains.\n'
+        "This list contains all persistence objects the game contains.\n"
         + "Note: This includes many internal quests and states that you probably shouldn't touch."
     )
 
-    imgui.text_disabled("Quest:")
+    imgui.text_disabled("Persistence definition:")
     imgui.same_line()
     imgui.set_next_item_width(-1)
-    changed, new_index = show_searchable_combo_box("##Quests", QUEST_LABELS, state.selected_quest_index)
+    changed, new_index = show_searchable_combo_box(
+        "##PersistenceDefinitions", PERSISTENCE_DEFINITION_LABELS, state.selected_persistence_index
+    )
     if changed:
-        state.selected_quest_index = new_index
+        state.selected_persistence_index = new_index
 
-    quest_info = ALL_QUESTS[state.selected_quest_index]
-    persistence_definition = PERSISTENCE_DEFINITIONS[quest_info["definition_id"]]
+    persistence_definition = ALL_PERSISTENCE_DEFINITIONS[state.selected_persistence_index]
+    def_id = persistence_definition["id"]
+    quest_info = PERSISTENCE_DEFINITION_TO_QUEST.get(def_id)
 
-    imgui.text_disabled("Persistence Definition:")
+    # display some properties:
+    imgui.text_disabled("Definition Id:")
     imgui.same_line()
-    imgui.text(f"{persistence_definition['name']} v{persistence_definition['version']}")
+    imgui.text(str(def_id))
 
-    if not imgui.begin_table("Quest Properties", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
+    imgui.text_disabled("Version:")
+    imgui.same_line()
+    imgui.text(str(persistence_definition["version"]))
+
+    if quest_info:
+        imgui.text_disabled("Journal Id:")
+        imgui.same_line()
+        imgui.text(str(quest_info["journal_id"]))
+    # end of properties
+
+    if not imgui.begin_table("Properties", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         return
 
-    persistence_key = registered_persistence_key(quest_info["definition_id"])
+    persistence_key = registered_persistence_key(def_id)
 
     imgui.table_setup_column("Property name")
     imgui.table_setup_column("Value")
@@ -1206,7 +1218,7 @@ def show_editor_quests_all(state: State):
         imgui.table_next_column()
 
         value = state.save_game.get_persistence_property(prop)
-        if property_info["name"] == "_QuestState":
+        if quest_info and property_info["name"] == "_QuestState":
             changed, new_value = show_bit_flags_editor(EcoQuestRegisteredStateFlags, value)
             if changed:
                 state.save_game.set_persistence_property(prop, new_value)
@@ -1219,30 +1231,6 @@ def show_editor_quests_all(state: State):
         imgui.pop_id()
 
     imgui.end_table()
-
-
-def show_editor_quests(state: State):
-    if not imgui.begin_tab_bar("quests"):
-        return
-
-    # if imgui.begin_tab_item("All")[0]:
-    #    show_editor_quests_all(state)
-    #    imgui.end_tab_item()
-
-    if imgui.begin_tab_item("Misc")[0]:
-        show_editor_progression(state, ISLEOFTHEGODS_00_CHOICES_PROPERTIES, "Isle of the Gods")
-        imgui.end_tab_item()
-
-    if imgui.begin_tab_item("Scripts")[0]:
-        show_editor_scripts(
-            {
-                'Force-start "Soul of a City" quest': lambda: force_start_soul_of_a_city(state.save_game),
-            },
-            header=None,
-        )
-        imgui.end_tab_item()
-
-    imgui.end_tab_bar()
 
 
 def show_editor_content(state: State):
@@ -1265,8 +1253,9 @@ def show_editor_content(state: State):
         show_editor_companions(state)
         imgui.end_tab_item()
 
+    # This isn't just "Quests" but people might find that label easier!
     if imgui.begin_tab_item("Quests")[0]:
-        show_editor_quests(state)
+        show_editor_persistence(state)
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Inventories")[0]:
