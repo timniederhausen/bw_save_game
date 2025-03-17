@@ -20,6 +20,7 @@
 from __future__ import absolute_import
 
 import os.path
+import re
 import sys
 import typing  # noqa: F401
 from uuid import UUID, uuid1
@@ -49,6 +50,7 @@ from bw_save_game.ui.editors import (
 from bw_save_game.ui.utils import ask_for_file_to_open, ask_for_file_to_save, show_error
 from bw_save_game.ui.widgets import (
     clear_unused_retained_data,
+    show_regex_input,
     show_searchable_combo_box,
 )
 from bw_save_game.veilguard import (
@@ -187,6 +189,7 @@ class State(object):
         self.show_app_about = False
         self.add_item_object = None  # type: typing.Optional[dict]
         self.inventory_filter = ""
+        self.inventory_filter_compiled = None  # type: typing.Optional[re.Pattern]
         self.selected_collectible_set_index = 0
         self.selected_quest_index = 0
 
@@ -248,6 +251,7 @@ class State(object):
         self.active_filename = None
         self.save_game = None
         self.inventory_filter = ""
+        self.inventory_filter_compiled = None
 
 
 def set_window_title(title: str):
@@ -525,24 +529,24 @@ def show_item_level_editor(item: dict):
     imgui.pop_item_width()
 
 
-def _does_item_match(item, filter_str: str):
+def _does_item_match(item, pattern: re.Pattern):
     item_def_index = _ITEM_ID_TO_INDEX.get(to_native(item["itemDataId"]))
     if item_def_index is not None:
         item_def = ALL_ITEMS[item_def_index]
-        if filter_str in item_def["key"]:
+        if pattern.match(item_def["key"]):
             return True
 
     typ, parent, attach_slot = deconstruct_item_attachment(item)
     if typ == ItemAttachmentType.None_:
         return False
 
-    if filter_str in attach_slot:
+    if pattern.match(attach_slot):
         return True
 
     if typ == ItemAttachmentType.Character:
         try:
             current_item = KNOWN_CHARACTER_ARCHETYPE_VALUES.index(parent)
-            if filter_str in KNOWN_CHARACTER_ARCHETYPE_LABELS[current_item]:
+            if pattern.match(KNOWN_CHARACTER_ARCHETYPE_LABELS[current_item]):
                 return True
         except ValueError:
             pass
@@ -597,13 +601,16 @@ def show_editor_inventories(state: State):
     imgui.text("Filter:")
     imgui.same_line()
     imgui.set_next_item_width(-1)
-    changed, new_value = imgui.input_text("##filter", state.inventory_filter)
+    changed, new_value, new_value_compiled = show_regex_input("##filter", state.inventory_filter)
     if changed:
         state.inventory_filter = new_value
+        state.inventory_filter_compiled = new_value_compiled
 
     filtered_items = enumerate(items)
     if state.inventory_filter:
-        filtered_items = filter(lambda i_item: _does_item_match(i_item[1], state.inventory_filter), filtered_items)
+        filtered_items = filter(
+            lambda i_item: _does_item_match(i_item[1], state.inventory_filter_compiled), filtered_items
+        )
 
     removed_items = []
     if imgui.begin_table("Items", 5, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):

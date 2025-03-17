@@ -16,6 +16,7 @@
 #
 # Website: https://github.com/timniederhausen/bw_save_game
 # -*- coding: utf-8 -*-
+import re
 from dataclasses import dataclass
 
 from imgui_bundle import imgui
@@ -23,7 +24,7 @@ from imgui_bundle import imgui
 
 @dataclass
 class ComboBoxState:
-    search_pattern = ""
+    search_pattern = None
     filtered_items: list[int] = None
     shown_this_frame = True
 
@@ -37,6 +38,18 @@ def clear_unused_retained_data():
     used_combo_boxes = {k: v for k, v in used_combo_boxes.items() if v.shown_this_frame}
     for v in used_combo_boxes.values():
         v.shown_this_frame = False
+
+
+def show_regex_input(label: str, pattern: str):
+    changed, new_value = imgui.input_text(label, pattern)
+    if changed:
+        try:
+            compiled_pattern = re.compile(new_value, re.IGNORECASE)
+            return changed, new_value, compiled_pattern
+        except re.error as e:
+            imgui.text_colored((0.9, 0.01, 0.01, 1.0), f"REGEX ERROR: {e}")
+
+    return False, None, None
 
 
 def show_searchable_combo_box(
@@ -62,8 +75,6 @@ def show_searchable_combo_box(
     else:
         retained_data.shown_this_frame = True
 
-    search_pattern = retained_data.search_pattern
-
     is_already_open = imgui.internal.is_popup_open(popup_id, 0)
 
     if not imgui.begin_combo(label, preview_value, imgui.ComboFlags_.height_largest):
@@ -76,39 +87,42 @@ def show_searchable_combo_box(
 
         return False, current_item
 
-    if not is_already_open:
-        search_pattern = ""
-
+    imgui.push_item_width(-imgui.FLT_MIN)
     imgui.push_style_color(imgui.Col_.frame_bg, (240 / 255, 240 / 255, 240 / 255, 1))
     imgui.push_style_color(imgui.Col_.text, (0, 0, 0, 1))
-    imgui.push_item_width(-imgui.FLT_MIN)
+
+    # Now we handle searching in our dataset:
+    search_pattern = retained_data.search_pattern
+    if not is_already_open or search_pattern is None:
+        search_pattern = ""
 
     if not is_already_open:
         imgui.set_keyboard_focus_here()
-    changed, new_value = imgui.input_text("##ComboWithFilter_inputText", search_pattern)
+    changed, new_value, new_pattern_compiled = show_regex_input("##ComboWithFilter_inputText", search_pattern)
     if changed:
-        search_pattern = new_value
+        if new_value:
+            filtered_items = [i for i, item in enumerate(items) if new_pattern_compiled.match(item)]
+            retained_data.filtered_items = filtered_items
+        else:
+            filtered_items = None
+            retained_data.filtered_items = None
+        retained_data.search_pattern = new_value
+    else:
+        filtered_items = retained_data.filtered_items
 
     imgui.pop_style_color(2)
 
-    is_filtering = is_already_open and search_pattern
+    is_filtering = filtered_items is not None
     if is_filtering:
-        if search_pattern != retained_data.search_pattern or not retained_data.filtered_items:
-            filtered_items = [i for i, item in enumerate(items) if search_pattern in item]
-            retained_data.filtered_items = filtered_items
-        else:
-            filtered_items = retained_data.filtered_items
         num_items = len(filtered_items)
         try:
-            filtered_current_item = filtered_items.index(current_item)
+            actual_current_item = filtered_items.index(current_item)
         except ValueError:
-            filtered_current_item = None
+            actual_current_item = None
     else:
         num_items = len(items)
+        actual_current_item = current_item
 
-    retained_data.search_pattern = search_pattern
-
-    actual_current_item = filtered_current_item if is_filtering else current_item
     value_changed = False
 
     imgui.push_style_var(imgui.StyleVar_.frame_border_size, 0)
