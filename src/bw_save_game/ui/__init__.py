@@ -47,7 +47,12 @@ from bw_save_game.ui.editors import (
     show_value_editor_in_place,
     show_value_tree_editor_in_place,
 )
-from bw_save_game.ui.utils import ask_for_file_to_open, ask_for_file_to_save, show_error
+from bw_save_game.ui.utils import (
+    ask_for_file_to_open,
+    ask_for_file_to_save,
+    push_int_id,
+    show_error,
+)
 from bw_save_game.ui.widgets import (
     clear_unused_retained_data,
     show_regex_input,
@@ -376,9 +381,7 @@ def show_item_id_editor(obj):
 
 
 def show_persisted_value_editor(state: State, label: str, prop: PersistencePropertyDefinition):
-    # XXX: nanobind only accepts signed values for PushID(int)
-    signed_id = prop.id
-    imgui.push_id(signed_id - (signed_id & (1 << 31)))
+    push_int_id(prop.id)
 
     changed, new_value = show_labeled_value_editor(label, state.save_game.get_persistence_property(prop))
     if changed:
@@ -390,9 +393,7 @@ def show_persisted_value_editor(state: State, label: str, prop: PersistencePrope
 def show_persisted_value_options_editor(
     state: State, label: str, prop: PersistencePropertyDefinition, option_values: list, option_names: list[str]
 ):
-    # XXX: nanobind only accepts signed values for PushID(int)
-    signed_id = prop.id
-    imgui.push_id(signed_id - (signed_id & (1 << 31)))
+    push_int_id(prop.id)
 
     changed, new_value = show_labeled_options_editor(
         label,
@@ -1116,9 +1117,7 @@ def show_editor_collectibles(state: State):
         flags_property = PersistencePropertyDefinition(persistence_key, collectible["id"], "Uint8", 0)
         flags = state.save_game.get_persistence_property(flags_property) or 0
 
-        # XXX: nanobind only accepts signed values for PushID(int)
-        signed_id = collectible["id"]
-        imgui.push_id(signed_id - (signed_id & (1 << 31)))
+        push_int_id(collectible["id"])
         imgui.table_next_row()
         imgui.table_next_column()
         imgui.text(collectible["name"])
@@ -1212,9 +1211,7 @@ def show_editor_persistence(state: State):
             persistence_key, property_info["id"], property_info["type"], property_info["default"]
         )
 
-        # XXX: nanobind only accepts signed values for PushID(int)
-        signed_id = prop.id
-        imgui.push_id(signed_id - (signed_id & (1 << 31)))
+        push_int_id(prop.id)
 
         imgui.table_next_row()
         imgui.table_next_column()

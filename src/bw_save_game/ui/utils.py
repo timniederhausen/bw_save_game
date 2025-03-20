@@ -16,7 +16,7 @@
 #
 # Website: https://github.com/timniederhausen/bw_save_game
 # -*- coding: utf-8 -*-
-from imgui_bundle import portable_file_dialogs
+from imgui_bundle import imgui, portable_file_dialogs
 
 
 def ask_for_file_to_open(message, wildcard, default_path=""):
@@ -40,3 +40,9 @@ def show_error(message):
     dlg = portable_file_dialogs.message("Error", message, portable_file_dialogs.choice.ok)
     while not dlg.ready():
         pass
+
+
+def push_int_id(signed_id: int):
+    # Make really sure our int value is signed - imgui_bundle only accepts signed int32 values for PushID(int)
+    # XXX: could be a nanobind issue too?
+    imgui.push_id(signed_id - (signed_id & (1 << 31)))

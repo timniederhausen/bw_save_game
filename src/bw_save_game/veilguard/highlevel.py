@@ -106,6 +106,9 @@ class VeilguardSaveGame(object):
     def get_persistence_instances(self) -> typing.List[dict]:
         return self.get_registered_persistence()["RegisteredData"]["Persistence"]
 
+    def set_persistence_instances(self, new_persistence: typing.List[dict]):
+        self.get_registered_persistence()["RegisteredData"]["Persistence"] = new_persistence
+
     def get_persistence_instance(self, key: PersistenceKey) -> typing.Optional[dict]:
         return self._persistence_key_to_instance.get(key)
 
