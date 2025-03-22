@@ -1,6 +1,7 @@
 import json
 import time
 import typing
+from collections import defaultdict
 from uuid import UUID
 
 from bw_save_game import (
@@ -40,7 +41,7 @@ class VeilguardSaveGame(object):
         self.meta = meta
         self.data = data
 
-        self._persistence_key_to_instance = self.build_persistence_instance_map()
+        self._definition_id_to_instances, self._persistence_key_to_instance = self.build_persistence_instance_map()
 
     @staticmethod
     def from_file(fp):
@@ -97,7 +98,7 @@ class VeilguardSaveGame(object):
         first_extent = self.get_server_rpg_extents(0)
         return first_extent.setdefault("items", [])
 
-    def get_registered_persistence(self, loadpass=0) -> dict:
+    def get_registered_persistence(self, loadpass: int = 0) -> dict:
         for c in self.data["server"]["contributors"]:
             if c["name"] == "RegisteredPersistence" and to_native(c["loadpass"]) == loadpass:
                 return c["data"]
@@ -108,15 +109,13 @@ class VeilguardSaveGame(object):
 
     def set_persistence_instances(self, new_persistence: typing.List[dict]):
         self.get_registered_persistence()["RegisteredData"]["Persistence"] = new_persistence
+        self._definition_id_to_instances, self._persistence_key_to_instance = self.build_persistence_instance_map()
 
     def get_persistence_instance(self, key: PersistenceKey) -> typing.Optional[dict]:
         return self._persistence_key_to_instance.get(key)
 
-    def get_persistence_instance_by_id(self, definition_id: int) -> typing.Optional[dict]:
-        for def_instance in self.get_persistence_instances():
-            if to_native(def_instance["DefinitionId"]) == definition_id:
-                return def_instance
-        return None
+    def get_persistence_instances_by_id(self, definition_id: int) -> typing.List[dict]:
+        return self._definition_id_to_instances[definition_id]
 
     def make_persistence_instance(self, key: PersistenceKey) -> dict:
         new_instance = dict(
@@ -128,6 +127,7 @@ class VeilguardSaveGame(object):
         )
         self.get_persistence_instances().append(new_instance)
         self._persistence_key_to_instance[key] = new_instance
+        self._definition_id_to_instances[key.definition_id].append(new_instance)
         return new_instance
 
     def get_persistence_property(self, prop: PersistencePropertyDefinition):
@@ -137,16 +137,21 @@ class VeilguardSaveGame(object):
         return get_persisted_value(instance, prop.id, prop.type, prop.default)
 
     def set_persistence_property(self, prop: PersistencePropertyDefinition, value):
-        # TODO: delete property if value == default
         instance = self.get_persistence_instance(prop.key)
         if instance is None:
             instance = self.make_persistence_instance(prop.key)
         set_persisted_value(instance, prop.id, prop.type, value)
 
     def build_persistence_instance_map(self):
-        return {
-            parse_persistence_key_string(instance["Key"]): instance for instance in self.get_persistence_instances()
-        }
+        all_instances = self.get_persistence_instances()
+
+        definition_id_to_instances = defaultdict(list)
+        for instance in all_instances:
+            definition_id = to_native(instance["DefinitionId"])
+            definition_id_to_instances[definition_id].append(instance)
+
+        key_to_instance = {parse_persistence_key_string(instance["Key"]): instance for instance in all_instances}
+        return definition_id_to_instances, key_to_instance
 
     def replace_character_archetype(self, old_archetype: int, new_archetype: int):
         if old_archetype == new_archetype:
