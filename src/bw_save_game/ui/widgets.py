@@ -101,7 +101,7 @@ def show_searchable_combo_box(
     changed, new_value, new_pattern_compiled = show_regex_input("##ComboWithFilter_inputText", search_pattern)
     if changed:
         if new_value:
-            filtered_items = [i for i, item in enumerate(items) if new_pattern_compiled.match(item)]
+            filtered_items = [i for i, item in enumerate(items) if new_pattern_compiled.search(item)]
             retained_data.filtered_items = filtered_items
         else:
             filtered_items = None

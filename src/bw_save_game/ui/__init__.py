@@ -532,20 +532,20 @@ def _does_item_match(item, pattern: re.Pattern):
     item_def_index = _ITEM_ID_TO_INDEX.get(to_native(item["itemDataId"]))
     if item_def_index is not None:
         item_def = ALL_ITEMS[item_def_index]
-        if pattern.match(item_def["key"]):
+        if pattern.search(item_def["key"]):
             return True
 
     typ, parent, attach_slot = deconstruct_item_attachment(item)
     if typ == ItemAttachmentType.None_:
         return False
 
-    if pattern.match(attach_slot):
+    if pattern.search(attach_slot):
         return True
 
     if typ == ItemAttachmentType.Character:
         try:
             current_item = KNOWN_CHARACTER_ARCHETYPE_VALUES.index(parent)
-            if pattern.match(KNOWN_CHARACTER_ARCHETYPE_LABELS[current_item]):
+            if pattern.search(KNOWN_CHARACTER_ARCHETYPE_LABELS[current_item]):
                 return True
         except ValueError:
             pass
