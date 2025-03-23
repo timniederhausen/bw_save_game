@@ -32,7 +32,9 @@ from bw_save_game.db_object import Long, to_native
 from bw_save_game.persistence import (
     PersistenceKey,
     PersistencePropertyDefinition,
+    get_persisted_value,
     registered_persistence_key,
+    set_persisted_value,
 )
 from bw_save_game.ui.editors import (
     show_bit_flags_editor,
@@ -194,7 +196,8 @@ class State(object):
         self.inventory_filter = ""
         self.inventory_filter_compiled = None  # type: typing.Optional[re.Pattern]
         self.selected_collectible_set_index = 0
-        self.selected_persistence_index = 0
+        self.selected_definition_index = 0
+        self.selected_instance_index = 0
 
         self.default_save_path = detect_save_game_path()
 
@@ -255,6 +258,9 @@ class State(object):
         self.save_game = None
         self.inventory_filter = ""
         self.inventory_filter_compiled = None
+        self.selected_collectible_set_index = 0
+        self.selected_definition_index = 0
+        self.selected_instance_index = 0
 
 
 def set_window_title(title: str):
@@ -1171,12 +1177,13 @@ def show_editor_persistence(state: State):
     imgui.same_line()
     imgui.set_next_item_width(-1)
     changed, new_index = show_searchable_combo_box(
-        "##PersistenceDefinitions", PERSISTENCE_DEFINITION_LABELS, state.selected_persistence_index
+        "##PersistenceDefinitions", PERSISTENCE_DEFINITION_LABELS, state.selected_definition_index
     )
     if changed:
-        state.selected_persistence_index = new_index
+        state.selected_definition_index = new_index
+        state.selected_instance_index = 0
 
-    persistence_definition = ALL_PERSISTENCE_DEFINITIONS[state.selected_persistence_index]
+    persistence_definition = ALL_PERSISTENCE_DEFINITIONS[state.selected_definition_index]
     def_id = persistence_definition["id"]
     quest_info = PERSISTENCE_DEFINITION_TO_QUEST.get(def_id)
 
@@ -1198,36 +1205,52 @@ def show_editor_persistence(state: State):
         imgui.text(str(quest_info["journal_id"]))
     # end of properties
 
+    persistence_instances = state.save_game.get_persistence_instances_by_id(def_id)
+    persistence_instance = None
+    if len(persistence_instances) > 1:
+        imgui.text_disabled("Persistence instance:")
+        imgui.same_line()
+        imgui.set_next_item_width(-1)
+        changed, new_index = show_searchable_combo_box(
+            "##PersistenceInstances", [pi["Key"] for pi in persistence_instances], state.selected_instance_index
+        )
+        if changed:
+            state.selected_instance_index = new_index
+        persistence_instance = persistence_instances[state.selected_instance_index]
+    elif persistence_instances:
+        persistence_instance = persistence_instances[0]
+
     if not imgui.begin_table("Properties", 2, imgui.TableFlags_.resizable | imgui.TableFlags_.borders):
         return
-
-    persistence_key = registered_persistence_key(def_id)
 
     imgui.table_setup_column("Property name")
     imgui.table_setup_column("Value")
     imgui.table_headers_row()
     for property_info in persistence_definition["properties"]:
-        prop = PersistencePropertyDefinition(
-            persistence_key, property_info["id"], property_info["type"], property_info["default"]
-        )
+        prop_id = property_info["id"]
+        prop_type = property_info["type"]
+        prop_default = property_info["default"]
 
-        push_int_id(prop.id)
+        push_int_id(prop_id)
 
         imgui.table_next_row()
         imgui.table_next_column()
         imgui.text(property_info["name"])
         imgui.table_next_column()
 
-        value = state.save_game.get_persistence_property(prop)
+        value = prop_default
+        if persistence_instance is not None:
+            value = get_persisted_value(persistence_instance, prop_id, prop_type, prop_default)
+
         if quest_info and property_info["name"] == "_QuestState":
             changed, new_value = show_bit_flags_editor(EcoQuestRegisteredStateFlags, value)
-            if changed:
-                state.save_game.set_persistence_property(prop, new_value)
         else:
             changed, new_value = show_value_editor(value)
 
         if changed:
-            state.save_game.set_persistence_property(prop, new_value)
+            if persistence_instance is None:
+                persistence_instance = state.save_game.make_persistence_instance(registered_persistence_key(def_id))
+            set_persisted_value(persistence_instance, prop_id, prop_type, new_value)
 
         imgui.pop_id()
 
