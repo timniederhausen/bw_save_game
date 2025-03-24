@@ -185,6 +185,7 @@ def show_labeled_value_editor_in_place(label, obj, key):
     if changed:
         obj[key] = new_value
     imgui.pop_id()
+    return changed
 
 
 def show_value_tree_editor_in_place(obj, key):

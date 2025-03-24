@@ -699,6 +699,9 @@ def show_editor_main(state: State):
                 TRANSITION_START_POINTS,
                 TRANSITION_START_POINTS,
             )
+            if show_labeled_value_editor_in_place("Career ID", state.save_game.meta, "activecareer"):
+                difficulty = state.save_game.get_client_difficulty()
+                difficulty["careerId"] = state.save_game.meta["activecareer"]
 
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
