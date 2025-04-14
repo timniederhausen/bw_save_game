@@ -2,6 +2,19 @@
 Changelog
 =========
 
+Version 1.5.0
+=============
+
+* feat(ui): Support editing a save game's associated career
+* feat(ui): Support multiple persistence instances for a definition
+* chore(ui): Use re.search() to simplify regex use for users
+* feat(veilguard): Support multiple persistence instances with the same DefId
+* chore: Code cleanup
+* fix: Make new persistence editor UI more consistent
+* feat(ui): Make item popups resize-able
+* feat: Add full-blown editor for all persistence definitions
+* feat(ui): Support using Python regular expressions for filtering
+
 Version 1.4.2
 =============
 
