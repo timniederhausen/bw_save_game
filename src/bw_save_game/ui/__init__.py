@@ -706,6 +706,13 @@ def show_editor_main(state: State):
         if imgui.collapsing_header(
             "Player character", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
         ):
+            if show_labeled_value_editor_in_place("Name", state.save_game.meta["projdata"], "charname"):
+                state.save_game.get_client_rpg_extents(loadpass=0)["characterName"] = state.save_game.meta["projdata"][
+                    "charname"
+                ]
+                state.save_game.get_server_rpg_extents(loadpass=0)["characterName"] = state.save_game.meta["projdata"][
+                    "charname"
+                ]
             if show_persisted_value_options_editor(
                 state,
                 "Lineage",
