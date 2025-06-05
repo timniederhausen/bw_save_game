@@ -339,7 +339,7 @@ def show_main_menu_bar(state: State):
             state.close()
             set_window_title(WINDOW_TITLE)
 
-        clicked, selected = imgui.menu_item("Quit", "Cmd+Q", False, True)
+        clicked, selected = imgui.menu_item("Quit", "Ctrl+Q", False, True)
         if clicked:
             sys.exit(0)
 
@@ -357,6 +357,14 @@ def show_main_menu_bar(state: State):
 
     if need_about_open:
         imgui.open_popup("About")
+
+    # shortcuts
+    if imgui.is_key_chord_pressed(imgui.Key.mod_ctrl.value | imgui.Key.o.value):
+        ask_for_open(state)
+    if state.active_filename and imgui.is_key_chord_pressed(imgui.Key.mod_ctrl.value | imgui.Key.s.value):
+        state.save(state.active_filename)
+    if imgui.is_key_chord_pressed(imgui.Key.mod_ctrl.value | imgui.Key.q.value):
+        sys.exit(0)
 
 
 def show_item_id_editor(obj):
