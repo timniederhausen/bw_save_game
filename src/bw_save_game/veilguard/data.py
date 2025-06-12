@@ -21,6 +21,7 @@ ALL_PERSISTENCE_DEFINITIONS = _load_data_file("persistence")
 ALL_FOLLOWERS = _load_data_file("followers")
 ALL_MAPS = _load_data_file("maps")
 ALL_XP_THRESHOLDS = _load_data_file("xp_thresholds")
+ALL_PARAMDB_KEYS = _load_data_file("paramdb_keys")
 
 # post-processing for data files:
 for item in ALL_ITEMS:
@@ -57,3 +58,5 @@ FOLLOWER_IDS = [0] + [f["id"] for f in ALL_FOLLOWERS]
 FOLLOWER_LABELS = ["<empty>"] + [f["name"] for f in ALL_FOLLOWERS]
 
 XP_THRESHOLDS = {m["name"]: m for m in ALL_XP_THRESHOLDS}
+
+PARAMDB_KEYS = {k["raw"]["hash"]: k for k in ALL_PARAMDB_KEYS}

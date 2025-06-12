@@ -1,6 +1,14 @@
 from enum import IntEnum, IntFlag
 
 
+class BWSavegameCategory(IntEnum):
+    Account = 0
+    Snapshot = 1
+    Index = 2
+    Count = 3
+    Invalid = -1
+
+
 class ItemAttachmentType(IntEnum):
     None_ = 0
     Character = 1
