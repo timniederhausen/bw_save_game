@@ -29,6 +29,7 @@ from imgui_bundle import glfw_utils, imgui, immapp
 
 from bw_save_game import __version__
 from bw_save_game.db_object import Long, to_native
+from bw_save_game.hash import frostbite_fnv1, frostbite_fnv1_lowercase
 from bw_save_game.persistence import (
     PersistenceKey,
     PersistencePropertyDefinition,
@@ -198,6 +199,7 @@ class State(object):
         self.selected_collectible_set_index = 0
         self.selected_definition_index = 0
         self.selected_instance_index = 0
+        self.hash_input = ""
 
         self.default_save_path = detect_save_game_path()
 
@@ -296,9 +298,44 @@ def show_app_about(state: State):
         imgui.end_popup()
 
 
+def show_hash_popup(state: State):
+    imgui.set_next_window_pos(imgui.get_main_viewport().get_center(), imgui.Cond_.appearing, (0.5, 0.5))
+    imgui.set_next_window_size((500, 120))
+    if imgui.begin_popup("Frostbite Hashes"):
+        imgui.text_disabled("Input:")
+        imgui.set_next_item_width(-1)
+        _, state.hash_input = imgui.input_text("##hash_in", state.hash_input)
+
+        input_to_hash = state.hash_input.encode("utf-8")
+
+        imgui.text_disabled("FNV1:")
+        imgui.same_line()
+        imgui.set_next_item_width(-1)
+        _, _ = imgui.input_text(
+            "##fnv1",
+            str(frostbite_fnv1(input_to_hash)),
+            flags=imgui.InputTextFlags_.read_only | imgui.InputTextFlags_.no_undo_redo,
+        )
+
+        imgui.text_disabled("FNV1 (lowercase):")
+        imgui.same_line()
+        imgui.set_next_item_width(-1)
+        _, _ = imgui.input_text(
+            "##fnv1_lower",
+            str(frostbite_fnv1_lowercase(input_to_hash)),
+            flags=imgui.InputTextFlags_.read_only | imgui.InputTextFlags_.no_undo_redo,
+        )
+
+        imgui.end_popup()
+
+
 def show_main_menu_bar(state: State):
     if not imgui.begin_main_menu_bar():
         return
+
+    # https://github.com/ocornut/imgui/issues/331
+    need_hash_open = False
+    need_about_open = False
 
     if imgui.begin_menu("File", True):
         clicked, selected = imgui.menu_item(label="Open", shortcut="Ctrl+O", p_selected=False)
@@ -345,8 +382,12 @@ def show_main_menu_bar(state: State):
 
         imgui.end_menu()
 
-    # https://github.com/ocornut/imgui/issues/331
-    need_about_open = False
+    if imgui.begin_menu("Tools", True):
+        clicked, selected = imgui.menu_item(label="Frostbite String Hashes", shortcut="", p_selected=False)
+        if clicked:
+            need_hash_open = True
+        imgui.end_menu()
+
     if imgui.begin_menu("Help", True):
         clicked, selected = imgui.menu_item(label="About BWSaveGameEditor", shortcut="", p_selected=False)
         if clicked:
@@ -355,6 +396,8 @@ def show_main_menu_bar(state: State):
 
     imgui.end_main_menu_bar()
 
+    if need_hash_open:
+        imgui.open_popup("Frostbite Hashes")
     if need_about_open:
         imgui.open_popup("About")
 
@@ -1359,6 +1402,7 @@ def show_editor_window(state: State):
 def show_ui(state: State):
     show_main_menu_bar(state)
     show_app_about(state)
+    show_hash_popup(state)
     show_editor_window(state)
 
     clear_unused_retained_data()
