@@ -161,6 +161,7 @@ from bw_save_game.veilguard import (
     deconstruct_item_attachment,
     force_complete_quest,
     item_attachment_to_string,
+    parse_ParamDbKeyData,
 )
 
 # The UI needs some additional per-item data, pre-compute that here:
@@ -951,7 +952,7 @@ def show_editor_main(state: State):
     imgui.columns(1)
 
 
-def show_editor_appearances(state: State):
+def show_editor_json_appearances(state: State):
     data = state.save_game.get_client_rpg_extents(2)
 
     imgui.text_wrapped(
@@ -960,7 +961,7 @@ def show_editor_appearances(state: State):
         + "and copy their appearance documents over than trying to modify the values below."
     )
 
-    editor_size = (-1, imgui.get_window_size().y / 2 - 75)
+    editor_size = (-1, imgui.get_window_size().y / 2 - 95)
 
     if imgui.collapsing_header(
         "Player appearance", imgui.TreeNodeFlags_.default_open | imgui.TreeNodeFlags_.allow_overlap
@@ -981,6 +982,133 @@ def show_editor_appearances(state: State):
         if changed:
             data["inquisitorData"] = new_value
         imgui.pop_item_width()
+
+
+def show_property_heading(label: str, to_yield=None):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        yield to_yield
+        imgui.pop_id()
+        imgui.unindent()
+
+
+def show_array_property_heading(label: str, obj: list):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        for i in range(len(obj)):
+            yield from show_property_heading(str(i), obj[i])
+        imgui.pop_id()
+        imgui.unindent()
+
+
+def show_array_custom_property_heading(label: str, obj: list, to_heading):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        for i in range(len(obj)):
+            o = obj[i]
+            yield from show_property_heading(to_heading(i, o), o)
+        imgui.pop_id()
+        imgui.unindent()
+
+
+def show_ant_game_state_editor(value):
+    show_labeled_value_editor_in_place("AntGameState", value, "antGameState")
+    show_labeled_value_editor_in_place("GSValue", value, "gSValue")
+
+
+def show_blend_weights_editor(value):
+    show_labeled_value_editor_in_place("BlendAssetGuid", value, "blendAssetGuid")
+    show_labeled_value_editor_in_place("BlendWeight", value, "blendWeight")
+    show_labeled_value_editor_in_place("HeadBlendBundleIndex", value, "headBlendBundleIndex")
+
+
+def show_item_choices_editor(value):
+    show_labeled_value_editor_in_place("ItemIndex", value, "itemIndex")
+    show_labeled_value_editor_in_place("ItemOverrideBundleIndex", value, "itemOverrideBundleIndex")
+    show_labeled_value_editor_in_place("ItemBundleIndex", value, "itemBundleIndex")
+    show_labeled_value_editor_in_place("SlotNameHash", value, "slotNameHash")
+
+
+def show_shader_texture_param_editor(value):
+    show_labeled_value_editor_in_place("ParamName", value, "paramName")
+    if show_labeled_value_editor_in_place("TexturePath", value, "texturePath"):
+        value["textureNameHash"] = frostbite_fnv1_lowercase(value["texturePath"])
+
+
+def show_bwheadfeature_editor(value):
+    show_labeled_value_editor_in_place("NameHash", value, "nameHash")
+    show_labeled_value_editor_in_place("Value", value, "value")
+
+
+def show_editor_structured_appearances(state: State, key: str):
+    # we treat this as a SaveDataCharacterCustomizationDataInstance
+    data = state.save_game.get_client_rpg_extents(2)[key]
+
+    for customUIData in show_property_heading("CustomUIData", data["customUIData"]):
+        for headBlendUIValue in show_property_heading("HeadBlendUIValue", customUIData["headBlendUIValue"]):
+            show_labeled_value_editor_in_place("HeadBlendWeights", headBlendUIValue, "headBlendWeights")
+            show_labeled_value_editor_in_place("UXPosition", headBlendUIValue, "uXPosition")
+            show_labeled_value_editor_in_place("Head1Hash", headBlendUIValue, "head1Hash")
+            show_labeled_value_editor_in_place("Head2Hash", headBlendUIValue, "head2Hash")
+            show_labeled_value_editor_in_place("Head3Hash", headBlendUIValue, "head3Hash")
+
+    for customHeadData in show_property_heading("CustomHeadData", data["customHeadData"]):
+        show_labeled_value_editor_in_place("BodyPreset", customHeadData, "bodyPreset")
+        show_labeled_value_editor_in_place("HeadPreset", customHeadData, "headPreset")
+        show_labeled_value_editor_in_place("HasTopSurgeryScar", customHeadData, "hasTopSurgeryScar")
+        show_labeled_value_editor_in_place("RookStatueVariation", customHeadData, "rookStatueVariation")
+
+        for item in show_array_property_heading("BlendWeightsList", customHeadData["blendWeightsList"]):
+            show_blend_weights_editor(item)
+        for item in show_array_property_heading("ShaderTexturesList", customHeadData["shaderTexturesList"]):
+            show_shader_texture_param_editor(item)
+        for item in show_array_property_heading(
+            "ShaderBodyBaseTexturesSetList", customHeadData["shaderBodyBaseTexturesSetList"]
+        ):
+            for item2 in show_array_property_heading("BodyBaseTextures", item["bodyBaseTextures"]):
+                show_shader_texture_param_editor(item2)
+        for item in show_array_custom_property_heading(
+            "ShaderVecsList", customHeadData["shaderVecsList"], lambda _, o: str(parse_ParamDbKeyData(o["name"]))
+        ):
+            vecs = item["values"]
+            for i in range(len(vecs)):
+                show_labeled_value_editor_in_place(str(i), vecs, i)
+        for shaderBoolsList in show_property_heading("ShaderBoolsList", customHeadData["shaderBoolsList"]):
+            for value in shaderBoolsList:
+                show_labeled_value_editor_in_place(str(parse_ParamDbKeyData(value["name"])), value, "value")
+        for item in show_array_property_heading("AntGSIntList", customHeadData["antGSIntList"]):
+            show_ant_game_state_editor(item)
+        for item in show_array_property_heading("AntGSFloatList", customHeadData["antGSFloatList"]):
+            show_ant_game_state_editor(item)
+        for item in show_array_property_heading("ItemChoicesList", customHeadData["itemChoicesList"]):
+            show_item_choices_editor(item)
+        for item in show_array_property_heading(
+            "UnequippedPresetItemsList", customHeadData["unequippedPresetItemsList"]
+        ):
+            show_item_choices_editor(item)
+        for item in show_array_property_heading("FeatureMorphsList", customHeadData["featureMorphsList"]):
+            show_bwheadfeature_editor(item)
+
+    for _ in show_property_heading("ItemBundleNameHashes"):
+        items = data["itemBundleNameHashes"]
+        for i in range(len(items)):
+            show_labeled_value_editor_in_place(str(i), items, i)
+    for _ in show_property_heading("ItemOverrideBundleNameHashes"):
+        items = data["itemOverrideBundleNameHashes"]
+        for i in range(len(items)):
+            show_labeled_value_editor_in_place(str(i), items, i)
 
 
 def show_editor_progression(state: State, progression_properties: dict, header="Progression"):
@@ -1331,7 +1459,17 @@ def show_editor_content(state: State):
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Appearances")[0]:
-        show_editor_appearances(state)
+        if imgui.begin_tab_bar("appearances"):
+            if imgui.begin_tab_item("JSON Appearances")[0]:
+                show_editor_json_appearances(state)
+                imgui.end_tab_item()
+            if imgui.begin_tab_item("Editor - Player")[0]:
+                show_editor_structured_appearances(state, "playerData")
+                imgui.end_tab_item()
+            if imgui.begin_tab_item("Editor - Inquisitor")[0]:
+                show_editor_structured_appearances(state, "inquisitorData")
+                imgui.end_tab_item()
+            imgui.end_tab_bar()
         imgui.end_tab_item()
 
     if imgui.begin_tab_item("Companions")[0]:
