@@ -155,6 +155,20 @@ def show_value_editor(value):
             imgui.end_tooltip()
         supported = True
 
+    if not supported and isinstance(value, list):
+        # https://github.com/ocornut/imgui/issues/623
+        imgui.set_next_item_width(-1)
+        value_len = len(value)
+        if value_len == 2 and isinstance(value[0], float):
+            changed, new_value = imgui.input_float2("##editor", value)
+            supported = True
+        if value_len == 3 and isinstance(value[0], float):
+            changed, new_value = imgui.input_float3("##editor", value)
+            supported = True
+        if value_len == 4 and isinstance(value[0], float):
+            changed, new_value = imgui.input_float4("##editor", value)
+            supported = True
+
     if not supported:
         raise TypeError(f"Unsupported type {type(value)}")
     return changed, new_value
