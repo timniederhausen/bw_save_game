@@ -326,7 +326,7 @@ def show_labeled_hashed_value_editor(label: str, value: int, unhasher):
             store.set_bool(is_editing_id, False)
     else:
         imgui.set_next_item_width(-1 - 30)
-        imgui.text_unformatted(value_str)
+        imgui.text_unformatted(f"{to_native(value)} ({value_str})")
         imgui.same_line()
         if imgui.button(icons_fontawesome.ICON_FA_EDIT):
             store.set_bool(is_editing_id, True)
