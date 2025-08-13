@@ -79,11 +79,6 @@ build:
     - pipx run 'coveralls<4' --submit coverage.lcov
       # ^-- https://github.com/TheKevJames/coveralls-python/issues/434
 
-py38:
-  stage: test
-  image: "python:3.8"
-  <<: *test_script
-
 py39:
   stage: test
   image: "python:3.9"
