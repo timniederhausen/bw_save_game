@@ -1009,7 +1009,7 @@ def show_item_choices_editor(value):
 def show_shader_texture_param_editor(value):
     show_labeled_value_editor_in_place("ParamName", value, "paramName")
     if show_labeled_value_editor_in_place("TexturePath", value, "texturePath"):
-        value["textureNameHash"] = frostbite_fnv1_lowercase(value["texturePath"])
+        value["textureNameHash"] = frostbite_fnv1_lowercase(value["texturePath"].encode("utf-8"))
 
 
 def show_bwheadfeature_editor(value):
