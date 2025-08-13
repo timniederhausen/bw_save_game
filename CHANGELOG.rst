@@ -2,6 +2,23 @@
 Changelog
 =========
 
+Version 1.6.0
+=============
+
+* chore(ui): Always show hash as well
+* chore: Dump Python 3.8 support
+* feat(ui): Show known names for hashes (with separate edit mode)
+* fix(ui): Correctly encode texturePath string
+* feat(ui): Use requested FeatureMorphsList sorting
+* chore(ui): Move re-usable functions to widget module
+* chore: Add correct file headers to veilguard/* modules
+* feat(ui): Add structured appearance editors
+* feat(ui): Support editing vec2/vec3/vec4 fields in a single row
+* feat(veilguard): Support parsing ParamDb keys
+* feat(ui): Add simple dialog for quick access to string hashes
+* fix(ui): Actually implement keyboard shortcuts
+* feat(ui): Allow changing the player character name
+
 Version 1.5.0
 =============
 
