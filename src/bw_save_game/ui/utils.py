@@ -16,7 +16,12 @@
 #
 # Website: https://github.com/timniederhausen/bw_save_game
 # -*- coding: utf-8 -*-
+import typing
+
 from imgui_bundle import imgui, portable_file_dialogs
+
+from bw_save_game.db_object import to_native
+from bw_save_game.veilguard import SHADER_PARAMS
 
 
 def ask_for_file_to_open(message, wildcard, default_path=""):
@@ -46,3 +51,14 @@ def push_int_id(signed_id: int):
     # Make really sure our int value is signed - imgui_bundle only accepts signed int32 values for PushID(int)
     # XXX: could be a nanobind issue too?
     imgui.push_id(signed_id - (signed_id & (1 << 31)))
+
+
+# ========================================================================
+# hash -> name mappers for different types:
+
+
+def unhash_shader_parameter(name_hash) -> typing.Optional[str]:
+    param = SHADER_PARAMS.get(to_native(name_hash))
+    if param:
+        return param["parameter_name"]
+    return None

@@ -42,6 +42,7 @@ from bw_save_game.ui.editors import (
     show_bit_flags_editor,
     show_json_editor,
     show_labeled_bit_flags_editor,
+    show_labeled_hashed_value_editor_in_place,
     show_labeled_options_editor,
     show_labeled_options_editor_in_place,
     show_labeled_value_editor,
@@ -56,6 +57,7 @@ from bw_save_game.ui.utils import (
     ask_for_file_to_save,
     push_int_id,
     show_error,
+    unhash_shader_parameter,
 )
 from bw_save_game.ui.widgets import (
     clear_unused_retained_data,
@@ -1013,7 +1015,7 @@ def show_shader_texture_param_editor(value):
 
 
 def show_bwheadfeature_editor(value):
-    show_labeled_value_editor_in_place("NameHash", value, "nameHash")
+    show_labeled_hashed_value_editor_in_place("NameHash", value, "nameHash", unhash_shader_parameter)
     show_labeled_value_editor_in_place("Value", value, "value")
 
 

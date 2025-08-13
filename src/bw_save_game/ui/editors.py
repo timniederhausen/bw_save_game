@@ -123,28 +123,28 @@ def show_numeric_value_editor(value):
     return True, True, new_value
 
 
-def show_value_editor(value):
+def show_value_editor(value, width=-1):
     supported = False
     if isinstance(value, bool):
         # https://github.com/ocornut/imgui/issues/623
-        imgui.set_next_item_width(-1)
+        imgui.set_next_item_width(width)
         changed, new_value = imgui.checkbox("##editor", value)
         supported = True
 
     if not supported:
         # https://github.com/ocornut/imgui/issues/623
-        imgui.set_next_item_width(-1)
+        imgui.set_next_item_width(width)
         supported, changed, new_value = show_numeric_value_editor(value)
 
     if not supported and isinstance(value, str):
         # https://github.com/ocornut/imgui/issues/623
-        imgui.set_next_item_width(-1)
+        imgui.set_next_item_width(width)
         changed, new_value = imgui.input_text("##editor", value)
         supported = True
 
     if not supported and isinstance(value, UUID):
         # https://github.com/ocornut/imgui/issues/623
-        imgui.set_next_item_width(-1 - 30)
+        imgui.set_next_item_width(width - 30)
         changed, new_value = show_uuid_editor("##editor", value)
         imgui.same_line()
         if imgui.button(icons_fontawesome.ICON_FA_SYNC):
@@ -157,7 +157,7 @@ def show_value_editor(value):
 
     if not supported and isinstance(value, list):
         # https://github.com/ocornut/imgui/issues/623
-        imgui.set_next_item_width(-1)
+        imgui.set_next_item_width(width)
         value_len = len(value)
         if value_len == 2 and isinstance(value[0], float):
             changed, new_value = imgui.input_float2("##editor", value)
@@ -184,7 +184,7 @@ def show_value_editor_in_place(obj, key):
 
 def show_labeled_value_editor(label, value):
     imgui.columns(2)
-    imgui.text(label)
+    imgui.text_unformatted(label)
     imgui.next_column()
 
     changed, new_value = show_value_editor(value)
@@ -296,10 +296,51 @@ def show_bit_flags_editor(flag_type, value: int):
 
 def show_labeled_bit_flags_editor(label: str, flag_type, value: int):
     imgui.columns(2)
-    imgui.text(label)
+    imgui.text_unformatted(label)
     imgui.next_column()
 
     changed, new_value = show_bit_flags_editor(flag_type, value)
 
     imgui.columns(1)
     return changed, new_value
+
+
+def show_labeled_hashed_value_editor(label: str, value: int, unhasher):
+    imgui.columns(2)
+    imgui.text_unformatted(label)
+    imgui.next_column()
+
+    store = imgui.get_state_storage()
+    is_editing_id = imgui.get_id(451)
+
+    is_editing = store.get_bool(is_editing_id, False)
+    if not is_editing:
+        value_str = unhasher(value)
+        if value_str is None:
+            is_editing = True
+
+    if is_editing:
+        changed, new_value = show_value_editor(value, -1 - 30)
+        imgui.same_line()
+        if imgui.button(icons_fontawesome.ICON_FA_CHECK):
+            store.set_bool(is_editing_id, False)
+    else:
+        imgui.set_next_item_width(-1 - 30)
+        imgui.text_unformatted(value_str)
+        imgui.same_line()
+        if imgui.button(icons_fontawesome.ICON_FA_EDIT):
+            store.set_bool(is_editing_id, True)
+        changed = False
+        new_value = None
+
+    imgui.columns(1)
+    return changed, new_value
+
+
+def show_labeled_hashed_value_editor_in_place(label, obj, key, unhasher):
+    imgui.push_id(key)
+    changed, new_value = show_labeled_hashed_value_editor(label, obj[key], unhasher)
+    if changed:
+        obj[key] = new_value
+    imgui.pop_id()
+    return changed
