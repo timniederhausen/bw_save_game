@@ -37,6 +37,7 @@ from bw_save_game.persistence import (
     registered_persistence_key,
     set_persisted_value,
 )
+from bw_save_game.ui.config import as_sorted_feature_morphs
 from bw_save_game.ui.editors import (
     show_bit_flags_editor,
     show_json_editor,
@@ -1062,7 +1063,9 @@ def show_editor_structured_appearances(state: State, key: str):
             "UnequippedPresetItemsList", customHeadData["unequippedPresetItemsList"]
         ):
             show_item_choices_editor(item)
-        for item in show_array_property_heading("FeatureMorphsList", customHeadData["featureMorphsList"]):
+        for item in show_array_property_heading(
+            "FeatureMorphsList", as_sorted_feature_morphs(customHeadData["featureMorphsList"])
+        ):
             show_bwheadfeature_editor(item)
 
     for _ in show_property_heading("ItemBundleNameHashes"):
