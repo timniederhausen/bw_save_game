@@ -58,6 +58,9 @@ from bw_save_game.ui.utils import (
 )
 from bw_save_game.ui.widgets import (
     clear_unused_retained_data,
+    show_array_custom_property_heading,
+    show_array_property_heading,
+    show_property_heading,
     show_regex_input,
     show_searchable_combo_box,
 )
@@ -982,45 +985,6 @@ def show_editor_json_appearances(state: State):
         if changed:
             data["inquisitorData"] = new_value
         imgui.pop_item_width()
-
-
-def show_property_heading(label: str, to_yield=None):
-    is_open, is_removed = imgui.collapsing_header(
-        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
-    )
-    if is_open:
-        imgui.push_id(label)
-        imgui.indent()
-        yield to_yield
-        imgui.pop_id()
-        imgui.unindent()
-
-
-def show_array_property_heading(label: str, obj: list):
-    is_open, is_removed = imgui.collapsing_header(
-        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
-    )
-    if is_open:
-        imgui.push_id(label)
-        imgui.indent()
-        for i in range(len(obj)):
-            yield from show_property_heading(str(i), obj[i])
-        imgui.pop_id()
-        imgui.unindent()
-
-
-def show_array_custom_property_heading(label: str, obj: list, to_heading):
-    is_open, is_removed = imgui.collapsing_header(
-        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
-    )
-    if is_open:
-        imgui.push_id(label)
-        imgui.indent()
-        for i in range(len(obj)):
-            o = obj[i]
-            yield from show_property_heading(to_heading(i, o), o)
-        imgui.pop_id()
-        imgui.unindent()
 
 
 def show_ant_game_state_editor(value):

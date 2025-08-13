@@ -174,3 +174,42 @@ def show_searchable_combo_box(
 
     used_combo_boxes[id] = retained_data
     return value_changed, current_item
+
+
+def show_property_heading(label: str, to_yield=None):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        yield to_yield
+        imgui.pop_id()
+        imgui.unindent()
+
+
+def show_array_property_heading(label: str, obj: list):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        for i in range(len(obj)):
+            yield from show_property_heading(str(i), obj[i])
+        imgui.pop_id()
+        imgui.unindent()
+
+
+def show_array_custom_property_heading(label: str, obj: list, to_heading):
+    is_open, is_removed = imgui.collapsing_header(
+        label, True, imgui.TreeNodeFlags_.allow_overlap | imgui.TreeNodeFlags_.default_open
+    )
+    if is_open:
+        imgui.push_id(label)
+        imgui.indent()
+        for i in range(len(obj)):
+            o = obj[i]
+            yield from show_property_heading(to_heading(i, o), o)
+        imgui.pop_id()
+        imgui.unindent()
