@@ -215,13 +215,8 @@ class VeilguardSaveGame(object):
             if bucket["level"] == new_level:
                 min_xp_for_level = bucket["value"]
 
-        cur_xp = self.get_persistence_property(PROGRESSION_XP_XP)
-        if cur_xp < min_xp_for_level:
-            self.set_persistence_property(PROGRESSION_XP_XP, min_xp_for_level)
-
-        cur_xp = self.get_persistence_property(DEFAULTXPBUCKET_XP)
-        if cur_xp < min_xp_for_level:
-            self.set_persistence_property(DEFAULTXPBUCKET_XP, min_xp_for_level)
+        self.set_persistence_property(PROGRESSION_XP_XP, min_xp_for_level)
+        self.set_persistence_property(DEFAULTXPBUCKET_XP, min_xp_for_level)
 
 
 def deconstruct_item_attachment(item: dict) -> tuple[ItemAttachmentType, None | int | UUID, None | str]:

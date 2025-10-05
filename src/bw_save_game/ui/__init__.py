@@ -812,7 +812,9 @@ def show_editor_main(state: State):
                 CLASS_KEYBINDING_LABELS,
             )
             if show_persisted_value_editor(state, "Level:", PROGRESSION_CurrentLevel):
-                state.save_game.change_level(state.save_game.get_persistence_property(PROGRESSION_CurrentLevel))
+                new_level = state.save_game.get_persistence_property(PROGRESSION_CurrentLevel)
+                if state.save_game.meta["projdata"]["level"] != new_level:
+                    state.save_game.change_level(new_level)
             if show_persisted_value_options_editor(
                 state,
                 "Voice",
