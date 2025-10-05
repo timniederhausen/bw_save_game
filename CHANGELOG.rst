@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Version 1.6.1
+=============
+
+* fix: Allow users to lower their level
+
 Version 1.6.0
 =============
 
