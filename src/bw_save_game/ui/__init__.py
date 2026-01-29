@@ -207,6 +207,7 @@ class State(object):
         self.selected_definition_index = 0
         self.selected_instance_index = 0
         self.hash_input = ""
+        self.temporary_select_all = False
 
         self.default_save_path = detect_save_game_path()
 
@@ -270,6 +271,7 @@ class State(object):
         self.selected_collectible_set_index = 0
         self.selected_definition_index = 0
         self.selected_instance_index = 0
+        self.temporary_select_all = False
 
 
 def set_window_title(title: str):
@@ -1145,6 +1147,20 @@ def show_editor_skills(state: State, archetype: CharacterArchetype):
     skill_points = PersistencePropertyDefinition(persistence_key, 2271481620, "Uint32", 0)
 
     show_persisted_value_editor(state, "Skill points:", skill_points)
+
+    # There are quite a few, provide a shortcut to grant/deny all
+    imgui.columns(2)
+    imgui.next_column()  # align with list checkbox
+    changed, new_value = imgui.checkbox("Unlock/Lock all", state.temporary_select_all)
+    if changed:
+        state.temporary_select_all = new_value
+        for skill in SKILL_GRAPHS[graph_id]["skills"]:
+            unlock_property = PersistencePropertyDefinition(
+                persistence_key, skill["unlock_property_id"], "Boolean", False
+            )
+            state.save_game.set_persistence_property(unlock_property, new_value)
+    imgui.columns(1)
+
     show_editor_skills_list(state, SKILL_GRAPHS[graph_id], persistence_key)
 
 
